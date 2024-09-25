@@ -10,9 +10,16 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@nextui-org/image": "^2.0.32",
+    "@nextui-org/react": "^2.4.8",
+    "@nextui-org/spinner": "^2.0.34",
+    "@nextui-org/system": "^2.2.6",
+    "@nextui-org/theme": "^2.2.11",
     "firebase": "^10.13.2",
+    "framer-motion": "^11.7.0",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.26.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",
