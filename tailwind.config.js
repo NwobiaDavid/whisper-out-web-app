@@ -10,7 +10,12 @@ export default {
 "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}"
 ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        maindark: '#3D3B6F',
+        
+      },
+    },
   },
   darkMode: "class",
   plugins: [nextui()],
