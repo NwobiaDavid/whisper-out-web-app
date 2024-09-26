@@ -1,19 +1,28 @@
+import { useEffect, useContext} from 'react';
 import { Image } from '@nextui-org/image';
-import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {Spinner} from "@nextui-org/spinner";
+import { AuthContext } from '../config/AuthContext.jsx';
 
 const SplashScreen = () => {
-
+  const { user } = useContext(AuthContext);
    const navigate = useNavigate();
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      navigate('/signup'); 
-    }, 10000);
+   useEffect(() => {
+    if (user) {
+      navigate('/home');
+    } else {
+      const timer = setTimeout(() => {
+        navigate('/signup'); 
+      }, 10000);
+  
+      return () => clearTimeout(timer);
+    }
+  }, [user, navigate]);
 
-    return () => clearTimeout(timer);
-  }, [navigate]);
+  // useEffect(() => {
+   
+  // }, [navigate]);
 
   return (
     <div className="max-w-screen h-screen">

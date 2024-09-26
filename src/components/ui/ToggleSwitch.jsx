@@ -3,7 +3,7 @@ import { toggleDarkMode } from '../../state/theme/themeSlice';
 import { useEffect } from 'react';
 import { motion } from 'framer-motion';
 
-import { BsFillSunFill,BsMoon } from "react-icons/bs";
+
 import { FaRegMoon } from "react-icons/fa";
 import { IoSunnySharp } from "react-icons/io5";
 

@@ -10,7 +10,7 @@ const Emailheader = () => {
   const darkMode = useSelector((state) => state.theme.darkMode);
 
   return (
-    <div className=" relative w-full px-3 py-10 bg-white dark:bg-maindark flex justify-center items-center ">
+    <div className=" relative w-full px-3 h-[15%] bg-white dark:bg-maindark flex justify-center items-center ">
       <Image
         className=" w-[60px] "
         alt="Whisper out logo"

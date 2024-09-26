@@ -2,7 +2,7 @@
 
 const Footer = () => {
   return (
-    <div className="w-full p-5" >
+    <div className="w-full flex justify-center gap-5 text-sm items-end pb-7 h-[10%] " >
       <span>
         © 2024 Whisper Out
       </span>
