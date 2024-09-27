@@ -11,13 +11,40 @@ const ToggleSwitch = () => {
   const dispatch = useDispatch();
   const darkMode = useSelector((state) => state.theme.darkMode);
 
+   // Load theme from localStorage on initial render
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('darkMode');
+    if (savedTheme) {
+      const isDarkMode = JSON.parse(savedTheme);
+      if (isDarkMode) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+      if (isDarkMode !== darkMode) {
+        dispatch(toggleDarkMode());
+      }
+    }
+  }, []); // Run once when component mounts
+
+  // Update theme in localStorage and apply it to the document
   useEffect(() => {
     if (darkMode) {
       document.documentElement.classList.add('dark');
+      localStorage.setItem('darkMode', JSON.stringify(true)); // Save dark mode to localStorage
     } else {
       document.documentElement.classList.remove('dark');
+      localStorage.setItem('darkMode', JSON.stringify(false)); // Save light mode to localStorage
     }
-  }, [darkMode]);
+  }, [darkMode]); // Run every time darkMode changes
+
+  // useEffect(() => {
+  //   if (darkMode) {
+  //     document.documentElement.classList.add('dark');
+  //   } else {
+  //     document.documentElement.classList.remove('dark');
+  //   }
+  // }, [darkMode]);
 
   return (
     <div className=" rounded-full flex border border-gray-50  drop-shadow-lg bg-white dark:bg-inherit transition-shadow w-[82px]  dark:border-gray-500  ">
