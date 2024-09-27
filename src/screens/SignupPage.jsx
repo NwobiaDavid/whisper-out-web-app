@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { Input } from '@nextui-org/react';
+import { Input, Image } from '@nextui-org/react';
 import { useState, useMemo, useEffect, useContext } from 'react';
 import { sendSignInLinkToEmail } from 'firebase/auth';
 import { AuthContext } from '../config/AuthContext.jsx';
@@ -55,8 +55,15 @@ const SignupPage = () => {
 
   return (
     <div
-      className="w-full max-h-screen dark:bg-maindark h-screen"
+     style={{ backgroundImage: "url('/assets/images/bg/auth.png')" ,
+      backgroundRepeat: 'no-repeat',  backgroundSize: 'cover', }}
+      className="w-full max-h-screen relative dark:bg-maindark h-screen"
     >
+      {/* <Image 
+    src="/assets/images/bg/auth.png" 
+    className="w-screen h-screen absolute   z-[999] top-[40%]  " 
+    alt="bg" 
+  /> */}
       <Emailheader />
       <motion.div
       initial={{ y: '10vw' }}
@@ -65,11 +72,11 @@ const SignupPage = () => {
       transition={{ type: 'spring', stiffness: 50, damping: 20 }}
        className="w-full h-[75%] flex justify-center">
         <div 
-        className="w-[70%] grid grid-cols-2"
+        className=" w-[75%] rounded-lg xl:w-[70%] border bg-transparent dark:border dark:border-opacity-20 dark:bg-[#44427C] border-gray-200 grid grid-cols-2"
         >
           <form
             onSubmit={handleSendLink}
-            className="xl:px-20 flex flex-col relative justify-center items-center"
+            className="xl:px-20 lg:px-7 flex flex-col relative justify-center items-center"
           >
             <Input
               size="lg"
@@ -112,7 +119,7 @@ const SignupPage = () => {
               Continue
             </button>
 
-            <div className="absolute xl:bottom-[10%] xl:px-20 text-sm">
+            <div className="absolute lg:bottom-[10%] xl:bottom-[10%] lg:px-7 xl:px-20 text-sm">
               <p className="font-light leading-[15px]">
                 By inserting your email, you confirm your agreement to
                 WhisperOut Terms and Conditions and WhisperOut contacting you
@@ -123,7 +130,7 @@ const SignupPage = () => {
             </div>
           </form>
 
-          <div className="flex flex-col justify-center xl:px-20">
+          <div className="flex flex-col justify-center lg:px-7 xl:px-20">
             <h1 className="text-3xl font-bold mb-10">Say Hello to WhisperOut</h1>
             <div>
               <p className="font-light text-[14px] leading-[16px]">

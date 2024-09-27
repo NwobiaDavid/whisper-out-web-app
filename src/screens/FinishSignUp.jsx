@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useEffect, useState } from 'react';
 import { isSignInWithEmailLink, signInWithEmailLink } from 'firebase/auth';
 import { auth } from '../config/firebase';
@@ -53,7 +54,10 @@ const FinishSignUp = () => {
   }, [navigate]);
     
   return (
-    <div className=" w-full max-h-screen dark:bg-maindark h-screen " >
+    <div 
+     style={{ backgroundImage: "url('/assets/images/bg/auth.png')" ,
+      backgroundRepeat: 'no-repeat',  backgroundSize: 'cover', }}
+    className=" w-full max-h-screen dark:bg-maindark h-screen " >
     <Emailheader />
 
     <div className="w-full h-[75%] flex justify-center  ">
@@ -68,7 +72,7 @@ const FinishSignUp = () => {
             <div className="w-[70%] border-2 rounded-lg relative ">
 
 
-            <div className="w-full text-lg h-full absolute z-[999] backdrop-blur-sm bg-black bg-opacity-10 justify-center items-center flex flex-col" >
+            <div className="w-full text-lg h-full absolute z-[999] backdrop-blur-sm bg-black bg-opacity-5 justify-center items-center flex flex-col" >
             {message === "good" ? (
               <Spinner />
             ): (

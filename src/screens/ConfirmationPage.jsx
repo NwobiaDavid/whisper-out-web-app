@@ -56,7 +56,10 @@ const ConfirmationPage = () => {
   // };
 
   return (
-    <div className=" w-full max-h-screen dark:bg-maindark h-screen ">
+    <div 
+     style={{ backgroundImage: "url('/assets/images/bg/auth.png')" ,
+      backgroundRepeat: 'no-repeat',  backgroundSize: 'cover', }}
+    className=" w-full max-h-screen dark:bg-maindark h-screen ">
       <Emailheader />
       <div className="w-full h-[75%] flex justify-center  ">
         {isLoading ? (
@@ -65,7 +68,7 @@ const ConfirmationPage = () => {
           </div>
         ) : (
           <div className=" w-full h-full justify-center flex ">
-            <div className="w-[70%] border-2 dark:border dark:border-opacity-20 dark:bg-[#44427C] border-gray-200 rounded-lg  ">
+            <div className="w-[70%] border dark:border dark:border-opacity-20 dark:bg-[#44427C] border-gray-200 rounded-lg  ">
               <div className="xl:px-20 xl:pt-20 flex xl:w-[65%] flex-col  ">
                 <div className="text-3xl mb-7 font-bold ">
                   <h1>Just sent you an email</h1>
