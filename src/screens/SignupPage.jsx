@@ -1,7 +1,8 @@
 /* eslint-disable no-unused-vars */
 import { Input } from '@nextui-org/react';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useContext } from 'react';
 import { sendSignInLinkToEmail } from 'firebase/auth';
+import { AuthContext } from '../config/AuthContext.jsx';
 import { auth } from '../config/firebase.js';
 import { useNavigate } from 'react-router-dom'; 
 import { TbMail } from 'react-icons/tb';
@@ -16,6 +17,14 @@ const SignupPage = () => {
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
   let email = window.localStorage.getItem('emailForSignIn');
+  
+  const { user } = useContext(AuthContext);
+
+  useEffect(() => {
+    if (user) {
+      navigate('/home');
+    } 
+  }, [user, navigate]);
   
   const validateEmail = (value) =>
     value.match(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+.[A-Z]{2,4}$/i);

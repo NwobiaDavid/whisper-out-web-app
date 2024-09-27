@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
-import { useState } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { sendSignInLinkToEmail } from 'firebase/auth';
+import { AuthContext } from '../config/AuthContext.jsx';
 import { auth } from '../config/firebase';
 import { useNavigate } from 'react-router-dom';
 import {Spinner} from "@nextui-org/react";
@@ -16,7 +17,14 @@ const ConfirmationPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
+  const { user } = useContext(AuthContext);
   const email = window.localStorage.getItem('emailForSignIn');
+
+  useEffect(() => {
+    if (user) {
+      navigate('/home');
+    } 
+  }, [user, navigate]);
 
   const handleResendLink = async () => {
     setIsResending(true);

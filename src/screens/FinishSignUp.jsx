@@ -32,7 +32,7 @@ const FinishSignUp = () => {
 
         try {
           const result = await signInWithEmailLink(auth, email, window.location.href);
-          setMessage(`Welcome, ${result.user.email}! Redirecting to home...`);
+          setMessage("good");
           window.localStorage.removeItem('emailForSignIn');
 
           // Simulate loading before redirect
@@ -69,8 +69,14 @@ const FinishSignUp = () => {
 
 
             <div className="w-full text-lg h-full absolute z-[999] backdrop-blur-sm bg-black bg-opacity-10 justify-center items-center flex flex-col" >
-            <h1 className="font-semibold " >Sign-In Confirmation</h1>
-              <p>{message}</p>
+            {message === "good" ? (
+              <Spinner />
+            ): (
+              <div>
+                <h1 className="font-semibold " >Sign-In Confirmation</h1>
+                <p>{message}</p>
+              </div>
+            )}
             </div>
 
               <div className="xl:px-20  xl:pt-20 flex xl:w-[65%] flex-col  ">

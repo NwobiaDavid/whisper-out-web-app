@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
 import { createContext, useEffect, useState } from 'react';
 import { checkAuthStatus } from './firebase.js';
+import { Spinner } from '@nextui-org/spinner';
 
 export const AuthContext = createContext();
 
@@ -13,7 +14,9 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   if (loading) {
-    return <div>Loading...</div>; // Show a loading spinner while checking auth status
+    return <div className="w-screen h-screen flex justify-center items-center" > 
+      <Spinner />
+    </div>; 
   }
 
   return (
