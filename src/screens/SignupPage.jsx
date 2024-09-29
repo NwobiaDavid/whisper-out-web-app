@@ -55,9 +55,7 @@ const SignupPage = () => {
 
   return (
     <div
-     style={{ backgroundImage: "url('/assets/images/bg/auth.png')" ,
-      backgroundRepeat: 'no-repeat',  backgroundSize: 'cover', }}
-      className="w-full max-h-screen relative dark:bg-maindark h-screen"
+     className={`w-full max-h-screen h-screen relative bg-cover bg-no-repeat bg-[url('/assets/images/bg/auth.png')] dark:bg-[url('')] dark:bg-maindark `}
     >
       {/* <Image 
     src="/assets/images/bg/auth.png" 

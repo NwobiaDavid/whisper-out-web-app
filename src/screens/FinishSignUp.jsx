@@ -55,9 +55,8 @@ const FinishSignUp = () => {
     
   return (
     <div 
-     style={{ backgroundImage: "url('/assets/images/bg/auth.png')" ,
-      backgroundRepeat: 'no-repeat',  backgroundSize: 'cover', }}
-    className=" w-full max-h-screen dark:bg-maindark h-screen " >
+      className={`w-full max-h-screen h-screen relative bg-cover bg-no-repeat bg-[url('/assets/images/bg/auth.png')] dark:bg-[url('')] dark:bg-maindark `}
+      >
     <Emailheader />
 
     <div className="w-full h-[75%] flex justify-center  ">
