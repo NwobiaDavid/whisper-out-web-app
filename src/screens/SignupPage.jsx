@@ -1,9 +1,10 @@
 /* eslint-disable no-unused-vars */
 import { Input, Image } from '@nextui-org/react';
+import { getFirestore, collection, query, where, getDocs, setDoc, doc } from 'firebase/firestore';
 import { useState, useMemo, useEffect, useContext } from 'react';
-import { sendSignInLinkToEmail } from 'firebase/auth';
+import { getAuth, sendSignInLinkToEmail, onAuthStateChanged  } from 'firebase/auth';
 import { AuthContext } from '../config/AuthContext.jsx';
-import { auth } from '../config/firebase.js';
+import { auth, db } from '../config/firebase.js';
 import { useNavigate } from 'react-router-dom'; 
 import { TbMail } from 'react-icons/tb';
 import { IoIosCheckmarkCircleOutline } from 'react-icons/io';
@@ -16,6 +17,10 @@ const SignupPage = () => {
   const [value, setValue] = useState('');
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
+
+  // const db = 
+  // const auth = getAuth();
+
   let email = window.localStorage.getItem('emailForSignIn');
   
   const { user } = useContext(AuthContext);
@@ -42,6 +47,25 @@ const SignupPage = () => {
   const handleSendLink = async (e) => {
     e.preventDefault();
     try {
+
+      // const emailDomain = value.split('@')[1];
+
+      // const checkIfCompanyExists = async (domain) => {
+      //   const companiesRef = collection(db, 'companies');
+      //   const q = query(companiesRef, where('domain', '==', domain)); 
+      //   const querySnapshot = await getDocs(q);
+        
+      //   return !querySnapshot.empty;  
+      // };
+
+      // const companyExists = await checkIfCompanyExists(emailDomain);
+
+      // if (!companyExists) {
+      //   navigate('/companyentry');  
+      //   return;
+      // }
+      
+
       window.localStorage.setItem('emailForSignIn', value);
       email = value;
       await sendSignInLinkToEmail(auth, email, actionCodeSettings);
@@ -52,6 +76,44 @@ const SignupPage = () => {
       setMessage(`Error: ${error.message}`);
     }
   };
+
+  // const storeUserInFirestore = async (email, companyName) => {
+  //   try {
+  //     const user = auth.currentUser;
+  //     const uid = user.uid; 
+
+  //     const secretId = generateSecretId(); 
+
+  //     await setDoc(doc(db, 'users', uid), {
+  //       email: user.email,
+  //       uid: user.uid,
+  //       secretId: secretId,
+  //       company: companyName, 
+  //     });
+
+  //     console.log('User data stored successfully in Firestore');
+  //   } catch (error) {
+  //     console.error('Error storing user data:', error);
+  //   }
+  // };
+  
+
+  // const generateSecretId = () => {
+  //   return 'someUniqueSecretId'; 
+  // };
+
+  
+  // useEffect(() => {
+  //   const unsubscribe = onAuthStateChanged(auth, (user) => {
+  //     if (user) {
+  //       const emailDomain = user.email.split('@')[1];
+  //       storeUserInFirestore(user.email, emailDomain); 
+  //     }
+  //   });
+
+  //   return () => unsubscribe();
+  // }, [auth]);
+
 
   return (
     <div

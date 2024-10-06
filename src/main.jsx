@@ -16,6 +16,7 @@ import ConfirmationPage from './screens/ConfirmationPage';
 import FinishSignUp from './screens/FinishSignUp';
 import Home from './screens/Home';
 import ThemeManager from './components/ThemeManager.jsx';
+import CompanyEntry from './screens/CompanyEntry.jsx';
 
 // const ThemeManager = ({ children }) => {
 //   const darkMode = useSelector((state) => state.theme.darkMode);
@@ -42,6 +43,7 @@ createRoot(document.getElementById('root')).render(
                 <Route path="/signup" element={<SignupPage />} />
                 <Route path="/confirmation" element={<ConfirmationPage />} />
                 <Route path="/finishSignUp" element={<FinishSignUp />} />
+                <Route path="/companyentry" element={<CompanyEntry />} />
                 {/* Protect home route */}
                 <Route path="/home" 
                   element={
