@@ -43,7 +43,7 @@ createRoot(document.getElementById('root')).render(
                 <Route path="/signup" element={<SignupPage />} />
                 <Route path="/confirmation" element={<ConfirmationPage />} />
                 <Route path="/finishSignUp" element={<FinishSignUp />} />
-                <Route path="/companyentry" element={<CompanyEntry />} />
+                <Route path="/company-entry" element={<CompanyEntry />} />
                 {/* Protect home route */}
                 <Route path="/home" 
                   element={

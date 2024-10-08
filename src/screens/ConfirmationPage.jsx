@@ -45,15 +45,7 @@ const ConfirmationPage = () => {
   const handleChangeEmail = () => {
     navigate('/signup');
   };
-
-  // const handleEmailVerification = async () => {
-  //   setIsLoading(true);
-  //   // Simulate some async work (Firebase email verification logic)
-  //   setTimeout(() => {
-  //     setIsLoading(false);
-  //     navigate('/home'); // Navigate to the home page after success
-  //   }, 2000); // Simulate delay, this should be the actual confirmation logic.
-  // };
+  
 
   return (
     <div 

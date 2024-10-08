@@ -54,15 +54,16 @@ const FinishSignUp = () => {
             const result = await signInWithEmailLink(auth, email, window.location.href);
             window.localStorage.removeItem('emailForSignIn');
             setMessage('Sign-in successful.');
+
             
             if (!companyExists) {
-              navigate('/companyentry');
+              navigate('/company-entry');
               return;
             }
             
-            // Optionally store user info in Firestore if user is available
+
             if (user) {
-              const userRef = doc(db, 'users', user.uid); // Now using context user
+              const userRef = doc(db, 'users', user.uid);
               await setDoc(userRef, {
                 uid: user.uid,
                 email: user.email,
@@ -89,7 +90,7 @@ const FinishSignUp = () => {
     };
 
     completeSignIn();
-  }, [navigate, user]); // Added `user` as dependency for the effect
+  }, [navigate, user]); 
 
   return (
     <div

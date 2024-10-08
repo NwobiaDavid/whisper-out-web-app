@@ -48,24 +48,6 @@ const SignupPage = () => {
     e.preventDefault();
     try {
 
-      // const emailDomain = value.split('@')[1];
-
-      // const checkIfCompanyExists = async (domain) => {
-      //   const companiesRef = collection(db, 'companies');
-      //   const q = query(companiesRef, where('domain', '==', domain)); 
-      //   const querySnapshot = await getDocs(q);
-        
-      //   return !querySnapshot.empty;  
-      // };
-
-      // const companyExists = await checkIfCompanyExists(emailDomain);
-
-      // if (!companyExists) {
-      //   navigate('/companyentry');  
-      //   return;
-      // }
-      
-
       window.localStorage.setItem('emailForSignIn', value);
       email = value;
       await sendSignInLinkToEmail(auth, email, actionCodeSettings);
@@ -77,53 +59,11 @@ const SignupPage = () => {
     }
   };
 
-  // const storeUserInFirestore = async (email, companyName) => {
-  //   try {
-  //     const user = auth.currentUser;
-  //     const uid = user.uid; 
-
-  //     const secretId = generateSecretId(); 
-
-  //     await setDoc(doc(db, 'users', uid), {
-  //       email: user.email,
-  //       uid: user.uid,
-  //       secretId: secretId,
-  //       company: companyName, 
-  //     });
-
-  //     console.log('User data stored successfully in Firestore');
-  //   } catch (error) {
-  //     console.error('Error storing user data:', error);
-  //   }
-  // };
-  
-
-  // const generateSecretId = () => {
-  //   return 'someUniqueSecretId'; 
-  // };
-
-  
-  // useEffect(() => {
-  //   const unsubscribe = onAuthStateChanged(auth, (user) => {
-  //     if (user) {
-  //       const emailDomain = user.email.split('@')[1];
-  //       storeUserInFirestore(user.email, emailDomain); 
-  //     }
-  //   });
-
-  //   return () => unsubscribe();
-  // }, [auth]);
-
 
   return (
     <div
      className={`w-full max-h-screen h-screen relative bg-cover bg-no-repeat bg-[url('/assets/images/bg/auth.png')] dark:bg-[url('')] dark:bg-maindark `}
     >
-      {/* <Image 
-    src="/assets/images/bg/auth.png" 
-    className="w-screen h-screen absolute   z-[999] top-[40%]  " 
-    alt="bg" 
-  /> */}
       <Emailheader />
       <motion.div
       initial={{ y: '10vw' }}

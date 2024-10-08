@@ -3,20 +3,19 @@ import { useState, useContext, useEffect } from 'react';
 import { GoOrganization } from 'react-icons/go';
 import { IoIosCheckmarkCircleOutline } from 'react-icons/io';
 import { useNavigate } from 'react-router-dom';
-import { doc, setDoc } from 'firebase/firestore';
-import { db } from '../config/firebase'; // Assuming Firebase config is correct
+import { doc, setDoc, collection, addDoc } from 'firebase/firestore'; // Add collection, addDoc for creating company documents
+import { db } from '../config/firebase';
 import Footer from '../components/Footer';
 import { AuthContext } from '../config/AuthContext.jsx'; // Assuming AuthContext provides current user
 
 const CompanyEntry = () => {
   const [value, setValue] = useState('');
   const [message, setMessage] = useState('');
-  const [loading, setLoading] = useState(true); // Loading state for user context
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const { user } = useContext(AuthContext);
 
   useEffect(() => {
-    // If `user` is available or checked, stop loading
     if (user !== undefined) {
       setLoading(false);
     }
@@ -36,17 +35,32 @@ const CompanyEntry = () => {
     }
 
     try {
+      console.log("the user => "+JSON.stringify(user));
+
+      const emailDomain = user.email.split('@')[1];
+      
+      // Step 1: Create a new document in 'companies' collection
       const companyData = {
         companyName: value.trim(),
-        uid: user.uid, // Storing the user's ID
-        email: user.email, // Storing the user's email
+        domain: emailDomain, // Store domain to recognize the company
+        createdBy: user.uid, // Store the user who created the company
       };
 
-      // Store the user's company data in Firestore under 'users' collection
-      const userRef = doc(db, 'users', user.uid);
-      await setDoc(userRef, companyData);
+      console.log("comapny dat-> "+JSON.stringify(companyData));
 
-      // Redirect to home page after successful submission
+      const companyRef = await addDoc(collection(db, 'companies'), companyData);
+      
+      // Step 2: Store the user's data and reference to the company in 'users' collection
+      const userData = {
+        uid: user.uid,
+        email: user.email,
+        companyId: companyRef.id, // Store the company ID to link the user to the company
+      };
+
+      const userRef = doc(db, 'users', user.uid);
+      await setDoc(userRef, userData);
+
+      // Step 3: Redirect to home page after successful submission
       navigate('/home');
     } catch (error) {
       console.error('Error storing company data:', error);
