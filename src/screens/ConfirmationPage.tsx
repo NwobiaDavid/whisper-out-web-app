@@ -1,15 +1,24 @@
 /* eslint-disable no-unused-vars */
 import { useState, useContext, useEffect } from 'react';
 import { sendSignInLinkToEmail } from 'firebase/auth';
-import { AuthContext } from '../config/AuthContext.jsx';
-import { auth } from '../config/firebase';
+import { AuthContext } from '../config/AuthContext.tsx';
+import { auth } from '../config/firebase.ts';
 import { useNavigate } from 'react-router-dom';
 import {Spinner} from "@nextui-org/react";
 
-import Emailheader from '../components/Emailheader';
-import Footer from '../components/Footer';
+import Emailheader from '../components/Emailheader.tsx';
+import Footer from '../components/Footer.tsx';
 
 import { FiInfo } from 'react-icons/fi';
+
+interface UserType {
+  uid: string;
+  email: string;
+}
+
+interface AuthContextType {
+  user: UserType | null;
+}
 
 const ConfirmationPage = () => {
   const [message, setMessage] = useState('Please check your email to confirm.');
@@ -17,7 +26,10 @@ const ConfirmationPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  const { user } = useContext(AuthContext);
+  // const { user } = useContext(AuthContext);
+  const authContext = useContext(AuthContext) as AuthContextType | undefined;
+  const user = authContext?.user;
+
   const email = window.localStorage.getItem('emailForSignIn');
 
   useEffect(() => {
@@ -29,12 +41,12 @@ const ConfirmationPage = () => {
   const handleResendLink = async () => {
     setIsResending(true);
     try {
-      await sendSignInLinkToEmail(auth, email, {
+      await sendSignInLinkToEmail(auth, email || "", {
         url: 'http://localhost:3000/finishSignUp',
         handleCodeInApp: true,
       });
       setMessage('Link resent! Check your email.');
-    } catch (error) {
+    } catch (error:any) {
       console.error('Error resending link:', error);
       setMessage(`Error: ${error.message}`);
     }

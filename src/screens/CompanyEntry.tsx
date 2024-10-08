@@ -4,16 +4,30 @@ import { GoOrganization } from 'react-icons/go';
 import { IoIosCheckmarkCircleOutline } from 'react-icons/io';
 import { useNavigate } from 'react-router-dom';
 import { doc, setDoc, collection, addDoc } from 'firebase/firestore'; // Add collection, addDoc for creating company documents
-import { db } from '../config/firebase';
-import Footer from '../components/Footer';
-import { AuthContext } from '../config/AuthContext.jsx'; // Assuming AuthContext provides current user
+import { db } from '../config/firebase.ts';
+import Footer from '../components/Footer.tsx';
+import { AuthContext } from '../config/AuthContext.tsx'; // Assuming AuthContext provides current user
+
+
+interface UserType {
+  uid: string;
+  email: string;
+}
+
+interface AuthContextType {
+  user: UserType | null;
+}
 
 const CompanyEntry = () => {
   const [value, setValue] = useState('');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-  const { user } = useContext(AuthContext);
+
+  const authContext = useContext(AuthContext) as AuthContextType | undefined;
+  const user = authContext?.user;
+
+  // const { user } = useContext(AuthContext);
 
   useEffect(() => {
     if (user !== undefined) {
@@ -21,7 +35,7 @@ const CompanyEntry = () => {
     }
   }, [user]);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: { preventDefault: () => void; }) => {
     e.preventDefault();
 
     if (!user) {

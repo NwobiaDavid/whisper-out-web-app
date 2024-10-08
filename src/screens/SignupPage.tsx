@@ -1,19 +1,32 @@
 /* eslint-disable no-unused-vars */
+import React from 'react'; 
 import { Input, Image } from '@nextui-org/react';
 import { getFirestore, collection, query, where, getDocs, setDoc, doc } from 'firebase/firestore';
 import { useState, useMemo, useEffect, useContext } from 'react';
 import { getAuth, sendSignInLinkToEmail, onAuthStateChanged  } from 'firebase/auth';
-import { AuthContext } from '../config/AuthContext.jsx';
-import { auth, db } from '../config/firebase.js';
+import { AuthContext } from '../config/AuthContext.tsx';
+import { auth, db } from '../config/firebase.ts';
 import { useNavigate } from 'react-router-dom'; 
 import { TbMail } from 'react-icons/tb';
 import { IoIosCheckmarkCircleOutline } from 'react-icons/io';
 import { motion } from 'framer-motion'; // Import Framer Motion
 
-import Emailheader from '../components/Emailheader';
-import Footer from '../components/Footer';
+import Emailheader from '../components/Emailheader.tsx';
+import Footer from '../components/Footer.tsx';
 
-const SignupPage = () => {
+
+// Define type for AuthContext
+interface UserType {
+  uid: string;
+  email: string;
+}
+
+interface AuthContextType {
+  user: UserType | null;
+}
+
+
+const SignupPage: React.FC = () => {
   const [value, setValue] = useState('');
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
@@ -23,7 +36,9 @@ const SignupPage = () => {
 
   let email = window.localStorage.getItem('emailForSignIn');
   
-  const { user } = useContext(AuthContext);
+  // const authContext = useContext(AuthContext);
+  const authContext = useContext(AuthContext) as AuthContextType | undefined;
+  const user = authContext?.user;
 
   useEffect(() => {
     if (user) {
@@ -31,7 +46,7 @@ const SignupPage = () => {
     } 
   }, [user, navigate]);
   
-  const validateEmail = (value) =>
+  const validateEmail = (value: string) =>
     value.match(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+.[A-Z]{2,4}$/i);
 
   const isInvalid = useMemo(() => {
@@ -44,7 +59,7 @@ const SignupPage = () => {
     handleCodeInApp: true, 
   };
 
-  const handleSendLink = async (e) => {
+  const handleSendLink = async (e: { preventDefault: () => void; }) => {
     e.preventDefault();
     try {
 
@@ -53,7 +68,7 @@ const SignupPage = () => {
       await sendSignInLinkToEmail(auth, email, actionCodeSettings);
       setMessage('Link sent! Check your email.');
       navigate('/confirmation');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error sending sign-in link:', error);
       setMessage(`Error: ${error.message}`);
     }

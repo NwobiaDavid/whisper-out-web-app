@@ -5,22 +5,34 @@ import { isSignInWithEmailLink, signInWithEmailLink } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import { Spinner } from '@nextui-org/react';
 import { collection, query, where, getDocs, setDoc, doc } from 'firebase/firestore';
-import { AuthContext } from '../config/AuthContext.jsx';
-import { auth, db } from '../config/firebase.js';
+import { AuthContext } from '../config/AuthContext.tsx';
+import { auth, db } from '../config/firebase.ts';
 
-import Emailheader from '../components/Emailheader';
-import Footer from '../components/Footer';
+import Emailheader from '../components/Emailheader.tsx';
+import Footer from '../components/Footer.tsx';
 import { FiInfo } from 'react-icons/fi';
-import { generateRandomId } from '../../scripts/generateUniqueID.js';
+import { generateRandomId } from '../../scripts/generateUniqueID.ts';
 
 const email = window.localStorage.getItem('emailForSignIn');
 
-const FinishSignUp = () => {
+interface UserType {
+  uid: string;
+  email: string;
+}
+
+interface AuthContextType {
+  user: UserType | null;
+}
+
+const FinishSignUp: React.FC  = () => {
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  const { user } = useContext(AuthContext); 
+  // const { user } = useContext(AuthContext); 
+
+  const authContext = useContext(AuthContext) as AuthContextType | undefined;
+  const user = authContext?.user;
 
   useEffect(() => {
     const completeSignIn = async () => {
@@ -40,7 +52,7 @@ const FinishSignUp = () => {
             // Check if company exists before signing in
             const emailDomain = email.split('@')[1];
 
-            const checkIfCompanyExists = async (domain) => {
+            const checkIfCompanyExists = async (domain: string) => {
               const companiesRef = collection(db, 'companies');
               const q = query(companiesRef, where('domain', '==', domain));
               const querySnapshot = await getDocs(q);
@@ -76,7 +88,7 @@ const FinishSignUp = () => {
             } else {
               setMessage('User is not authenticated.');
             }
-          } catch (error) {
+          } catch (error:any) {
             console.error('Error completing sign-in:', error);
             setMessage(`Error: ${error.message}`);
           }

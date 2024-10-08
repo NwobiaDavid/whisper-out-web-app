@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { toggleDarkMode } from '../../state/theme/themeSlice';
+import { toggleDarkMode } from '../../state/theme/themeSlice.ts'
 import { useEffect } from 'react';
 import { motion } from 'framer-motion';
 
@@ -9,7 +9,7 @@ import { IoSunnySharp } from "react-icons/io5";
 
 const ToggleSwitch = () => {
   const dispatch = useDispatch();
-  const darkMode = useSelector((state) => state.theme.darkMode);
+  const darkMode = useSelector((state:any) => state.theme.darkMode);
 
    // Load theme from localStorage on initial render
   useEffect(() => {

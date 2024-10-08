@@ -2,11 +2,24 @@ import { useEffect, useContext } from 'react';
 import { Image } from '@nextui-org/image';
 import { useNavigate } from 'react-router-dom';
 import { Spinner } from '@nextui-org/spinner';
-import { AuthContext } from '../config/AuthContext.jsx';
+import { AuthContext } from '../config/AuthContext.tsx';
 import { motion } from 'framer-motion';
 
-const SplashScreen = () => {
-  const { user } = useContext(AuthContext);
+interface UserType {
+  uid: string;
+  email: string;
+}
+
+interface AuthContextType {
+  user: UserType | null;
+}
+
+const SplashScreen: React.FC  = () => {
+  
+  // const { user } = useContext(AuthContext);
+  const authContext = useContext(AuthContext) as AuthContextType | undefined;
+  const user = authContext?.user;
+
   const navigate = useNavigate();
   // const [showSpinner, setShowSpinner] = useState(false);
 
@@ -16,20 +29,12 @@ const SplashScreen = () => {
     } else {
       const timer = setTimeout(() => {
         navigate('/signup');
-      }, 10000);
+      }, 8000);
 
       return () => clearTimeout(timer);
     }
   }, [user, navigate]);
 
-  // Show spinner after 3 seconds
-  // useEffect(() => {
-  //   const timer = setTimeout(() => {
-  //     setShowSpinner(true);
-  //   }, 3000);
-
-  //   return () => clearTimeout(timer);
-  // }, []);
 
   return (
     <div className="max-w-screen h-screen">
