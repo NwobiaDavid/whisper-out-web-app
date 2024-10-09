@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable no-unused-vars */
 import { useState, useEffect, useContext } from 'react';
-import { isSignInWithEmailLink, signInWithEmailLink } from 'firebase/auth';
+import { isSignInWithEmailLink, onAuthStateChanged, signInWithEmailLink } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import { Spinner } from '@nextui-org/react';
 import { collection, query, where, getDocs, setDoc, doc } from 'firebase/firestore';
@@ -17,7 +17,7 @@ const email = window.localStorage.getItem('emailForSignIn');
 
 interface UserType {
   uid: string;
-  email: string;
+  email: string | null;
 }
 
 interface AuthContextType {
@@ -26,6 +26,7 @@ interface AuthContextType {
 
 const FinishSignUp: React.FC  = () => {
   const [message, setMessage] = useState('');
+  const [currentUser, setCurrentUser] = useState<UserType | null>(null); 
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -34,7 +35,7 @@ const FinishSignUp: React.FC  = () => {
   const authContext = useContext(AuthContext) as AuthContextType | undefined;
   const user = authContext?.user;
 
-  useEffect(() => {
+   useEffect(() => {
     const completeSignIn = async () => {
       setIsLoading(true);
 
@@ -42,53 +43,46 @@ const FinishSignUp: React.FC  = () => {
         let email = window.localStorage.getItem('emailForSignIn');
 
         if (!email) {
-          email = window.prompt('Please provide your email for confirmation.');
+          email = window.prompt('Please provide your email for confirmation.') || '';
         }
 
         if (email) {
           try {
-
-            console.log("auth context log statements => "+user);
-            // Check if company exists before signing in
-            const emailDomain = email.split('@')[1];
-
-            const checkIfCompanyExists = async (domain: string) => {
-              const companiesRef = collection(db, 'companies');
-              const q = query(companiesRef, where('domain', '==', domain));
-              const querySnapshot = await getDocs(q);
-              return !querySnapshot.empty;
-            };
-
-            const companyExists = await checkIfCompanyExists(emailDomain);
-
-            
-            // Complete sign-in process
+            // Sign in with email link
             const result = await signInWithEmailLink(auth, email, window.location.href);
             window.localStorage.removeItem('emailForSignIn');
-            setMessage('Sign-in successful.');
 
-            
-            if (!companyExists) {
-              navigate('/company-entry');
-              return;
-            }
-            
+            // Check if company exists
+            const emailDomain = email.split('@')[1];
+            const companiesRef = collection(db, 'companies');
+            const q = query(companiesRef, where('domain', '==', emailDomain));
+            const querySnapshot = await getDocs(q);
+            const companyExists = !querySnapshot.empty;
 
-            if (user) {
-              const userRef = doc(db, 'users', user.uid);
-              await setDoc(userRef, {
-                uid: user.uid,
-                email: user.email,
-                company: emailDomain,
-                secretId: generateRandomId(),
-              });
+            // Monitor user authentication state
+            onAuthStateChanged(auth, (authUser) => {
+              if (authUser) {
+                setCurrentUser(authUser);
 
-              // Redirect after successful sign-in
-              navigate('/home');
-            } else {
-              setMessage('User is not authenticated.');
-            }
-          } catch (error:any) {
+                if (!companyExists) {
+                  navigate('/company-entry');
+                } else {
+                  const userRef = doc(db, 'users', authUser.uid);
+                  setDoc(userRef, {
+                    uid: authUser.uid,
+                    email: authUser.email,
+                    company: emailDomain,
+                    secretId: generateRandomId(),
+                  });
+
+                  // Redirect to home
+                  navigate('/home');
+                }
+              } else {
+                setMessage('User is not authenticated.');
+              }
+            });
+          } catch (error: any) {
             console.error('Error completing sign-in:', error);
             setMessage(`Error: ${error.message}`);
           }
@@ -102,7 +96,7 @@ const FinishSignUp: React.FC  = () => {
     };
 
     completeSignIn();
-  }, [navigate, user]); 
+  }, [navigate]);
 
   return (
     <div
@@ -118,7 +112,7 @@ const FinishSignUp: React.FC  = () => {
         ) : (
           <div className="w-full h-full justify-center flex">
             <div className="w-[70%] border-2 rounded-lg relative">
-              <div className="w-full text-lg h-full absolute z-[999] backdrop-blur-sm bg-black bg-opacity-5 justify-center items-center flex flex-col">
+              <div className="w-full text-lg h-full absolute z-[999] backdrop-blur-sm bg-slate-900 bg-opacity-5 justify-center items-center flex flex-col">
                 {message === 'good' ? (
                   <Spinner />
                 ) : (

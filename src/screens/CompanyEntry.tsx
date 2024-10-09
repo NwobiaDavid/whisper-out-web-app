@@ -1,5 +1,5 @@
 import { Input, Image } from '@nextui-org/react';
-import { useState, useContext, useEffect } from 'react';
+import { useState, useContext, useEffect, FormEvent } from 'react';
 import { GoOrganization } from 'react-icons/go';
 import { IoIosCheckmarkCircleOutline } from 'react-icons/io';
 import { useNavigate } from 'react-router-dom';
@@ -35,7 +35,7 @@ const CompanyEntry = () => {
     }
   }, [user]);
 
-  const handleSubmit = async (e: { preventDefault: () => void; }) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!user) {
@@ -53,29 +53,26 @@ const CompanyEntry = () => {
 
       const emailDomain = user.email.split('@')[1];
       
-      // Step 1: Create a new document in 'companies' collection
       const companyData = {
         companyName: value.trim(),
-        domain: emailDomain, // Store domain to recognize the company
-        createdBy: user.uid, // Store the user who created the company
+        domain: emailDomain, 
+        createdBy: user.uid,
       };
 
       console.log("comapny dat-> "+JSON.stringify(companyData));
 
       const companyRef = await addDoc(collection(db, 'companies'), companyData);
       
-      // Step 2: Store the user's data and reference to the company in 'users' collection
       const userData = {
         uid: user.uid,
         email: user.email,
-        companyId: companyRef.id, // Store the company ID to link the user to the company
+        companyId: companyRef.id, 
       };
 
       const userRef = doc(db, 'users', user.uid);
       await setDoc(userRef, userData);
 
-      // Step 3: Redirect to home page after successful submission
-      navigate('/home');
+      navigate('/company-interests');
     } catch (error) {
       console.error('Error storing company data:', error);
       setMessage('Error: Unable to save company data.');
