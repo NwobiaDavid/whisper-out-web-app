@@ -76,21 +76,23 @@ const SignupPage: React.FC = () => {
 
   return (
     <div
-     className={`w-full max-h-screen h-screen relative bg-cover bg-no-repeat bg-[url('/assets/images/bg/auth.png')] dark:bg-[url('')] dark:bg-maindark `}
+     className={`w-full max-h-screen h-screen relative bg-cover bg-no-repeat bg-[url('')] lg:bg-[url('/assets/images/bg/auth.png')] dark:bg-[url('')] dark:bg-maindark `}
     >
       <Emailheader />
+
       <motion.div
       initial={{ y: '10vw' }}
       animate={{ y: 0 }}
       exit={{ y: '-10vw' }}
       transition={{ type: 'spring', stiffness: 50, damping: 20 }}
-       className="w-full h-[75%] flex justify-center">
+       className="w-full h-[83%] lg:h-[75%] flex justify-center">
         <div 
-        className=" w-[75%] rounded-lg xl:w-[70%] border bg-transparent dark:border dark:border-opacity-20 dark:bg-[#44427C] border-gray-200 grid grid-cols-2"
+        className=" w-[85%] lg:w-[75%] py-10 lg:py-0 rounded-lg xl:w-[70%] border-none lg:border bg-transparent dark:border dark:border-opacity-20 dark:bg-[#44427C] border-gray-200 lg:grid flex flex-col  lg:grid-cols-2"
         >
+
           <form
             onSubmit={handleSendLink}
-            className="xl:px-20 lg:px-7 flex flex-col relative justify-center items-center"
+            className="xl:px-20 lg:px-7  flex flex-col relative justify-center items-center"
           >
             <Input
               size="lg"
@@ -128,23 +130,24 @@ const SignupPage: React.FC = () => {
                 !isInvalid && value !== ''
                   ? ' dark:bg-[#FFC157] dark:text-black  dark:hover:bg-[#f1b54d] bg-[#FFC157]   hover:bg-[#f1b54d] text-white'
                   : 'bg-gray-200'
-              } p-3 rounded-lg active:scale-95 dark:bg-[#BBC0CA6E] duration-200 font-semibold w-full mt-5`}
+              } p-3 rounded-lg active:scale-95 dark:bg-[#BBC0CA6E] duration-200 font-semibold w-full mt-3 lg:mt-5`}
             >
               Continue
             </button>
 
-            <div className="absolute lg:bottom-[10%] xl:bottom-[10%] lg:px-7 xl:px-20 text-sm">
-              <p className="font-light leading-[15px]">
+            <div className="  lg:absolute lg:bottom-[10%] mt-10 lg:mt-0 xl:bottom-[10%] lg:px-7 xl:px-20 text-sm">
+              <p className="font-light leading-[16px] lg:leading-[15px]">
                 By inserting your email, you confirm your agreement to
                 WhisperOut Terms and Conditions and WhisperOut contacting you
                 about our products and services. You can opt at any time by
                 deleting your account. Find out more about our
+                <span className="italic lg:hidden inline ml-1 font-medium">Privacy Policy</span>
               </p>
-              <h4 className="italic font-normal">Privacy Policy</h4>
+              {/* <h4 className="italic hidden lg:flex font-normal">Privacy Policy</h4> */}
             </div>
           </form>
 
-          <div className="flex flex-col justify-center lg:px-7 xl:px-20">
+          <div className="flex -order-1 lg:order-1  flex-col justify-center lg:mb-0 mb-20 lg:py-0 lg:px-7 xl:px-20">
             <h1 className="text-3xl font-bold mb-10">Say Hello to WhisperOut</h1>
             <div>
               <p className="font-light text-[14px] leading-[16px]">
