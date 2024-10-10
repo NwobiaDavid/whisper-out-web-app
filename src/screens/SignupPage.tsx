@@ -147,8 +147,8 @@ const SignupPage: React.FC = () => {
             </div>
           </form>
 
-          <div className="flex -order-1 lg:order-1  flex-col justify-center lg:mb-0 mb-20 lg:py-0 lg:px-7 xl:px-20">
-            <h1 className="text-3xl font-bold mb-10">Say Hello to WhisperOut</h1>
+          <div className="flex -order-1 lg:order-1  flex-col justify-center lg:mb-0 mb-16 lg:py-0 lg:px-7 xl:px-20">
+            <h1 className=" text-2xl lg:text-3xl font-bold mb-10">Say Hello to WhisperOut</h1>
             <div>
               <p className="font-light text-[14px] leading-[16px]">
                 WhisperOut is your go-to spot for real talk, zero judgment. Got
