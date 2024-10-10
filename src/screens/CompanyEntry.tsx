@@ -89,16 +89,16 @@ const CompanyEntry = () => {
 
   return (
     <div
-      className={`w-full max-h-screen h-screen relative bg-cover bg-no-repeat bg-[url('/assets/images/bg/auth.png')] dark:bg-[url('')] dark:bg-maindark `}
+      className={`w-full max-h-screen h-screen relative bg-cover bg-no-repeat bg-[url('')] lg:bg-[url('/assets/images/bg/auth.png')] dark:bg-[url('')] dark:bg-maindark `}
     >
-      <div className="w-full h-[90%] flex xl:py-28 items-center flex-col ">
+      <div className="w-full py-7 lg:py-20 h-[93%] lg:h-[90%] flex xl:py-28 items-center flex-col ">
         <div className="flex flex-col items-center mb-5">
           <Image src="/assets/logo1.png" className="h-[60px]" alt="company logo" />
-          <h1 className="my-5 text-2xl font-bold">Welcome to WhisperOut</h1>
+          <h1 className="my-6 text-2xl font-bold">Welcome to WhisperOut</h1>
           <h3 className="font-semibold text-lg">New Company? Cool!</h3>
         </div>
 
-        <form className="flex flex-col items-center mt-28 xl:w-[30%]" onSubmit={handleSubmit}>
+        <form className="flex flex-col items-center mt-28 w-[90%] lg:w-[40%] xl:w-[30%]" onSubmit={handleSubmit}>
           <p className="text-lg mb-5 font-medium">Enter your Company Name</p>
           <Input
             size="lg"
