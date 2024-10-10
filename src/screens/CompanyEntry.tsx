@@ -72,7 +72,7 @@ const CompanyEntry = () => {
       const userRef = doc(db, 'users', user.uid);
       await setDoc(userRef, userData);
 
-      navigate('/company-interests');
+      navigate('/interests');
     } catch (error) {
       console.error('Error storing company data:', error);
       setMessage('Error: Unable to save company data.');

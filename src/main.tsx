@@ -19,6 +19,7 @@ import Home from './screens/Home.tsx';
 // import ThemeManager from './components/ThemeManager.tsx';
 import CompanyEntry from './screens/CompanyEntry.tsx';
 import CompanyInterests from './screens/CompanyInterests.tsx';
+import UsersInterests from './screens/UsersInterests.tsx';
 
 
 createRoot(document.getElementById('root') as HTMLElement).render(
@@ -33,7 +34,7 @@ createRoot(document.getElementById('root') as HTMLElement).render(
                 <Route path="/confirmation" element={<ConfirmationPage />} />
                 <Route path="/finishSignUp" element={<FinishSignUp />} />
                 <Route path="/company-entry" element={<CompanyEntry />} />
-                <Route path="/company-interests" element={<CompanyInterests />} />
+                <Route path="/interests" element={<UsersInterests />} />
                 {/* Protect home route */}
                 <Route path="/home" 
                   element={

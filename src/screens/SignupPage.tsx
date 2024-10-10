@@ -1,11 +1,10 @@
 /* eslint-disable no-unused-vars */
 import React from 'react'; 
-import { Input, Image } from '@nextui-org/react';
-import { getFirestore, collection, query, where, getDocs, setDoc, doc } from 'firebase/firestore';
+import { Input } from '@nextui-org/react';
 import { useState, useMemo, useEffect, useContext } from 'react';
-import { getAuth, sendSignInLinkToEmail, onAuthStateChanged  } from 'firebase/auth';
+import {  sendSignInLinkToEmail  } from 'firebase/auth';
 import { AuthContext } from '../config/AuthContext.tsx';
-import { auth, db } from '../config/firebase.ts';
+import { auth} from '../config/firebase.ts';
 import { useNavigate } from 'react-router-dom'; 
 import { TbMail } from 'react-icons/tb';
 import { IoIosCheckmarkCircleOutline } from 'react-icons/io';

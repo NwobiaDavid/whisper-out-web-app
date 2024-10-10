@@ -26,7 +26,6 @@ const ConfirmationPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  // const { user } = useContext(AuthContext);
   const authContext = useContext(AuthContext) as AuthContextType | undefined;
   const user = authContext?.user;
 
@@ -99,11 +98,7 @@ const ConfirmationPage = () => {
                 <div className=" w-[60%] px-3 text-xs font-medium py-2 flex justify-end " >
                   <button onClick={handleChangeEmail} className=" cursor-pointer " >Wrong email? Change it</button>
                 </div>
-
-                {/* <p>{message}</p>
-                <button onClick={handleResendLink} disabled={isResending}>
-                  {isResending ? 'Resending...' : 'Resend Email'}
-                </button> */}
+                
               </div>
             </div>
           </div>
@@ -111,17 +106,7 @@ const ConfirmationPage = () => {
       </div>
       <Footer />
 
-      {/* <h1>Email Confirmation</h1>
-      {isLoading ? (
-        <div>Loading... </div>
-      ) : (
-        <div>
-          <p>{message}</p>
-          <button onClick={handleResendLink} disabled={isResending}>
-            {isResending ? 'Resending...' : 'Resend Email'}
-          </button>
-        </div>
-      )} */}
+    
     </div>
   );
 };

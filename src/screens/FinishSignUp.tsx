@@ -4,7 +4,7 @@ import { useState, useEffect, useContext } from 'react';
 import { isSignInWithEmailLink, onAuthStateChanged, signInWithEmailLink } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import { Spinner } from '@nextui-org/react';
-import { collection, query, where, getDocs, setDoc, doc } from 'firebase/firestore';
+import { collection, query, where, getDocs, setDoc, doc, getDoc } from 'firebase/firestore';
 import { AuthContext } from '../config/AuthContext.tsx';
 import { auth, db } from '../config/firebase.ts';
 
@@ -26,72 +26,82 @@ interface AuthContextType {
 
 const FinishSignUp: React.FC  = () => {
   const [message, setMessage] = useState('');
-  const [currentUser, setCurrentUser] = useState<UserType | null>(null); 
+  const [currentUser, setCurrentUser] = useState<UserType | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  // const { user } = useContext(AuthContext); 
-
   const authContext = useContext(AuthContext) as AuthContextType | undefined;
   const user = authContext?.user;
-
-   useEffect(() => {
+  useEffect(() => {
     const completeSignIn = async () => {
       setIsLoading(true);
 
-      if (isSignInWithEmailLink(auth, window.location.href)) {
-        let email = window.localStorage.getItem('emailForSignIn');
+      try {
+        if (isSignInWithEmailLink(auth, window.location.href)) {
+          let email = window.localStorage.getItem('emailForSignIn') || '';
 
-        if (!email) {
-          email = window.prompt('Please provide your email for confirmation.') || '';
-        }
+          if (!email) {
+            email = window.prompt('Please provide your email for confirmation.') || '';
+          }
 
-        if (email) {
-          try {
-            // Sign in with email link
+          if (email) {
             const result = await signInWithEmailLink(auth, email, window.location.href);
             window.localStorage.removeItem('emailForSignIn');
 
-            // Check if company exists
             const emailDomain = email.split('@')[1];
             const companiesRef = collection(db, 'companies');
             const q = query(companiesRef, where('domain', '==', emailDomain));
             const querySnapshot = await getDocs(q);
-            const companyExists = !querySnapshot.empty;
 
-            // Monitor user authentication state
-            onAuthStateChanged(auth, (authUser) => {
-              if (authUser) {
-                setCurrentUser(authUser);
+            let companyName = emailDomain;
+            
+            if (!querySnapshot.empty) {
+              const companyDoc = querySnapshot.docs[0];
+              const companyData = companyDoc.data();
+              companyName = companyData?.name || emailDomain;
 
-                if (!companyExists) {
-                  navigate('/company-entry');
-                } else {
+              const authUnsubscribe = onAuthStateChanged(auth, async (authUser) => {
+                if (authUser) {
+                  setCurrentUser(authUser);
+
                   const userRef = doc(db, 'users', authUser.uid);
-                  setDoc(userRef, {
-                    uid: authUser.uid,
-                    email: authUser.email,
-                    company: emailDomain,
-                    secretId: generateRandomId(),
-                  });
+                  const userDoc = await getDoc(userRef);
 
-                  // Redirect to home
-                  navigate('/home');
+                  if (userDoc.exists()) {
+                    navigate('/home');
+                  } else {
+                    await setDoc(userRef, {
+                      uid: authUser.uid,
+                      email: authUser.email,
+                      company: companyName,
+                      domain: emailDomain,
+                      secretId: generateRandomId(),
+                    });
+                    navigate('/interests');
+                  }
+                } else {
+                  setMessage('User is not authenticated.');
                 }
-              } else {
-                setMessage('User is not authenticated.');
-              }
-            });
-          } catch (error: any) {
-            console.error('Error completing sign-in:', error);
-            setMessage(`Error: ${error.message}`);
+              });
+
+              return () => {
+                authUnsubscribe();
+              };
+            } else {
+              navigate('/company-entry');
+            }
+
+          } else {
+            setMessage('No email provided.');
           }
         } else {
-          setMessage('No email provided.');
+          setMessage('Invalid sign-in link.');
         }
-      } else {
-        setMessage('Invalid sign-in link.');
+      } catch (error: any) {
+        setMessage(`Error: ${error.message}`);
+        console.error('Error completing sign-in:', error);
       }
+
       setIsLoading(false);
     };
 
@@ -105,15 +115,15 @@ const FinishSignUp: React.FC  = () => {
       <Emailheader />
 
       <div className="w-full h-[75%] flex justify-center">
-        {isLoading ? (
+        {/* {isLoading ? (
           <div className="w-full h-full flex justify-center items-center">
             <Spinner />
           </div>
-        ) : (
+        ) : ( */}
           <div className="w-full h-full justify-center flex">
             <div className="w-[70%] border-2 rounded-lg relative">
               <div className="w-full text-lg h-full absolute z-[999] backdrop-blur-sm bg-slate-900 bg-opacity-5 justify-center items-center flex flex-col">
-                {message === 'good' ? (
+                {isLoading ? (
                   <Spinner />
                 ) : (
                   <div>
@@ -155,7 +165,7 @@ const FinishSignUp: React.FC  = () => {
               </div>
             </div>
           </div>
-        )}
+        {/* )} */}
       </div>
 
       <Footer />
