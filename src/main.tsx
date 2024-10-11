@@ -18,7 +18,6 @@ import FinishSignUp from './screens/FinishSignUp.tsx';
 import Home from './screens/Home.tsx';
 // import ThemeManager from './components/ThemeManager.tsx';
 import CompanyEntry from './screens/CompanyEntry.tsx';
-import CompanyInterests from './screens/CompanyInterests.tsx';
 import UsersInterests from './screens/UsersInterests.tsx';
 
 

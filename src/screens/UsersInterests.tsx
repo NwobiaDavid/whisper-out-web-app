@@ -1,8 +1,8 @@
 import Footer from "../components/Footer";
 import { Image } from "@nextui-org/image";
-import { useState, FormEvent, useEffect, useContext } from "react";
+import { useState, FormEvent, useContext } from "react";
 import { useNavigate } from 'react-router-dom';
-import { doc, setDoc, collection, addDoc, getDoc, updateDoc } from 'firebase/firestore'; 
+import { doc, setDoc, collection, getDoc, updateDoc } from 'firebase/firestore'; 
 import { db } from '../config/firebase.ts';
 import { AuthContext } from '../config/AuthContext.tsx'; 
 import { IoIosCheckmarkCircleOutline } from "react-icons/io";

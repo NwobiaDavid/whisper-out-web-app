@@ -59,14 +59,14 @@ const CompanyEntry = () => {
         createdBy: user.uid,
       };
 
-      console.log("comapny dat-> "+JSON.stringify(companyData));
+      console.log("company dat-> "+JSON.stringify(companyData));
 
       const companyRef = await addDoc(collection(db, 'companies'), companyData);
       
       const userData = {
         uid: user.uid,
         email: user.email,
-        companyId: companyRef.id, 
+        company: value.trim(), 
       };
 
       const userRef = doc(db, 'users', user.uid);

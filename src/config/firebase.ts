@@ -10,13 +10,13 @@ import { getFirestore } from "firebase/firestore"
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIRE_API_KEY,
+  apiKey: "AIzaSyBzJMDkfQ48ystEsA00S0jnOiPgg3uIKg8",
   authDomain: "whisper-out.firebaseapp.com",
   projectId: "whisper-out",
-  storageBucket: import.meta.env.VITE_STORAGE_BUK,
-  messagingSenderId: import.meta.env.VITE_MESSAGE_ID,
-  appId: import.meta.env.VITE_FIRE_APP_ID,
-  measurementId: import.meta.env.VITE_MEASURE_ID
+  storageBucket: "whisper-out.appspot.com",
+  messagingSenderId: "293803792725",
+  appId: "1:293803792725:web:9551d9f5c70dfc6f9e77dc",
+  measurementId: "G-4E41LSP0KQ"
 };
 
 // Initialize Firebase
@@ -29,10 +29,10 @@ export const auth = getAuth(app);
 export const checkAuthStatus = (setUser, setLoading) => {
   onAuthStateChanged(auth, (user) => {
     if (user) {
-      setUser(user); // Set the authenticated user
+      setUser(user); 
     } else {
-      setUser(null); // Set to null if the user is not authenticated
+      setUser(null); 
     }
-    setLoading(false); // Indicate loading is complete
+    setLoading(false); 
   });
 };

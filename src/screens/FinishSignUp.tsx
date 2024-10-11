@@ -11,7 +11,7 @@ import { auth, db } from '../config/firebase.ts';
 import Emailheader from '../components/Emailheader.tsx';
 import Footer from '../components/Footer.tsx';
 import { FiInfo } from 'react-icons/fi';
-import { generateRandomId } from '../../scripts/generateUniqueID.ts';
+// import { generateRandomId } from '../../scripts/generateUniqueID.ts';
 
 const email = window.localStorage.getItem('emailForSignIn');
 
@@ -74,8 +74,6 @@ const FinishSignUp: React.FC  = () => {
                       uid: authUser.uid,
                       email: authUser.email,
                       company: companyName,
-                      domain: emailDomain,
-                      secretId: generateRandomId(),
                     });
                     navigate('/interests');
                   }
