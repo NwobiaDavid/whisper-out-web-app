@@ -1,9 +1,14 @@
-// src/components/ThemeManager.jsx
-import { useEffect } from 'react';
-import { useSelector } from 'react-redux';
 
-const ThemeManager = ({ children }) => {
-  const darkMode = useSelector((state) => state.theme.darkMode);
+import { useEffect, ReactNode } from 'react';
+import { useSelector } from 'react-redux';
+import { RootState } from '../state/store'; 
+
+interface ThemeManagerProps {
+  children: ReactNode;
+}
+
+const ThemeManager: React.FC<ThemeManagerProps> = ({ children }) => {
+  const darkMode = useSelector((state: RootState) => state.theme.darkMode);
 
   useEffect(() => {
     if (darkMode) {
@@ -13,7 +18,7 @@ const ThemeManager = ({ children }) => {
     }
   }, [darkMode]);
 
-  return children;
+  return <>{children}</>;
 };
 
 export default ThemeManager;

@@ -1,11 +1,11 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable no-unused-vars */
-import { useState, useEffect, useContext } from 'react';
+import { useEffect } from 'react';
 import { isSignInWithEmailLink, onAuthStateChanged, signInWithEmailLink } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import { Spinner } from '@nextui-org/react';
 import { collection, query, where, getDocs, setDoc, doc, getDoc } from 'firebase/firestore';
-import { AuthContext } from '../config/AuthContext.tsx';
+// import { AuthContext } from '../config/AuthContext.tsx';
 import { auth, db } from '../config/firebase.ts';
 
 import Emailheader from '../components/Emailheader.tsx';
@@ -15,26 +15,26 @@ import { FiInfo } from 'react-icons/fi';
 
 const email = window.localStorage.getItem('emailForSignIn');
 
-interface UserType {
-  uid: string;
-  email: string | null;
-}
+// interface UserType {
+//   uid: string;
+//   email: string | null;
+// }
 
-interface AuthContextType {
-  user: UserType | null;
-}
+// interface AuthContextType {
+//   user: UserType | null;
+// }
 
 const FinishSignUp: React.FC  = () => {
-  const [message, setMessage] = useState('');
-  const [currentUser, setCurrentUser] = useState<UserType | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  // const [message, setMessage] = useState('');
+  // const [currentUser, setCurrentUser] = useState<UserType | null>(null);
+  // const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  const authContext = useContext(AuthContext) as AuthContextType | undefined;
-  const user = authContext?.user;
+  // const authContext = useContext(AuthContext) as AuthContextType | undefined;
+  // const user = authContext?.user;
   useEffect(() => {
     const completeSignIn = async () => {
-      setIsLoading(true);
+      // setIsLoading(true);
 
       try {
         if (isSignInWithEmailLink(auth, window.location.href)) {
@@ -47,6 +47,7 @@ const FinishSignUp: React.FC  = () => {
           if (email) {
             const result = await signInWithEmailLink(auth, email, window.location.href);
             window.localStorage.removeItem('emailForSignIn');
+            console.log("the result: "+result);
 
             const emailDomain = email.split('@')[1];
             const companiesRef = collection(db, 'companies');
@@ -62,7 +63,7 @@ const FinishSignUp: React.FC  = () => {
 
               const authUnsubscribe = onAuthStateChanged(auth, async (authUser) => {
                 if (authUser) {
-                  setCurrentUser(authUser);
+                  // setCurrentUser(authUser);
 
                   const userRef = doc(db, 'users', authUser.uid);
                   const userDoc = await getDoc(userRef);
@@ -78,7 +79,7 @@ const FinishSignUp: React.FC  = () => {
                     navigate('/interests');
                   }
                 } else {
-                  setMessage('User is not authenticated.');
+                  console.log('User is not authenticated.');
                 }
               });
 
@@ -90,17 +91,17 @@ const FinishSignUp: React.FC  = () => {
             }
 
           } else {
-            setMessage('No email provided.');
+            console.log('No email provided.');
           }
         } else {
-          setMessage('Invalid sign-in link.');
+          console.log('Invalid sign-in link.');
         }
       } catch (error: any) {
-        setMessage(`Error: ${error.message}`);
+        // setMessage(`Error: ${error.message}`);
         console.error('Error completing sign-in:', error);
       }
 
-      setIsLoading(false);
+      // setIsLoading(false);
     };
 
     completeSignIn();

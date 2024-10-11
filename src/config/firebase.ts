@@ -1,7 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 // import { getAnalytics } from "firebase/analytics";
-import {getAuth, onAuthStateChanged } from "firebase/auth"
+import {getAuth, onAuthStateChanged, User } from "firebase/auth"
 import { getFirestore } from "firebase/firestore"
 
 // TODO: Add SDKs for Firebase products that you want to use
@@ -26,7 +26,10 @@ export const db = getFirestore(app);
 export const auth = getAuth(app);
 
 
-export const checkAuthStatus = (setUser, setLoading) => {
+type SetUser = (user: User | null) => void;
+type SetLoading = (loading: boolean) => void;
+
+export const checkAuthStatus = (setUser: SetUser, setLoading: SetLoading): void => {
   onAuthStateChanged(auth, (user) => {
     if (user) {
       setUser(user); 

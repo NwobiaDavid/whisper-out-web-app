@@ -2,7 +2,7 @@
 import React from 'react';
 import { Input } from '@nextui-org/react';
 import { useState, useMemo, useEffect, useContext } from 'react';
-import { createUserWithEmailAndPassword, sendSignInLinkToEmail, signInWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import { AuthContext } from '../config/AuthContext.tsx';
 import { auth, db } from '../config/firebase.ts';
 import { useNavigate } from 'react-router-dom';
@@ -11,7 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { TbMail } from 'react-icons/tb';
 import { IoIosCheckmarkCircleOutline } from 'react-icons/io';
 import { VscKey } from "react-icons/vsc";
-import { FiInfo, FiEye, FiEyeOff } from 'react-icons/fi';
+import { FiEye, FiEyeOff } from 'react-icons/fi';
 
 
 import { motion } from 'framer-motion'; 
@@ -19,7 +19,7 @@ import { motion } from 'framer-motion';
 import Emailheader from '../components/Emailheader.tsx';
 import Footer from '../components/Footer.tsx';
 
-import { collection, query, where, getDocs, setDoc, doc, getDoc } from 'firebase/firestore';
+import { collection, query, where, getDocs, setDoc, doc } from 'firebase/firestore';
 
 
 interface UserType {
@@ -42,7 +42,7 @@ const SignupPage: React.FC = () => {
 
 
   const navigate = useNavigate();
-  
+
 
   const authContext = useContext(AuthContext) as AuthContextType | undefined;
   const user = authContext?.user;

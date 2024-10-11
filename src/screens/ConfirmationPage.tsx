@@ -4,7 +4,7 @@ import { sendSignInLinkToEmail } from 'firebase/auth';
 import { AuthContext } from '../config/AuthContext.tsx';
 import { auth } from '../config/firebase.ts';
 import { useNavigate } from 'react-router-dom';
-import {Spinner} from "@nextui-org/react";
+// import {Spinner} from "@nextui-org/react";
 
 import Emailheader from '../components/Emailheader.tsx';
 import Footer from '../components/Footer.tsx';
@@ -21,9 +21,9 @@ interface AuthContextType {
 }
 
 const ConfirmationPage = () => {
-  const [message, setMessage] = useState('Please check your email to confirm.');
+  // const [message, setMessage] = useState('Please check your email to confirm.');
   const [isResending, setIsResending] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const authContext = useContext(AuthContext) as AuthContextType | undefined;
@@ -44,16 +44,17 @@ const ConfirmationPage = () => {
         url: 'http://localhost:3000/finishSignUp',
         handleCodeInApp: true,
       });
-      setMessage('Link resent! Check your email.');
+      // setMessage('Link resent! Check your email.');
     } catch (error:any) {
       console.error('Error resending link:', error);
-      setMessage(`Error: ${error.message}`);
+      // setMessage(`Error: ${error.message}`);
     }
     setIsResending(false);
   };
 
 
   const handleChangeEmail = () => {
+
     navigate('/signup');
   };
   
@@ -64,11 +65,11 @@ const ConfirmationPage = () => {
      >
       <Emailheader />
       <div className="w-full h-[83%] lg:h-[75%] py-10 lg:py-0 flex justify-center  ">
-        {isLoading ? (
+        {/* {isLoading ? (
           <div className="w-full h-full flex justify-center items-center ">
           <Spinner />
           </div>
-        ) : (
+        ) : ( */}
           <div className=" w-full h-full justify-center flex ">
             <div className=" w-[85%] lg:w-[70%] border-none lg:border dark:border dark:border-opacity-20 lg:dark:bg-[#44427C] border-gray-200 rounded-lg  ">
               <div className="xl:px-20 xl:pt-20 flex xl:w-[65%] flex-col  ">
@@ -102,7 +103,7 @@ const ConfirmationPage = () => {
               </div>
             </div>
           </div>
-        )}
+        {/* )} */}
       </div>
       <Footer />
 

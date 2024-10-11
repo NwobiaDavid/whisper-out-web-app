@@ -1,11 +1,11 @@
 /* eslint-disable no-unused-vars */
-import React, { StrictMode, useEffect } from 'react';
-import ReactDOM, { createRoot } from 'react-dom/client';
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
 import { NextUIProvider } from '@nextui-org/react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { Provider, useSelector } from 'react-redux';
+import { Provider } from 'react-redux';
 import ProtectedRoute from './ProtectedRoute.tsx';
-import { AuthProvider, AuthContext } from './config/AuthContext.tsx';
+import { AuthProvider } from './config/AuthContext.tsx';
 
 import './index.css';
 import store from './state/store.ts';
