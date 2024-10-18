@@ -19,6 +19,8 @@ import Home from './screens/Home.tsx';
 // import ThemeManager from './components/ThemeManager.tsx';
 import CompanyEntry from './screens/CompanyEntry.tsx';
 import UsersInterests from './screens/UsersInterests.tsx';
+import ForgotPassword from './screens/ForgotPassword.tsx';
+import Homepage from './screens/dashboard/Homepage.tsx';
 
 
 createRoot(document.getElementById('root') as HTMLElement).render(
@@ -34,11 +36,12 @@ createRoot(document.getElementById('root') as HTMLElement).render(
                 <Route path="/finishSignUp" element={<FinishSignUp />} />
                 <Route path="/company-entry" element={<CompanyEntry />} />
                 <Route path="/interests" element={<UsersInterests />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
                 {/* Protect home route */}
                 <Route path="/home" 
                   element={
                     <ProtectedRoute>
-                      <Home />
+                      <Homepage />
                     </ProtectedRoute>
                   }
                 />

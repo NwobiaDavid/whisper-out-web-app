@@ -2,7 +2,7 @@
 import React from 'react';
 import { Input } from '@nextui-org/react';
 import { useState, useMemo, useEffect, useContext } from 'react';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword } from 'firebase/auth';
 import { AuthContext } from '../config/AuthContext.tsx';
 import { auth, db } from '../config/firebase.ts';
 import { useNavigate } from 'react-router-dom';
@@ -35,6 +35,7 @@ interface AuthContextType {
 const SignupPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState(''); 
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [isSignUp, setIsSignUp] = useState(true); 
   const [error, setError] = useState<string | null>(null);
   const [passwordStrength, setPasswordStrength] = useState('');
@@ -88,6 +89,8 @@ const SignupPage: React.FC = () => {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const uid = userCredential.user.uid;
 
+        await sendEmailVerification(userCredential.user);
+
         const companyQuery = query(collection(db, 'companies'), where('domain', '==', emailDomain));
         const companySnapshot = await getDocs(companyQuery);
 
@@ -111,7 +114,16 @@ const SignupPage: React.FC = () => {
       }
     } catch (error: any) {
       console.error('Error with authentication:', error);
-      setError(error.message);
+
+      if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
+        setError('User not found. Redirecting to sign-up...');
+        setTimeout(() => {
+          setIsSignUp(true); 
+          setError(null); 
+        }, 2000);
+      } else {
+        setError(error.message); 
+      }
     }
   };
 
@@ -220,8 +232,19 @@ const SignupPage: React.FC = () => {
                   : 'bg-gray-200'
                 } p-3 rounded-lg active:scale-95 dark:bg-[#BBC0CA6E] duration-200 font-semibold w-full mt-3 lg:mt-5`}
             >
-              {isSignUp ? 'Sign Up' : 'Sign In'}
+              {isSignUp ? 'Sign Up' : 'Log In'}
             </button>
+
+            {!isSignUp && (
+              <div className="mt-1 w-full flex justify-end">
+                <span
+                  className="text-blue-600 text-sm cursor-pointer"
+                  onClick={() => navigate('/forgot-password')}
+                >
+                  Forgot Password?
+                </span>
+              </div>
+            )}
 
             <div className="mt-4 text-center">
               {isSignUp ? (
@@ -231,7 +254,7 @@ const SignupPage: React.FC = () => {
                     className="text-blue-600 cursor-pointer"
                     onClick={() => setIsSignUp(false)}
                   >
-                    Sign In
+                    Log In
                   </span>
                 </p>
               ) : (
