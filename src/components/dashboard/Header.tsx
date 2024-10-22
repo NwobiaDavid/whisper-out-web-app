@@ -41,7 +41,7 @@ const Header = () => {
             </div>
 
             <div className=' flex  w-1/3 justify-center ' >
-                <div className=" text-3xl hover:scale-125 ">
+                <div className=" text-3xl hover:-rotate-45 duration-200 ">
                     <GoGear />
                 </div>
             </div>

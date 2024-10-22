@@ -89,6 +89,8 @@ const SignupPage: React.FC = () => {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const uid = userCredential.user.uid;
 
+        // make this so that the email must be verified before it can continue
+        
         await sendEmailVerification(userCredential.user);
 
         const companyQuery = query(collection(db, 'companies'), where('domain', '==', emailDomain));

@@ -38,7 +38,7 @@ createRoot(document.getElementById('root') as HTMLElement).render(
                 <Route path="/interests" element={<UsersInterests />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
                 {/* Protect home route */}
-                <Route path="/home" 
+                <Route path="/home/*" 
                   element={
                     <ProtectedRoute>
                       <Homepage />
