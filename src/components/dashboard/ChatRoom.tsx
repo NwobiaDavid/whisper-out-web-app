@@ -1,31 +1,38 @@
 import { db } from '../../config/firebase';
-import { addDoc, collection, Timestamp } from 'firebase/firestore';
-import React, { useState, ChangeEvent, FormEvent } from 'react';
+import { addDoc, collection, onSnapshot, orderBy, query, Timestamp } from 'firebase/firestore';
+import React, { useState, ChangeEvent, FormEvent, useEffect } from 'react';
+import CryptoJS from 'crypto-js'; 
 
 interface ChatRoomProps {
     channel: string;
+    userId: string;
 }
 
 interface Message {
     text: string;
     time: string;
+    userId: string;
 }
 
-const ChatRoom: React.FC<ChatRoomProps> = ({ channel }) => {
+const secretKey = 'your_secret_key';
+
+const ChatRoom: React.FC<ChatRoomProps> = ({ channel, userId }) => {
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState<string>('');
+
+    const hashUserId = (userId: string) => {
+        return CryptoJS.HmacSHA256(userId, secretKey).toString();
+    };
 
     const handleSendMessage = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (input.trim()) {
-            const newMessage = { text: input, time: new Date().toLocaleTimeString() };
-            setMessages([...messages, newMessage]);
-
-            // Save to Firestore
+            
             try {
                 await addDoc(collection(db, 'chatRooms', channel, 'messages'), {
                     text: input,
                     time: Timestamp.now(),
+                    userId: hashUserId(userId),
                 });
             } catch (err) {
                 console.error('Error adding message to Firestore:', err);
@@ -35,9 +42,26 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel }) => {
         }
     };
 
+    useEffect(() => {
+        const q = query(collection(db, 'chatRooms', channel, 'messages'), orderBy('time'));
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+            const updatedMessages = snapshot.docs.map((doc) => ({
+                text: doc.data().text,
+                time: doc.data().time.toDate().toLocaleTimeString(),
+                userId: doc.data().userId,
+            }));
+            setMessages(updatedMessages);
+        });
+
+        return () => unsubscribe();
+    }, [channel]);
+
+
     const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
         setInput(e.target.value);
     };
+
+
 
     return (
         <div className='flex flex-col h-full'>
@@ -51,7 +75,9 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel }) => {
                             <div className='bg-blue-100 dark:bg-blue-700 p-3 rounded-lg max-w-xs text-left'>
                                 {msg.text}
                             </div>
-                            <div className='text-sm text-gray-400'>{msg.time}</div>
+                            <div className='text-sm text-gray-400'>
+                                {msg.time} - {msg.userId === hashUserId(userId) ? 'user name here'}
+                            </div>
                         </div>
                     ))
                 )}
