@@ -21,6 +21,8 @@ import CompanyEntry from './screens/CompanyEntry.tsx';
 import UsersInterests from './screens/UsersInterests.tsx';
 import ForgotPassword from './screens/ForgotPassword.tsx';
 import Homepage from './screens/dashboard/Homepage.tsx';
+import VerifyEmailPage from './screens/VerifyEmailPage.tsx';
+import WaitingPage from './screens/WaitingPage.tsx';
 
 
 createRoot(document.getElementById('root') as HTMLElement).render(
@@ -36,6 +38,8 @@ createRoot(document.getElementById('root') as HTMLElement).render(
                 <Route path="/finishSignUp" element={<FinishSignUp />} />
                 <Route path="/company-entry" element={<CompanyEntry />} />
                 <Route path="/interests" element={<UsersInterests />} />
+                <Route path="/verify-email" element={<VerifyEmailPage />} />
+                <Route path="/waiting-page" element={<WaitingPage />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
                 {/* Protect home route */}
                 <Route path="/home/*" 

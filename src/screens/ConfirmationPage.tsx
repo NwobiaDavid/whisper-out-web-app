@@ -44,14 +44,13 @@ const ConfirmationPage = () => {
         url: 'http://localhost:3000/finishSignUp',
         handleCodeInApp: true,
       });
-      // setMessage('Link resent! Check your email.');
     } catch (error:any) {
       console.error('Error resending link:', error);
-      // setMessage(`Error: ${error.message}`);
     }
     setIsResending(false);
   };
 
+  
 
   const handleChangeEmail = () => {
 

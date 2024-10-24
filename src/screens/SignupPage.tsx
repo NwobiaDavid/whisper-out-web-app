@@ -93,23 +93,27 @@ const SignupPage: React.FC = () => {
         
         await sendEmailVerification(userCredential.user);
 
-        const companyQuery = query(collection(db, 'companies'), where('domain', '==', emailDomain));
-        const companySnapshot = await getDocs(companyQuery);
+        // const companyQuery = query(collection(db, 'companies'), where('domain', '==', emailDomain));
+        // const companySnapshot = await getDocs(companyQuery);
 
-        if (!companySnapshot.empty) {
-          const companyDoc = companySnapshot.docs[0].data();
-          const companyName = companyDoc.companyName;
+        // if (!companySnapshot.empty) {
+        //   const companyDoc = companySnapshot.docs[0].data();
+        //   const companyName = companyDoc.companyName;
 
-          await setDoc(doc(db, 'users', uid), {
-            uid,
-            email,
-            company: companyName,
-          });
+        //   await setDoc(doc(db, 'users', uid), {
+        //     uid,
+        //     email,
+        //     company: companyName,
+        //   });
 
-          navigate('/interests');
-        } else {
-          navigate('/company-entry');
-        }
+        //   navigate('/interests');
+        // } else {
+        //   navigate('/company-entry');
+        // }
+
+        // await auth.signOut();
+        navigate('/verify-email');
+
       } else {
         await signInWithEmailAndPassword(auth, email, password);
         navigate('/home');
@@ -285,7 +289,7 @@ const SignupPage: React.FC = () => {
           </form>
 
           <div className="flex -order-1 lg:order-1  flex-col justify-center lg:mb-0 mb-16 lg:py-0 lg:px-7 xl:px-20">
-            <h1 className=" text-2xl lg:text-3xl font-bold mb-10">Say Hello to WhisperOut</h1>
+            <h1 className=" text-2xl lg:text-3xl font-bold mb-10">{isSignUp ? 'Say Hello' : 'Log in'} to WhisperOut</h1>
             <div>
               <p className="font-light text-[14px] leading-[16px]">
                 WhisperOut is your go-to spot for real talk, zero judgment. Got
