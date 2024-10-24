@@ -3,10 +3,10 @@ import { useState, useContext, useEffect, FormEvent } from 'react';
 import { GoOrganization } from 'react-icons/go';
 import { IoIosCheckmarkCircleOutline } from 'react-icons/io';
 import { useNavigate } from 'react-router-dom';
-import { doc, setDoc, collection, addDoc } from 'firebase/firestore'; // Add collection, addDoc for creating company documents
+import { doc, setDoc, collection, addDoc } from 'firebase/firestore'; 
 import { db } from '../config/firebase.ts';
 import Footer from '../components/Footer.tsx';
-import { AuthContext } from '../config/AuthContext.tsx'; // Assuming AuthContext provides current user
+import { AuthContext } from '../config/AuthContext.tsx'; 
 
 
 interface UserType {

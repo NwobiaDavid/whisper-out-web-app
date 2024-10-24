@@ -2,7 +2,7 @@ import ChatRoom from '../../components/dashboard/ChatRoom';
 import AdSection from '../../components/dashboard/AdSection'
 import ChannelSection from '../../components/dashboard/ChannelSection'
 import Header from '../../components/dashboard/Header'
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, Navigate } from 'react-router-dom';
 
 const Homepage = () => {
     return (
@@ -12,8 +12,9 @@ const Homepage = () => {
             </div>
             <div className='flex  px-20 h-[90%]   '>
                 <ChannelSection />
-                <div className=' ml-[20%] p-5 w-[65%] overflow-y-auto h-[80vh] ' >
-                <Routes>
+                <div className=' ml-[20%]  p-5 w-[65%] overflow-y-auto h-[80vh] ' >
+                    <Routes>
+                        <Route path="/" element={<Navigate to="welfare" />} />
                         <Route path="welfare" element={<ChatRoom channel="Welfare" />} />
                         <Route path="salaries" element={<ChatRoom channel="Salaries" />} />
                         <Route path="office-space" element={<ChatRoom channel="Office Space" />} />
