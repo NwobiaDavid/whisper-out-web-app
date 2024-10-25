@@ -4,6 +4,8 @@ import { useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { collection, query, where, getDocs, setDoc, doc } from 'firebase/firestore';
 import { auth, db } from '../config/firebase';
+import Emailheader from '../components/Emailheader';
+import Footer from '../components/Footer';
 // import { sendEmailVerification } from "firebase/auth"
 
 
@@ -78,13 +80,19 @@ const VerifyEmailPage = () => {
       };
 
   return (
-    <div>
-       <div className="verify-email-page">
-      <h1>Verify Your Email</h1>
-      <p>Please check your inbox for a verification email.</p>
-      <button onClick={handleResendVerification}>Resend Verification Email</button>
-      <button onClick={() => navigate('/login')}>Go to Login</button>
+    <div  className={`w-full max-h-screen h-screen relative bg-cover bg-no-repeat bg-[url('')] lg:bg-[url('/assets/images/bg/auth.png')] dark:bg-[url('')] dark:bg-maindark `}>
+       <Emailheader />
+       <div className="w-full py-7 lg:py-20 h-[83%] lg:h-[75%] flex xl:py-28 items-center flex-col ">
+      <div className="border p-3 ">
+        <h1 className='text-xl font-semibold ' >Verify Your Email</h1>
+        <p className=' text-lg ' >Please check your inbox for a verification email.</p>
+        <div className="flex mt-5 item-center gap-5 ">
+          <button className=' p-2 rounded-md text-blue-800 font-semibold border hover:bg-blue-500 hover:text-white duration-200 border-blue-500 bg-blue-200 ' onClick={handleResendVerification}>Resend Verification Email</button>
+          <button className=' p-2 rounded-md border hover:bg-black hover:text-white duration-200 '  onClick={() => navigate('/sign-up')}>Go to Login</button>
+        </div>
+      </div>
     </div>
+    <Footer />
     </div>
   )
 }

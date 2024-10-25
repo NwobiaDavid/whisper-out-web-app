@@ -2,8 +2,8 @@
 
 import { useContext } from 'react';
 import { Navigate } from 'react-router-dom';
-import { AuthContext } from './config/AuthContext.tsx'; // Import AuthContext
-import { ReactNode } from 'react';  // Import ReactNode for typing children
+import { AuthContext } from './config/AuthContext.tsx'; 
+import { ReactNode } from 'react'; 
 
 interface UserType {
   uid: string;
@@ -15,7 +15,7 @@ interface AuthContextType {
 }
 
 interface ProtectedRouteProps {
-  children: ReactNode;  // Define children type as ReactNode
+  children: ReactNode; 
 }
 
 const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
@@ -23,11 +23,9 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const user = authContext?.user;
   
   if (!user) {
-    // If user is not authenticated, redirect to sign-in page
     return <Navigate to="/" replace={true} />;
   }
 
-  // Otherwise, render the protected component
   return <>{children}</>;
 };
 

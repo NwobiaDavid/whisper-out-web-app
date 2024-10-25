@@ -4,6 +4,8 @@ import { collection, query, where, getDocs, setDoc, doc, getDoc  } from 'firebas
 import { db } from '../config/firebase';
 import { AuthContext } from '../config/AuthContext';
 import Footer from '../components/Footer';
+import Emailheader from '../components/Emailheader';
+import { Spinner } from '@nextui-org/spinner';
 
 interface UserType {
   uid: string;
@@ -27,7 +29,7 @@ const WaitingPage = () => {
       if (!user) return;
 
       try {
-        const companyRef = doc(db, 'companies', user.uid);
+        // const companyRef = doc(db, 'companies', user.uid);
         const companyQuery = query(collection(db, 'companies'), where('createdBy', '==', user.uid));
         const companySnap = await getDocs(companyQuery);
 
@@ -93,15 +95,17 @@ useEffect(() => {
   if (loading) {
     return (
       <div className="w-full h-screen flex justify-center items-center">
-        <p>Loading...</p>
+         <Spinner />
       </div>
     );
   }
 
   return (
     <div className={`w-full max-h-screen h-screen relative bg-cover bg-no-repeat bg-[url('')] lg:bg-[url('/assets/images/bg/auth.png')] dark:bg-[url('')] dark:bg-maindark `}>
+      <Emailheader />
+
       <div className="w-full py-7 lg:py-20 h-[93%] lg:h-[90%] flex xl:py-28 items-center flex-col ">
-        <p>Your company creation request is currently under review.</p>
+        <p className=' font-semibold text-xl text-center ' >Your company is still currently under review.<br/>Please be patient</p>
       </div>
       <Footer />
     </div>
