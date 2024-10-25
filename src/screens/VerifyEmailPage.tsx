@@ -1,6 +1,6 @@
-import { AuthContext } from '../config/AuthContext';
+// import { AuthContext } from '../config/AuthContext';
 import { sendEmailVerification } from 'firebase/auth';
-import { useContext, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { collection, query, where, getDocs, setDoc, doc } from 'firebase/firestore';
 import { auth, db } from '../config/firebase';
@@ -9,14 +9,14 @@ import Footer from '../components/Footer';
 // import { sendEmailVerification } from "firebase/auth"
 
 
-interface UserType {
-    uid: string;
-    email: string;
-  }
+// interface UserType {
+//     uid: string;
+//     email: string;
+//   }
   
-  interface AuthContextType {
-    user: UserType | null;
-  }
+  // interface AuthContextType {
+  //   user: UserType | null;
+  // }
 
 const VerifyEmailPage = () => {
     const navigate = useNavigate();
@@ -30,7 +30,7 @@ const VerifyEmailPage = () => {
         const checkEmailVerification = async () => {
           const currentUser = auth.currentUser;
           if (currentUser) {
-            await currentUser.reload(); // Reload user data to get the updated verification status
+            await currentUser.reload(); 
             if (currentUser.emailVerified) {
               const uid = currentUser.uid;
               const emailDomain = currentUser.email.split('@')[1];
@@ -61,12 +61,11 @@ const VerifyEmailPage = () => {
           }
         };
     
-        // Polling mechanism: check every 5 seconds to see if the email has been verified
+       
         const verificationInterval = setInterval(() => {
           checkEmailVerification();
-        }, 5000); // Poll every 5 seconds
+        }, 5000); 
     
-        // Clear the interval when the component is unmounted
         return () => clearInterval(verificationInterval);
       }, [navigate]);
 

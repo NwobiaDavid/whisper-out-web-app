@@ -67,13 +67,17 @@ useEffect(() => {
         //   const companySnap = await getDoc(companyRef);
         //   const companyName = companySnap.exists() ? companySnap.data().companyName : '';
 
-        const emailDomain = user.email.split('@')[1];
-          const companyRef = doc(db, 'companies', emailDomain);
-          const companySnap = await getDoc(companyRef);
+        // const emailDomain = user.email.split('@')[1];
+        //   const companyRef = doc(db, 'companies', emailDomain);
+        //   const companySnap = await getDoc(companyRef);
 
-          console.log("comapy dat=>"+JSON.stringify(companySnap.exists()))
+        const companyQuery = query(collection(db, 'companies'), where('createdBy', '==', user.uid));
+        const companySnap = await getDocs(companyQuery);
 
-          const companyName = companySnap.exists() ? companySnap.data().companyName : '';
+          console.log("comapy dat=>"+JSON.stringify(companySnap.docs[0]))
+          // console.log("com exis-> "+companySnap.exists())
+
+          const companyName = companySnap.docs[0].data().companyName;
 
 
           await setDoc(doc(db, 'users', user.uid), {
