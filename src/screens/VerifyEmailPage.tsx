@@ -33,7 +33,7 @@ const VerifyEmailPage = () => {
             await currentUser.reload(); 
             if (currentUser.emailVerified) {
               const uid = currentUser.uid;
-              const emailDomain = currentUser.email.split('@')[1];
+              const emailDomain = currentUser.email?.split('@')[1];
     
               const companyQuery = query(collection(db, 'companies'), where('domain', '==', emailDomain));
               const companySnapshot = await getDocs(companyQuery);
