@@ -1,5 +1,5 @@
 import { db } from '../../config/firebase';
-import { addDoc, collection, onSnapshot, orderBy, query, Timestamp } from 'firebase/firestore';
+import { addDoc, collection, doc, getDoc, onSnapshot, orderBy, query, setDoc, Timestamp, updateDoc } from 'firebase/firestore';
 import React, { useState, ChangeEvent, FormEvent, useEffect, useContext, useRef } from 'react';
 import CryptoJS from 'crypto-js';
 import { AuthContext } from '../../config/AuthContext.tsx';
@@ -33,6 +33,8 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel }) => {
     const [input, setInput] = useState<string>('');
     const [unreadMessages, setUnreadMessages] = useState<number>(0);
 
+    const [lastSeenIndex, setLastSeenIndex] = useState<number>(0);
+
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
     const textareaRef = useRef<HTMLTextAreaElement | null>(null);
     const messageContainerRef = useRef<HTMLDivElement | null>(null);
@@ -44,14 +46,24 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel }) => {
         return CryptoJS.HmacSHA256(userId, secretKey).toString();
     };
 
-    // Generate a unique username based on the last 5 characters of the UID
+
     const generateUsername = (userId: string) => {
-        return `User${hashUserId(user?.uid || "").slice(-5)}`;
+        return `User${hashUserId(userId).slice(-5)}`;
+    };
+
+
+    const scrollToLastSeen = () => {
+        if (messageContainerRef.current && lastSeenIndex < messages.length) {
+            const lastSeenElement = messageContainerRef.current.children[lastSeenIndex] as HTMLElement;
+            lastSeenElement?.scrollIntoView({ behavior: 'smooth' });
+        }
     };
 
     const scrollToBottom = () => {
         if (messageContainerRef.current) {
             messageContainerRef.current.scrollTo({ top: messageContainerRef.current.scrollHeight, behavior: 'smooth' });
+            updateLastSeenMessage(messages.length - 1);
+            setUnreadMessages(0);
         }
     };
 
@@ -65,28 +77,87 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel }) => {
                     userId: hashUserId(user?.uid || ""),
                     username: generateUsername(user?.uid || ""),
                 });
+
+                setInput('');
+                if (textareaRef.current) {
+                    textareaRef.current.style.height = 'auto';
+                }
+                scrollToBottom();
             } catch (err) {
                 console.error('Error adding message to Firestore:', err);
             }
 
-            setInput('');
         }
     };
 
+
+
+    const fetchLastSeenIndex = async () => {
+        if (user) {
+            const userDocRef = doc(db, 'chatRooms', channel, 'userLastSeen', user.uid);
+
+            try {
+                const userDoc = await getDoc(userDocRef);
+                if (userDoc.exists()) {
+                    // Set the last seen index if it exists
+                    setLastSeenIndex(userDoc.data().lastSeenIndex || 0);
+                } else {
+                    // Initialize lastSeenIndex to 0 if it doesn't exist
+                    await setDoc(userDocRef, { lastSeenIndex: 0 });
+                    setLastSeenIndex(0);
+                }
+            } catch (error) {
+                console.error("Error fetching last seen index:", error);
+            }
+
+            // const userDoc = await getDoc(userDocRef);
+            // if (userDoc.exists()) {
+            //     console.log("last seen index--> "+userDoc.data().lastSeenIndex);
+            //     setLastSeenIndex(userDoc.data().lastSeenIndex || 0);
+            // }
+
+        }
+    };
+
+
+    const updateLastSeenMessage = async (index: number) => {
+        if (user) {
+            const userDocRef = doc(db, 'chatRooms', channel, 'userLastSeen', user.uid);
+            await updateDoc(userDocRef, { lastSeenIndex: index });
+            setLastSeenIndex(index); 
+        }
+    };
+
+
+
     useEffect(() => {
+        fetchLastSeenIndex();
+
         const q = query(collection(db, 'chatRooms', channel, 'messages'), orderBy('time'));
         const unsubscribe = onSnapshot(q, (snapshot) => {
             const updatedMessages = snapshot.docs.map((doc) => ({
                 text: doc.data().text,
-                time: doc.data().time.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), // Hide seconds
+                time: doc.data().time,
                 userId: doc.data().userId,
                 username: doc.data().username,
             }));
             setMessages(updatedMessages);
+
+
+            const newUnreadCount = updatedMessages.length - lastSeenIndex - 1;
+            setUnreadMessages(newUnreadCount > 0 ? newUnreadCount : 0);
         });
 
         return () => unsubscribe();
-    }, [channel]);
+    }, [channel, lastSeenIndex]);
+
+
+    useEffect(() => {
+        if (lastSeenIndex >= 0 && messages.length > 0) {
+            scrollToLastSeen();
+        }
+    }, [lastSeenIndex, messages]);
+
 
     const handleInputChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
         setInput(e.target.value);
@@ -97,22 +168,21 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel }) => {
         }
     };
 
+
+
     const handleScroll = () => {
         if (messageContainerRef.current) {
             const { scrollTop, clientHeight, scrollHeight } = messageContainerRef.current;
-            const isAtBottom = scrollHeight - scrollTop === clientHeight;
+            const isAtBottom = scrollHeight - scrollTop <= clientHeight + 10;
 
-            if (isAtBottom) {
+            if (isAtBottom && lastSeenIndex < messages.length - 1 ) {
                 setUnreadMessages(0);
-            } else {
-                const totalMessages = messages.length;
-                const visibleMessages = Math.floor(scrollTop / (scrollHeight / totalMessages));
-                const unreadCount = totalMessages - visibleMessages;
-
-                setUnreadMessages(unreadCount);
+                updateLastSeenMessage(messages.length - 1);
             }
         }
     };
+
+
 
     useEffect(() => {
         if (messageContainerRef.current) {
@@ -125,6 +195,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel }) => {
             }
         };
     }, [messages]);
+
 
     const hashedCurrentUserId = user?.uid ? hashUserId(user?.uid) : '';
 
@@ -149,7 +220,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel }) => {
                                         {msg.text}
                                     </div>
                                     <div className='text-xs text-gray-400'>
-                                        {msg.time}
+                                        {msg.time.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                     </div>
                                 </div>
                             </div>
