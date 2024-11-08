@@ -51,7 +51,7 @@ const Settings = () => {
                     <h1 className=' capitalize text-[#FFC157] text-sm mb-1 ' >privacy</h1>
 
                     <div className=' border border-[#3D3B6F] dark:border-gray-400 overflow-hidden text-lg rounded-md capitalize ' >
-                        <div className=' p-3  flex items-center justify-between hover:dark:bg-[#353361] cursor-pointer dark:bg-[#44427C] hover:text-white duration-200 bg-white  ' >
+                        <div className=' p-3 hover:bg-[#3D3B6F] flex items-center justify-between hover:dark:bg-[#353361] cursor-pointer dark:bg-[#44427C] hover:text-white duration-200 bg-white  ' >
                             <span>show active status</span>
 
                             <div>
