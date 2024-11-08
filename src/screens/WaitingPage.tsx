@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { collection, query, where, getDocs, setDoc, doc, getDoc  } from 'firebase/firestore';
+import { collection, query, where, getDocs, setDoc, doc  } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { AuthContext } from '../config/AuthContext';
 import Footer from '../components/Footer';

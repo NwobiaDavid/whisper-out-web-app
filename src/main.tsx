@@ -15,7 +15,7 @@ import SignupPage from './screens/SignupPage.tsx';
 
 import ConfirmationPage from './screens/ConfirmationPage.tsx';
 import FinishSignUp from './screens/FinishSignUp.tsx';
-import Home from './screens/Home.tsx';
+// import Home from './screens/Home.tsx';
 // import ThemeManager from './components/ThemeManager.tsx';
 import CompanyEntry from './screens/CompanyEntry.tsx';
 import UsersInterests from './screens/UsersInterests.tsx';

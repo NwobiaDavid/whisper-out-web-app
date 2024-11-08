@@ -3,8 +3,8 @@ import AdSection from '../../components/dashboard/AdSection'
 import ChannelSection from '../../components/dashboard/ChannelSection'
 import Header from '../../components/dashboard/Header'
 import { Route, Routes, Navigate, useNavigate } from 'react-router-dom';
-import { useContext, useEffect, useState } from 'react';
-import { AuthContext } from '../../config/AuthContext';
+import { useEffect, useState } from 'react';
+// import { AuthContext } from '../../config/AuthContext';
 import { doc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../../config/firebase';
 import Settings from '../../components/dashboard/Settings';
@@ -14,7 +14,7 @@ const Homepage = () => {
   const [isVerified, setIsVerified] = useState(false);
   const [hasCompany, setHasCompany] = useState(false);
   const [loading, setLoading] = useState(true);
-  const authContext = useContext(AuthContext);
+  // const authContext = useContext(AuthContext);
   const user = auth.currentUser;
   const navigate = useNavigate();
 

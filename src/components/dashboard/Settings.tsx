@@ -1,7 +1,7 @@
-import React, { useState } from 'react'
-import { FaRegMoon } from 'react-icons/fa';
+import { useState } from 'react'
+// import { FaRegMoon } from 'react-icons/fa';
 import { FaGear } from 'react-icons/fa6'
-import { IoSunnySharp } from 'react-icons/io5';
+// import { IoSunnySharp } from 'react-icons/io5';
 import { motion } from 'framer-motion';
 
 

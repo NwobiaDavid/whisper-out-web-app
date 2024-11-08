@@ -4,7 +4,7 @@ import { Input } from '@nextui-org/react';
 import { useState, useMemo, useEffect, useContext } from 'react';
 import { createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword } from 'firebase/auth';
 import { AuthContext } from '../config/AuthContext.tsx';
-import { auth, db } from '../config/firebase.ts';
+import { auth } from '../config/firebase.ts';
 import { useNavigate } from 'react-router-dom';
 
 
@@ -19,7 +19,7 @@ import { motion } from 'framer-motion';
 import Emailheader from '../components/Emailheader.tsx';
 import Footer from '../components/Footer.tsx';
 
-import { collection, query, where, getDocs, setDoc, doc } from 'firebase/firestore';
+// import { collection, query, where, getDocs, setDoc, doc } from 'firebase/firestore';
 
 
 interface UserType {
@@ -35,7 +35,7 @@ interface AuthContextType {
 const SignupPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState(''); 
-  const [confirmPassword, setConfirmPassword] = useState('');
+  // const [confirmPassword, setConfirmPassword] = useState('');
   const [isSignUp, setIsSignUp] = useState(true); 
   const [error, setError] = useState<string | null>(null);
   const [passwordStrength, setPasswordStrength] = useState('');
@@ -82,12 +82,12 @@ const SignupPage: React.FC = () => {
 
     setError(null);
 
-    const emailDomain = email.split('@')[1];
+    // const emailDomain = email.split('@')[1];
 
     try {
       if (isSignUp) {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        const uid = userCredential.user.uid;
+        // const uid = userCredential.user.uid;
 
         // make this so that the email must be verified before it can continue
         
