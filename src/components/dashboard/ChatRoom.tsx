@@ -218,9 +218,9 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel }) => {
                 </div>
             </div>
 
-            <div ref={messageContainerRef} className="flex-grow relative overflow-y-auto p-4 bg-gray-50 bg-[url('/assets/images/bg/chatroom/chatroom_light.png')] dark:bg-[url('/assets/images/bg/chatroom/chatroom_dark.png')] rounded-md">
+            <div ref={messageContainerRef} className="flex-grow relative overflow-y-auto p-4 bg-gray-50 bg-[url('/assets/images/bg/chatroom/chatroom_light.png')] dark:bg-[url('/assets/images/bg/chatroom/chatroom_dark.png')] rounded-t-md">
                 {messages.length === 0 ? (
-                    <div className='text-gray-500'>No messages yet. Start the conversation!</div>
+                    <div className='text-gray-900 font-semibold dark:text-gray-100'>No messages yet. Start the conversation!</div>
                 ) : (
                     <>
                         {messages.map((msg, index) => (
@@ -230,12 +230,12 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel }) => {
                                 <div className={`flex flex-col ${msg.userId === hashedCurrentUserId ? 'items-end' : 'items-start'}`}>
                                     <div
                                         className={`p-2 flex-col flex rounded-lg max-w-xs text-left
-                                            ${msg.userId === hashedCurrentUserId ? 'bg-green-100 dark:text-gray-800 dark:bg-[#FFC157]' : 'bg-blue-100 dark:bg-[#6967ac]'}`}>
-                                        <span className='text-sm font-semibold dark:text-[#44427C80] text-gray-300'>{msg.username}</span>
+                                            ${msg.userId === hashedCurrentUserId ? ' dark:text-gray-800 bg-[#FFC157]' : 'bg-[#6967ac]'}`}>
+                                        <span className={`text-xs font-semibold  ${msg.userId === hashedCurrentUserId ? " text-[#0e0c4180] " : " text-gray-300" }  `}>{msg.username}</span>
                                         {msg.text}
-                                    </div>
-                                    <div className='text-xs text-gray-400'>
+                                    <div className={`text-xs text-right mt-2  ${msg.userId === hashedCurrentUserId ? " text-black text-opacity-50 " : " text-gray-300" }  `}>
                                         {msg.time.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                    </div>
                                     </div>
                                 </div>
                             </div>
@@ -248,7 +248,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel }) => {
             {unreadMessages > 0 && (
                 <div className='relative w-full'>
                     <div className="absolute bottom-[10%] right-[5%] my-4">
-                        <div onClick={scrollToBottom} className='relative z-10 cursor-pointer p-3 bg-blue-600 text-white rounded-full'>
+                        <div onClick={scrollToBottom} className='relative z-10 cursor-pointer p-3 bg-[#FFC157] text-maindark rounded-full'>
                             <div className="p-1">
                                 <FaAngleDown />
                             </div>
@@ -260,7 +260,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel }) => {
                 </div>
             )}
 
-            <div className='dark:bg-[#44427C80] rounded-md p-4'>
+            <div className='dark:bg-[#44427C80] rounded-b-md p-4'>
                 <form
                     className='flex items-center border rounded-xl border-gray-500 z-10 dark:bg-[#33316880] overflow-hidden'
                     onSubmit={handleSendMessage}

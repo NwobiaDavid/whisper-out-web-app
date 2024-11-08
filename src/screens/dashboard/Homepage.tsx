@@ -7,10 +7,11 @@ import { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../../config/AuthContext';
 import { doc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../../config/firebase';
+import Settings from '../../components/dashboard/Settings';
 
 const Homepage = () => {
 
-    const [isVerified, setIsVerified] = useState(false);
+  const [isVerified, setIsVerified] = useState(false);
   const [hasCompany, setHasCompany] = useState(false);
   const [loading, setLoading] = useState(true);
   const authContext = useContext(AuthContext);
@@ -55,7 +56,7 @@ const Homepage = () => {
   }
 
     return (
-        <div className=' max-h-screen dark:bg-maindark h-screen  ' >
+        <div className=' max-h-screen bg-[#F2F2F2] dark:bg-maindark h-screen  ' >
             <div className="h-[10%] ">
                 <Header />
             </div>
@@ -70,6 +71,7 @@ const Homepage = () => {
                         <Route path="tech-jobs" element={<ChatRoom channel="Tech Jobs" />} />
                         <Route path="finance" element={<ChatRoom channel="Finance" />} />
                         <Route path="internship" element={<ChatRoom channel="Internship" />} />
+                        <Route path="settings" element={<Settings />} />
                     </Routes>
                 </div>
                 <AdSection />

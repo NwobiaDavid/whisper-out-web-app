@@ -9,6 +9,10 @@ const ChannelSection = () => {
     const location = useLocation();
     const [activeChannel, setActiveChannel] = useState(location.pathname);
 
+    useEffect(() => {
+        setActiveChannel(location.pathname);
+    }, [location.pathname]);
+    
     const channels = [
         { title: "welfare", img_dark: "/assets/images/icons/channels/channels_light/welfare-pension-insurance-premium_svgrepo.com (1).png", img_light: "/assets/images/icons/channels/welfare-pension-insurance-premium_svgrepo.com.png", link: "welfare" },
         { title: "salaries", img_dark: "/assets/images/icons/channels/channels_light/salary-wage_svgrepo.com (1).png", img_light: "/assets/images/icons/channels/salary-wage_svgrepo.com.png", link: "salaries" },
@@ -40,17 +44,17 @@ const ChannelSection = () => {
                 </div>
             </div>
 
-            <div className=' bg-gray-100 dark:bg-[#44427C80] overflow-hidden h-[80%] rounded-md ' >
-                <div className=' mb-5 capitalize ' >
+            <div className=' bg-white  dark:bg-[#44427C80]  p-2 h-[80%] rounded-md overflow-hidden ' >
+                <div className=' mb-5 capitalize  ' >
                     {channels.map((item, index) => (
-                        <Link to={item.link}  onClick={() => setActiveChannel("/home/"+item.link)} key={index} className={` font-medium flex p-4 ${activeChannel === "/home/"+item.link ? " dark:bg-maindark border-gray-50 rounded-xl " : " border-transparent "} hover:bg-gray-300 border  dark:hover:bg-maindark  cursor-pointer duration-200 `} >
+                        <Link to={item.link}  onClick={() => setActiveChannel("/home/"+item.link)} key={index} className={` font-medium mb-2 flex p-4 ${activeChannel === "/home/"+item.link ? " dark:bg-maindark dark:border-gray-50 bg-[#F2F2F2] border-maindark border-opacity-30  " : " border-transparent "} hover:bg-gray-300 border rounded-lg  dark:hover:bg-maindark  cursor-pointer duration-200 `} >
                             <Image src={!darkMode ? item.img_dark : item.img_light} className={` mr-3 rounded-none ${activeChannel === "/home/"+item.link && " text-[#FFC157]  "}  `} />
                             {item.title}
                         </Link>
                     ))}
                 </div>
 
-            <div className='border-t flex mx-5 mt-[50%] p-2 justify-center items-center capitalize  ' >
+            <div className='border-t dark:border-gray-100 border-maindark flex mx-5 mt-[40%] p-2 justify-center items-center capitalize  ' >
                 <span>about</span>
                 <span className=" px-1 flex justify-center  items-center ">.</span>
                 <span>terms</span>
