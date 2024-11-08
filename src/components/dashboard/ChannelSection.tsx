@@ -2,20 +2,25 @@ import { IoIosAddCircleOutline } from "react-icons/io";
 import ToggleSwitch from '../ui/ToggleSwitch';
 import { Image } from '@nextui-org/image';
 import { Link, useLocation } from 'react-router-dom';
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 
 const ChannelSection = () => {
     const location = useLocation();
     const [activeChannel, setActiveChannel] = useState(location.pathname);
 
     const channels = [
-        { title: "welfare", img: "/assets/images/icons/channels/welfare-pension-insurance-premium_svgrepo.com.png", link: "welfare" },
-        { title: "salaries", img: "/assets/images/icons/channels/salary-wage_svgrepo.com.png", link: "salaries" },
-        { title: "office space", img: "/assets/images/icons/channels/office-chair_svgrepo.com.png", link: "office-space" },
-        { title: "tech jobs", img: "/assets/images/icons/channels/jobsmajor_svgrepo.com.png", link: "tech-jobs" },
-        { title: "finance", img: "/assets/images/icons/channels/finance_svgrepo.com.png", link: "finance" },
-        { title: "internship", img: "/assets/images/icons/channels/student-duotone_svgrepo.com.png", link: "internship" },
+        { title: "welfare", img_dark: "/assets/images/icons/channels/channels_light/welfare-pension-insurance-premium_svgrepo.com (1).png", img_light: "/assets/images/icons/channels/welfare-pension-insurance-premium_svgrepo.com.png", link: "welfare" },
+        { title: "salaries", img_dark: "/assets/images/icons/channels/channels_light/salary-wage_svgrepo.com (1).png", img_light: "/assets/images/icons/channels/salary-wage_svgrepo.com.png", link: "salaries" },
+        { title: "office space", img_dark: "/assets/images/icons/channels/channels_light/office-chair_svgrepo.com (1).png", img_light: "/assets/images/icons/channels/office-chair_svgrepo.com.png", link: "office-space" },
+        { title: "tech jobs", img_dark: "/assets/images/icons/channels/channels_light/jobsmajor_svgrepo.com (1).png", img_light: "/assets/images/icons/channels/jobsmajor_svgrepo.com.png", link: "tech-jobs" },
+        { title: "finance", img_dark: "/assets/images/icons/channels/channels_light/salary-wage_svgrepo.com (1).png", img_light: "/assets/images/icons/channels/finance_svgrepo.com.png", link: "finance" },
+        { title: "internship", img_dark: "/assets/images/icons/channels/channels_light/student-duotone_svgrepo.com (2).png", img_light: "/assets/images/icons/channels/student-duotone_svgrepo.com.png", link: "internship" },
     ];
+
+
+    const darkMode = useSelector((state: any) => state.theme.darkMode);
+
 
     console.log("the link-> " + activeChannel)
 
@@ -39,7 +44,7 @@ const ChannelSection = () => {
                 <div className=' mb-5 capitalize ' >
                     {channels.map((item, index) => (
                         <Link to={item.link}  onClick={() => setActiveChannel("/home/"+item.link)} key={index} className={` font-medium flex p-4 ${activeChannel === "/home/"+item.link ? " dark:bg-maindark border-gray-50 rounded-xl " : " border-transparent "} hover:bg-gray-300 border  dark:hover:bg-maindark  cursor-pointer duration-200 `} >
-                            <Image src={item.img} className={` mr-3 rounded-none ${activeChannel === "/home/"+item.link && " text-[#FFC157]  "}  `} />
+                            <Image src={!darkMode ? item.img_dark : item.img_light} className={` mr-3 rounded-none ${activeChannel === "/home/"+item.link && " text-[#FFC157]  "}  `} />
                             {item.title}
                         </Link>
                     ))}
