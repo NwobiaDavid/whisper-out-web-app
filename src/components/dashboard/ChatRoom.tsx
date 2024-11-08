@@ -21,7 +21,7 @@ interface AuthContextType {
 
 interface Message {
     text: string;
-    time: string;
+    time: Timestamp;
     userId: string;
     username: string;
 }
@@ -99,10 +99,8 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel }) => {
             try {
                 const userDoc = await getDoc(userDocRef);
                 if (userDoc.exists()) {
-                    // Set the last seen index if it exists
                     setLastSeenIndex(userDoc.data().lastSeenIndex || 0);
                 } else {
-                    // Initialize lastSeenIndex to 0 if it doesn't exist
                     await setDoc(userDocRef, { lastSeenIndex: 0 });
                     setLastSeenIndex(0);
                 }
@@ -135,12 +133,23 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel }) => {
 
         const q = query(collection(db, 'chatRooms', channel, 'messages'), orderBy('time'));
         const unsubscribe = onSnapshot(q, (snapshot) => {
-            const updatedMessages = snapshot.docs.map((doc) => ({
-                text: doc.data().text,
-                time: doc.data().time,
-                userId: doc.data().userId,
-                username: doc.data().username,
-            }));
+            // const updatedMessages = snapshot.docs.map((doc) => ({
+            //     text: doc.data().text,
+            //     time: doc.data().time,
+            //     userId: doc.data().userId,
+            //     username: doc.data().username,
+            // }));
+
+            const updatedMessages = snapshot.docs.map((doc) => {
+                const data = doc.data();
+                return {
+                    text: data.text,
+                    time: data.time instanceof Timestamp ? data.time : Timestamp.fromDate(new Date(data.time)),
+                    userId: data.userId,
+                    username: data.username,
+                };
+            });
+
             setMessages(updatedMessages);
 
 
@@ -201,9 +210,15 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel }) => {
 
     return (
         <div className='flex flex-col h-full'>
-            <div className='text-xl font-bold mb-4 text-[#FFC157] '>{channel} Chat</div>
+            <div className=' flex justify-between items-center mb-4 ' >
+                <div className='text-xl font-bold  text-[#FFC157] '>{channel} Chat</div>
 
-            <div ref={messageContainerRef} className="flex-grow relative overflow-y-auto p-4 bg-gray-50 dark:bg-[#44427C80] rounded-md">
+                <div>
+                    active users
+                </div>
+            </div>
+
+            <div ref={messageContainerRef} className="flex-grow relative overflow-y-auto p-4 bg-gray-50 bg-[url('/assets/images/bg/chatroom/chatroom_light.png')] dark:bg-[url('/assets/images/bg/chatroom/chatroom_dark.png')] rounded-md">
                 {messages.length === 0 ? (
                     <div className='text-gray-500'>No messages yet. Start the conversation!</div>
                 ) : (
@@ -247,13 +262,13 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel }) => {
 
             <div className='dark:bg-[#44427C80] rounded-md p-4'>
                 <form
-                    className='flex items-center border rounded-xl border-gray-200 z-10 dark:bg-[#33316880] overflow-hidden'
+                    className='flex items-center border rounded-xl border-gray-500 z-10 dark:bg-[#33316880] overflow-hidden'
                     onSubmit={handleSendMessage}
                 >
                     <textarea
                         ref={textareaRef}
                         className='flex-grow p-3 focus:outline-none dark:bg-inherit dark:text-white resize-none'
-                        placeholder='Type your message...'
+                        placeholder="What's on your mind..."
                         value={input}
                         onChange={handleInputChange}
                         rows={1}

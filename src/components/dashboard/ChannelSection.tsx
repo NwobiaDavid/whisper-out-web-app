@@ -28,7 +28,7 @@ const ChannelSection = () => {
 
             <div className="h-[10%] ">
                 <div onClick={createChannel} className=' cursor-pointer dark:text-black dark:bg-white hover:bg-[#FFC157] duration-200 bg-[#FFC157] flex justify-center capitalize font-medium items-center text-xl rounded-md p-3 ' >
-                    create topic
+                    suggest channel
                     <div className='ml-2 text-2xl'>
                     <IoIosAddCircleOutline  />
                     </div>
@@ -38,7 +38,7 @@ const ChannelSection = () => {
             <div className=' bg-gray-100 dark:bg-[#44427C80] overflow-hidden h-[80%] rounded-md ' >
                 <div className=' mb-5 capitalize ' >
                     {channels.map((item, index) => (
-                        <Link to={item.link}  onClick={() => setActiveChannel("/home/"+item.link)} key={index} className={` font-medium flex p-4 ${activeChannel === "/home/"+item.link && " text-[#FFC157] dark:bg-maindark "} hover:bg-gray-300 dark:hover:text-[#FFC157] dark:hover:bg-maindark  cursor-pointer duration-200 `} >
+                        <Link to={item.link}  onClick={() => setActiveChannel("/home/"+item.link)} key={index} className={` font-medium flex p-4 ${activeChannel === "/home/"+item.link ? " dark:bg-maindark border-gray-50 rounded-xl " : " border-transparent "} hover:bg-gray-300 border  dark:hover:bg-maindark  cursor-pointer duration-200 `} >
                             <Image src={item.img} className={` mr-3 rounded-none ${activeChannel === "/home/"+item.link && " text-[#FFC157]  "}  `} />
                             {item.title}
                         </Link>

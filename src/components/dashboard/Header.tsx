@@ -14,7 +14,7 @@ const Header = () => {
     }
 
     return (
-        <div className=' px-6 h-[10%] border-b flex fixed w-full justify-around   items-center ' >
+        <div className=' xl:px-8 h-[10%] border-b flex fixed w-full justify-between   items-center ' >
             <div className=' w-1/3 ' >
                 <Link to={"/home"} className=' flex items-center ' >
                     <Image
@@ -27,7 +27,7 @@ const Header = () => {
             </div>
 
 
-            <div className=' flex items-center gap-5 w-1/3 h-full font-medium capitalize justify-center ' >
+            {/* <div className=' flex items-center gap-5 w-1/3 h-full font-medium capitalize justify-center ' >
 
                 <div className={`${getActiveClass("/home")}  h-full  `}>
                     <Link className=' h-full flex justify-center items-center px-2 ' to="/home">my domain</Link>
@@ -38,11 +38,14 @@ const Header = () => {
                 <div className={getActiveClass("/updates")}>
                     <Link className=' h-full flex justify-center items-center px-2 ' to="/updates">updates</Link>
                 </div>
-            </div>
+            </div> */}
 
             <div className=' flex  w-1/3 justify-center ' >
-                <div className=" text-3xl hover:-rotate-45 duration-200 ">
-                    <GoGear />
+                <div className="text-3xl flex items-center group cursor-pointer duration-200">
+                    <GoGear className="group-hover:-rotate-45 duration-200 transform" />
+                    <span className="capitalize text-xl ml-3">
+                        settings
+                    </span>
                 </div>
             </div>
         </div>
