@@ -210,7 +210,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel }) => {
 
     return (
         <div className='flex flex-col h-full'>
-            <div className=' flex justify-between items-center mb-4 ' >
+            <div className=' flex justify-between h-[8%] items-center  ' >
                 <div className='text-xl font-bold  text-[#FFC157] '>{channel} Chat</div>
 
                 <div>
@@ -218,7 +218,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel }) => {
                 </div>
             </div>
 
-            <div ref={messageContainerRef} className="flex-grow relative overflow-y-auto p-4 bg-gray-50 bg-[url('/assets/images/bg/chatroom/chatroom_light.png')] dark:bg-[url('/assets/images/bg/chatroom/chatroom_dark.png')] rounded-t-md">
+            <div ref={messageContainerRef} className="flex-grow h-[94%] relative overflow-y-auto p-4 bg-gray-50 bg-[url('/assets/images/bg/chatroom/chatroom_light.png')] dark:bg-[url('/assets/images/bg/chatroom/chatroom_dark.png')] rounded-t-md">
                 {messages.length === 0 ? (
                     <div className='text-gray-900 font-semibold dark:text-gray-100'>No messages yet. Start the conversation!</div>
                 ) : (

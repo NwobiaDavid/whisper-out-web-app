@@ -22,7 +22,7 @@ const Header = () => {
     
 
     return (
-        <div className=' xl:px-8 h-[10%] border-b border-gray-300 dark:border-gray-300 flex fixed w-full justify-between   items-center ' >
+        <div className=' xl:px-8 px-5 h-[10%] border-b border-gray-300 dark:border-gray-300 flex fixed w-full justify-between   items-center ' >
             <div className=' w-1/3 ' >
                 <Link to={"/home"} className=' flex items-center ' >
                     <Image

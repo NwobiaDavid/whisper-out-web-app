@@ -60,9 +60,9 @@ const Homepage = () => {
             <div className="h-[10%] ">
                 <Header />
             </div>
-            <div className='flex  px-20 h-[90%]   '>
+            <div className='flex-grow flex  px-5 2xl:px-20 py-0 h-[90%]  '>
                 <ChannelSection />
-                <div className=' ml-[20%]  p-5 w-[65%] overflow-y-auto h-[80vh] ' >
+                <div className="flex-grow p-5 overflow-y-auto h-full lg:w-[70%] 2xl:w-[65%]">
                     <Routes>
                         <Route path="/" element={<Navigate to="welfare" />} />
                         <Route path="welfare" element={<ChatRoom channel="Welfare" />} />
