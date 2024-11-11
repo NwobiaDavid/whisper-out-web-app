@@ -41,7 +41,7 @@ const VerifyEmailPage = () => {
               if (!companySnapshot.empty) {
                 const companyDoc = companySnapshot.docs[0].data();
                 const companyName = companyDoc.companyName;
-                const approvalStatus = companyDoc.approvalStatus;
+                const approvalStatus = companyDoc.isApproved;
     
                 if (approvalStatus === true) {
                     await setDoc(doc(db, 'users', uid), {
@@ -69,6 +69,7 @@ const VerifyEmailPage = () => {
         return () => clearInterval(verificationInterval);
       }, [navigate]);
 
+
       const handleResendVerification = async () => {
         const currentUser = auth.currentUser;
         if (currentUser) {
@@ -77,6 +78,8 @@ const VerifyEmailPage = () => {
           alert('Verification email resent.');
         }
       };
+
+      
 
   return (
     <div  className={`w-full max-h-screen h-screen relative bg-cover bg-no-repeat bg-[url('')] lg:bg-[url('/assets/images/bg/auth.png')] dark:bg-[url('')] dark:bg-maindark `}>

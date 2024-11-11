@@ -1,4 +1,4 @@
-import { Input, Image } from '@nextui-org/react';
+import { Input, Image, Spinner } from '@nextui-org/react';
 import { useState, useContext, useEffect, FormEvent } from 'react';
 import { GoOrganization } from 'react-icons/go';
 import { IoIosCheckmarkCircleOutline } from 'react-icons/io';
@@ -102,7 +102,8 @@ const CompanyEntry = () => {
   if (loading) {
     return (
       <div className="w-full h-screen flex justify-center items-center">
-        <p>Loading...</p>
+        {/* <p>Loading...</p> */}
+        <Spinner />
       </div>
     );
   }

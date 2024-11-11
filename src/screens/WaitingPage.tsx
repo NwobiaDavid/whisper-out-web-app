@@ -36,8 +36,8 @@ const WaitingPage = () => {
         console.log("comapyda--> "+JSON.stringify(companySnap.docs[0]))
 
         if (!companySnap.empty) {
-          const { approvalStatus } = companySnap.docs[0].data();
-          setApprovalStatus(approvalStatus);
+          const { isApproved } = companySnap.docs[0].data();
+          setApprovalStatus(isApproved);
         } else {
           console.error('No company request found.');
         }

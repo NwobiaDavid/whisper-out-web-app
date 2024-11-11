@@ -8,6 +8,8 @@ import { useEffect, useState } from 'react';
 import { doc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../../config/firebase';
 import Settings from '../../components/dashboard/Settings';
+import { Spinner } from '@nextui-org/spinner';
+import { AiOutlineMenu } from 'react-icons/ai';
 
 const Homepage = () => {
 
@@ -15,13 +17,17 @@ const Homepage = () => {
   const [hasCompany, setHasCompany] = useState(false);
   const [loading, setLoading] = useState(true);
   // const authContext = useContext(AuthContext);
+
+const [isChannelOpen, setIsChannelOpen] = useState(window.innerWidth >= 1024);
+
+
   const user = auth.currentUser;
   const navigate = useNavigate();
 
   useEffect(() => {
     const checkAccessPermissions = async () => {
       if (!user) {
-        navigate('/signup'); 
+        navigate('/signup');
         return;
       }
 
@@ -43,41 +49,62 @@ const Homepage = () => {
     checkAccessPermissions();
   }, [user, navigate]);
 
+
+    useEffect(() => {
+    const handleResize = () => {
+      setIsChannelOpen(window.innerWidth >= 1024);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+
   if (loading) {
     return (
       <div className="w-full h-screen flex justify-center items-center">
-        <p>Loading...</p>
+        <Spinner />
       </div>
     );
   }
 
-  if (!isVerified || !hasCompany) {
-    return <Navigate to="/waiting-page" />;
+  if (!isVerified) {
+    return <Navigate to="/verify-email" />;
+  } else if (!hasCompany) {
+    return <Navigate to="/waiting-page" />
   }
 
-    return (
-        <div className=' max-h-screen bg-[#F2F2F2] dark:bg-maindark h-screen  ' >
-            <div className="h-[10%] ">
-                <Header />
-            </div>
-            <div className='flex-grow flex  px-5 2xl:px-20 py-0 h-[90%]  '>
-                <ChannelSection />
-                <div className="flex-grow p-5 overflow-y-auto h-full lg:w-[70%] 2xl:w-[65%]">
-                    <Routes>
-                        <Route path="/" element={<Navigate to="welfare" />} />
-                        <Route path="welfare" element={<ChatRoom channel="Welfare" />} />
-                        <Route path="salaries" element={<ChatRoom channel="Salaries" />} />
-                        <Route path="office-space" element={<ChatRoom channel="Office Space" />} />
-                        <Route path="tech-jobs" element={<ChatRoom channel="Tech Jobs" />} />
-                        <Route path="finance" element={<ChatRoom channel="Finance" />} />
-                        <Route path="internship" element={<ChatRoom channel="Internship" />} />
-                        <Route path="settings" element={<Settings />} />
-                    </Routes>
-                </div>
-                <AdSection />
-            </div>
+  return (
+    <div className=' max-h-screen bg-[#F2F2F2] dark:bg-maindark h-screen  ' >
+      <div className="h-[10%] ">
+        <Header />
+        <button
+          className="lg:hidden text-xl p-3 "
+          onClick={() => setIsChannelOpen(prev => !prev)}
+        >
+          <AiOutlineMenu />
+        </button>
+      </div>
+
+      <div className='flex-grow flex px-5 2xl:px-20 py-0 h-[90%]'>
+         {isChannelOpen && (
+          <ChannelSection />
+        )}
+        <div className="flex-grow p-5 overflow-y-auto h-full lg:w-[70%] 2xl:w-[65%]">
+          <Routes>
+            <Route path="/" element={<Navigate to="welfare" />} />
+            <Route path="welfare" element={<ChatRoom channel="Welfare" />} />
+            <Route path="salaries" element={<ChatRoom channel="Salaries" />} />
+            <Route path="office-space" element={<ChatRoom channel="Office Space" />} />
+            <Route path="tech-jobs" element={<ChatRoom channel="Tech Jobs" />} />
+            <Route path="finance" element={<ChatRoom channel="Finance" />} />
+            <Route path="internship" element={<ChatRoom channel="Internship" />} />
+            <Route path="settings" element={<Settings />} />
+          </Routes>
         </div>
-    )
+        <AdSection />
+      </div>
+    </div>
+  )
 }
 
 export default Homepage
