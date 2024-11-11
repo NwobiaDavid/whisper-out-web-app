@@ -34,43 +34,6 @@ const ChannelSection = () => {
 
 
     return (
-        // <div className=' w-[20%] fixed top-[10%] left-[20px] 2xl:left-[40px] h-[calc(100vh-10%)] lg:px-3 2xl:p-5  ' >
-
-        //     <div className="h-[10%] ">
-        //         <div onClick={createChannel} className=' cursor-pointer dark:text-black dark:bg-white hover:bg-[#FFC157] duration-200 bg-[#FFC157] flex justify-center capitalize font-medium items-center text-xl rounded-md p-3 ' >
-        //             suggest channel
-        //             <div className='ml-2 text-2xl'>
-        //             <IoIosAddCircleOutline  />
-        //             </div>
-        //         </div>
-        //     </div>
-
-        //     <div className=' bg-white  dark:bg-[#44427C80]  p-2 h-[80%] rounded-md overflow-hidden ' >
-        //         <div className=' mb-5 capitalize  ' >
-        //             {channels.map((item, index) => (
-        //                 <Link to={item.link}  onClick={() => setActiveChannel("/home/"+item.link)} key={index} className={` font-medium mb-2 flex p-4 ${activeChannel === "/home/"+item.link ? " dark:bg-maindark dark:border-gray-50 bg-[#F2F2F2] border-maindark border-opacity-30  " : " border-transparent "} hover:bg-gray-300 border rounded-lg  dark:hover:bg-maindark  cursor-pointer duration-200 `} >
-        //                     <Image src={!darkMode ? item.img_dark : item.img_light} className={` mr-3 rounded-none ${activeChannel === "/home/"+item.link && " text-[#FFC157]  "}  `} />
-        //                     {item.title}
-        //                 </Link>
-        //             ))}
-        //         </div>
-
-        //     <div className='border-t dark:border-gray-100 border-maindark flex mx-5 mt-[40%] p-2 justify-center items-center capitalize  ' >
-        //         <span>about</span>
-        //         <span className=" px-1 flex justify-center  items-center ">.</span>
-        //         <span>terms</span>
-        //         <span className=" px-1 flex justify-center  items-center ">.</span>
-        //         <span>privacy</span>
-        //     </div>
-        //     </div>
-
-        //     <div className=' h-[10%] flex items-center ' >
-        //         <ToggleSwitch />
-        //     </div>
-
-
-        // </div>
-
         <div className="w-[20%] lg:w-[15%] 2xl:w-[15%] h-full lg:px-0 flex flex-col">
         {/* Header & Channels List */}
         <div className="flex flex-col h-full py-2 xl:py-5 overflow-y-auto">
@@ -120,7 +83,7 @@ const ChannelSection = () => {
             </div>
         </div>
 
-        <style jsx={true}>{`
+        <style>{`
             @media (max-height: 600px) {
                 .h-full {
                     height: 80vh;
