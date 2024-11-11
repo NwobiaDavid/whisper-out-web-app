@@ -19,6 +19,9 @@ import { motion } from 'framer-motion';
 import Emailheader from '../components/Emailheader.tsx';
 import Footer from '../components/Footer.tsx';
 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 // import { collection, query, where, getDocs, setDoc, doc } from 'firebase/firestore';
 
 
@@ -87,49 +90,29 @@ const SignupPage: React.FC = () => {
     try {
       if (isSignUp) {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        // const uid = userCredential.user.uid;
 
-        // make this so that the email must be verified before it can continue
-        
         await sendEmailVerification(userCredential.user);
-
-        // const companyQuery = query(collection(db, 'companies'), where('domain', '==', emailDomain));
-        // const companySnapshot = await getDocs(companyQuery);
-
-        // if (!companySnapshot.empty) {
-        //   const companyDoc = companySnapshot.docs[0].data();
-        //   const companyName = companyDoc.companyName;
-
-        //   await setDoc(doc(db, 'users', uid), {
-        //     uid,
-        //     email,
-        //     company: companyName,
-        //   });
-
-        //   navigate('/interests');
-        // } else {
-        //   navigate('/company-entry');
-        // }
-
-        // await auth.signOut();
+        toast.success('Sign up successful! Please verify your email.');
         navigate('/verify-email');
 
       } else {
         await signInWithEmailAndPassword(auth, email, password);
+        toast.success('Logged in successfully');
         navigate('/home');
       }
     } catch (error: any) {
       console.error('Error with authentication:', error);
 
-      if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
-        setError('User not found. Redirecting to sign-up...');
-        setTimeout(() => {
-          setIsSignUp(true); 
-          setError(null); 
-        }, 2000);
+      if (error.code === 'auth/email-already-in-use') {
+        toast.error('Email already in use. Please log in instead.');
+        setIsSignUp(false); 
+      } else if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
+        toast.error('User not found. Redirecting to sign-up...');
+        setTimeout(() => setIsSignUp(true), 2000);
       } else {
-        setError(error.message); 
+        toast.error('Error: ' + error.message);
       }
+      
     }
   };
 
@@ -306,6 +289,7 @@ const SignupPage: React.FC = () => {
         </div>
       </motion.div>
       <Footer />
+      <ToastContainer position="top-right" autoClose={5000} hideProgressBar closeOnClick pauseOnHover />
     </div>
   );
 };

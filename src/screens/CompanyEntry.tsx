@@ -56,7 +56,7 @@ const CompanyEntry = () => {
         companyName: value.trim(),
         domain: emailDomain, 
         createdBy: user.uid,
-        approvalStatus: false, 
+        isApproved: false, 
       };
 
       await addDoc(collection(db, 'companies'), companyData); 
