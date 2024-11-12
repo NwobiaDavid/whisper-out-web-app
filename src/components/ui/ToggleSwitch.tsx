@@ -36,16 +36,9 @@ const ToggleSwitch = () => {
       document.documentElement.classList.remove('dark');
       localStorage.setItem('darkMode', JSON.stringify(false)); // Save light mode to localStorage
     }
-  }, [darkMode]); // Run every time darkMode changes
+  }, [darkMode]); 
 
-  // useEffect(() => {
-  //   if (darkMode) {
-  //     document.documentElement.classList.add('dark');
-  //   } else {
-  //     document.documentElement.classList.remove('dark');
-  //   }
-  // }, [darkMode]);
-
+  
   return (
     <div className=" rounded-full flex border border-gray-50  drop-shadow-lg bg-white dark:bg-inherit transition-shadow w-[82px]  dark:border-gray-500  ">
       <motion.button
