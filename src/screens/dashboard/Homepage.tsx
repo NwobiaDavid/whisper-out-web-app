@@ -9,7 +9,6 @@ import { doc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../../config/firebase';
 import Settings from '../../components/dashboard/Settings';
 import { Spinner } from '@nextui-org/spinner';
-import { AiOutlineMenu } from 'react-icons/ai';
 
 const Homepage = () => {
 
@@ -18,11 +17,17 @@ const Homepage = () => {
   const [loading, setLoading] = useState(true);
   // const authContext = useContext(AuthContext);
 
-const [isChannelOpen, setIsChannelOpen] = useState(window.innerWidth >= 1024);
+  const [isChannelOpen, setIsChannelOpen] = useState(false);
+  // const [isChannelOpen, setIsChannelOpen] = useState(window.innerWidth >= 1024);
+
 
 
   const user = auth.currentUser;
   const navigate = useNavigate();
+
+  const toggleDrawer = () => setIsChannelOpen(!isChannelOpen);
+  const closeDrawer = () => setIsChannelOpen(false);
+
 
   useEffect(() => {
     const checkAccessPermissions = async () => {
@@ -50,13 +55,13 @@ const [isChannelOpen, setIsChannelOpen] = useState(window.innerWidth >= 1024);
   }, [user, navigate]);
 
 
-    useEffect(() => {
-    const handleResize = () => {
-      setIsChannelOpen(window.innerWidth >= 1024);
-    };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  //   useEffect(() => {
+  //   const handleResize = () => {
+  //     setIsChannelOpen(window.innerWidth >= 1024);
+  //   };
+  //   window.addEventListener('resize', handleResize);
+  //   return () => window.removeEventListener('resize', handleResize);
+  // }, []);
 
 
   if (loading) {
@@ -75,21 +80,26 @@ const [isChannelOpen, setIsChannelOpen] = useState(window.innerWidth >= 1024);
 
   return (
     <div className=' max-h-screen bg-[#F2F2F2] dark:bg-maindark h-screen  ' >
-      <div className="h-[10%] ">
-        <Header />
-        <button
-          className="lg:hidden text-xl p-3 "
-          onClick={() => setIsChannelOpen(prev => !prev)}
-        >
-          <AiOutlineMenu />
-        </button>
+      <div className="h-[8%]  ">
+        <Header toggleDrawer={toggleDrawer} closeDrawer={closeDrawer} />
       </div>
 
-      <div className='flex-grow flex px-5 2xl:px-20 py-0 h-[90%]'>
-         {isChannelOpen && (
+      {isChannelOpen && (
+        <div className="fixed lg:hidden  inset-0 top-[8%] bg-gray-800 bg-opacity-75 z-50">
+          <ChannelSection onChannelClick={closeDrawer} />
+        </div>
+      )}
+
+      <div className='flex-grow flex px-2 md:px-5 2xl:px-20 py-0 h-[90%]'>
+        {/* {isChannelOpen && (
           <ChannelSection />
-        )}
-        <div className="flex-grow p-5 overflow-y-auto h-full lg:w-[70%] 2xl:w-[65%]">
+        )} */}
+
+        <div className="hidden lg:block lg:w-[20%]  ">
+          <ChannelSection onChannelClick={closeDrawer} />
+        </div>
+
+        <div className="flex-grow p-1 lg:p-5 lg:py-0 overflow-y-auto h-full w-full lg:w-[70%] 2xl:w-[65%]">
           <Routes>
             <Route path="/" element={<Navigate to="welfare" />} />
             <Route path="welfare" element={<ChatRoom channel="Welfare" />} />
@@ -101,6 +111,7 @@ const [isChannelOpen, setIsChannelOpen] = useState(window.innerWidth >= 1024);
             <Route path="settings" element={<Settings />} />
           </Routes>
         </div>
+        
         <AdSection />
       </div>
     </div>

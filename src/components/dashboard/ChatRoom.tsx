@@ -213,12 +213,14 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel }) => {
             <div className=' flex justify-between h-[8%] items-center  ' >
                 <div className='text-xl font-bold  text-[#FFC157] '>{channel} Chat</div>
 
-                <div>
-                    active users
+                <div className='flex justify-center items-center' >
+                    <div className=' min-w-[6px] min-h-[6px] mr-1 bg-green-500 rounded-full ' ></div>
+                    <span className="font-semibold text-green-500 ">121 active users</span>
                 </div>
             </div>
 
-            <div ref={messageContainerRef} className="flex-grow h-[94%] relative overflow-y-auto p-4 bg-gray-50 bg-[url('/assets/images/bg/chatroom/chatroom_light.png')] dark:bg-[url('/assets/images/bg/chatroom/chatroom_dark.png')] rounded-t-md">
+
+            <div ref={messageContainerRef} className="flex-grow h-[94%] relative overflow-y-auto overflow-x-hidden p-2 md:p-4 bg-gray-50 bg-[url('/assets/images/bg/chatroom/chatroom_light.png')] dark:bg-[url('/assets/images/bg/chatroom/chatroom_dark.png')] bg-no-repeat bg-cover bg-center rounded-t-md">
                 {messages.length === 0 ? (
                     <div className='text-gray-900 font-semibold dark:text-gray-100'>No messages yet. Start the conversation!</div>
                 ) : (
@@ -229,7 +231,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel }) => {
                                 className={`mb-3 flex ${msg.userId === hashedCurrentUserId ? 'justify-end' : 'justify-start'}`}>
                                 <div className={`flex flex-col ${msg.userId === hashedCurrentUserId ? 'items-end' : 'items-start'}`}>
                                     <div
-                                        className={`p-2 flex-col flex rounded-lg max-w-xs text-left
+                                        className={`p-2 flex-col flex rounded-lg max-w-xs md:max-w-sm lg:max-w-md xl:max-w-lg break-words text-left
                                             ${msg.userId === hashedCurrentUserId ? ' dark:text-gray-800 bg-[#FFC157]' : 'bg-[#6967ac]'}`}>
                                         <span className={`text-xs font-semibold  ${msg.userId === hashedCurrentUserId ? " text-[#0e0c4180] " : " text-gray-300" }  `}>{msg.username}</span>
                                         {msg.text}
@@ -248,7 +250,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel }) => {
             {unreadMessages > 0 && (
                 <div className='relative w-full'>
                     <div className="absolute bottom-[10%] right-[5%] my-4">
-                        <div onClick={scrollToBottom} className='relative z-10 cursor-pointer p-3 bg-[#FFC157] text-maindark rounded-full'>
+                        <div onClick={scrollToBottom} className='relative z-10 cursor-pointer p-2 md:p-3 bg-[#FFC157] border border-[#c49038] text-maindark rounded-full'>
                             <div className="p-1">
                                 <FaAngleDown />
                             </div>
@@ -260,27 +262,19 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel }) => {
                 </div>
             )}
 
-            <div className='dark:bg-[#44427C80] rounded-b-md p-4'>
-                <form
-                    className='flex items-center border rounded-xl border-gray-500 z-10 dark:bg-[#33316880] overflow-hidden'
-                    onSubmit={handleSendMessage}
-                >
+            <div className='dark:bg-[#44427C80] rounded-b-md py-2 md:p-4'>
+            <form className='flex items-center w-full p-1 border rounded-xl bg-white border-gray-500 dark:bg-[#44427C80]  overflow-hidden' onSubmit={handleSendMessage}>
                     <textarea
                         ref={textareaRef}
-                        className='flex-grow p-3 focus:outline-none dark:bg-inherit dark:text-white resize-none'
+                        className='flex-grow p-2 focus:outline-none dark:bg-inherit dark:text-white resize-none'
                         placeholder="What's on your mind..."
                         value={input}
                         onChange={handleInputChange}
                         rows={1}
                     />
-                    <div className='w-[7%] flex justify-center dark:bg-[#33316880] items-center relative'>
-                        <button
-                            type='submit'
-                            className='p-2 bg-[#FFC157] hover:bg-[#ffbe4d] duration-200 text-white rounded-full'
-                        >
-                            <PiNavigationArrowBold className='text-2xl rotate-[125deg]' />
-                        </button>
-                    </div>
+                    <button type='submit' className='p-2 ml-2 bg-[#FFC157] hover:bg-[#ffbe4d] duration-200 text-white rounded-full'>
+                        <PiNavigationArrowBold className='text-2xl rotate-[125deg]' />
+                    </button>
                 </form>
             </div>
         </div>
