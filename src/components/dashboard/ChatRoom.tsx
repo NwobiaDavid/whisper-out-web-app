@@ -1,5 +1,5 @@
 import { db } from '../../config/firebase';
-import { addDoc, collection, doc, getDoc, onSnapshot, orderBy, query, setDoc, Timestamp, updateDoc } from 'firebase/firestore';
+import { addDoc, collection, doc, getDoc, onSnapshot, orderBy, query, setDoc, Timestamp, updateDoc, where } from 'firebase/firestore';
 import React, { useState, ChangeEvent, FormEvent, useEffect, useContext, useRef } from 'react';
 import CryptoJS from 'crypto-js';
 import { AuthContext } from '../../config/AuthContext.tsx';
@@ -71,11 +71,20 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel }) => {
         e.preventDefault();
         if (input.trim()) {
             try {
+                const userDoc = await getDoc(doc(db, 'users', user?.uid || ""));
+                const companyName = userDoc.data()?.company;
+
+                if (!companyName) {
+                    console.error("User's company name not found");
+                    return;
+                }
+
                 await addDoc(collection(db, 'chatRooms', channel, 'messages'), {
                     text: input,
                     time: Timestamp.now(),
                     userId: hashUserId(user?.uid || ""),
                     username: generateUsername(user?.uid || ""),
+                    companyName: companyName,
                 });
 
                 setInput('');
@@ -122,43 +131,145 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel }) => {
         if (user) {
             const userDocRef = doc(db, 'chatRooms', channel, 'userLastSeen', user.uid);
             await updateDoc(userDocRef, { lastSeenIndex: index });
-            setLastSeenIndex(index); 
+            setLastSeenIndex(index);
         }
     };
 
 
 
+    // useEffect(() => {
+    //     fetchLastSeenIndex();
+
+    //     const q = query(collection(db, 'chatRooms', channel, 'messages'), orderBy('time'));
+
+    //     const unsubscribe = onSnapshot(q, (snapshot) => {
+    //         // const updatedMessages = snapshot.docs.map((doc) => ({
+    //         //     text: doc.data().text,
+    //         //     time: doc.data().time,
+    //         //     userId: doc.data().userId,
+    //         //     username: doc.data().username,
+    //         // }));
+
+    //         const updatedMessages = snapshot.docs.map((doc) => {
+    //             const data = doc.data();
+    //             return {
+    //                 text: data.text,
+    //                 time: data.time instanceof Timestamp ? data.time : Timestamp.fromDate(new Date(data.time)),
+    //                 userId: data.userId,
+    //                 username: data.username,
+    //             };
+    //         });
+
+    //         setMessages(updatedMessages);
+
+
+    //         const newUnreadCount = updatedMessages.length - lastSeenIndex - 1;
+    //         setUnreadMessages(newUnreadCount > 0 ? newUnreadCount : 0);
+    //     });
+
+    //     return () => unsubscribe();
+    // }, [channel, lastSeenIndex]);
+
+    // useEffect(() => {
+    //     fetchLastSeenIndex();
+
+    //     const fetchMessages = async () => {
+    //         if (user) {
+    //             const userDoc = await getDoc(doc(db, 'users', user.uid));
+    //             const companyName = userDoc.data()?.company;
+
+    //             if (!companyName) {
+    //                 console.error("User's company name not found");
+    //                 return;
+    //             }
+
+    //             const q = query(
+    //                 collection(db, 'chatRooms', channel, 'messages'),
+    //                 where('companyName', '==', companyName),
+    //                 orderBy('time')
+    //             );
+
+    //             // Await the unsubscribe function here and return it directly
+    //             return onSnapshot(q, (snapshot) => {
+    //                 const updatedMessages = snapshot.docs.map((doc) => {
+    //                     const data = doc.data();
+    //                     return {
+    //                         text: data.text,
+    //                         time: data.time instanceof Timestamp ? data.time : Timestamp.fromDate(new Date(data.time)),
+    //                         userId: data.userId,
+    //                         username: data.username,
+    //                     };
+    //                 });
+
+    //                 setMessages(updatedMessages);
+    //                 const newUnreadCount = updatedMessages.length - lastSeenIndex - 1;
+    //                 setUnreadMessages(newUnreadCount > 0 ? newUnreadCount : 0);
+    //             });
+    //         }
+    //     };
+
+    //     const initFetch = async () => {
+    //         const unsubscribe = await fetchMessages();
+    //         return unsubscribe;
+    //     };
+
+    //     // Call and clean up unsubscribe
+    //     const unsubscribe = initFetch();
+    //     return () => {
+    //         unsubscribe && unsubscribe.then((unsub) => unsub && unsub());
+    //     };
+    // }, [channel, lastSeenIndex]);
+
+
+
     useEffect(() => {
-        fetchLastSeenIndex();
-
-        const q = query(collection(db, 'chatRooms', channel, 'messages'), orderBy('time'));
-        const unsubscribe = onSnapshot(q, (snapshot) => {
-            // const updatedMessages = snapshot.docs.map((doc) => ({
-            //     text: doc.data().text,
-            //     time: doc.data().time,
-            //     userId: doc.data().userId,
-            //     username: doc.data().username,
-            // }));
-
-            const updatedMessages = snapshot.docs.map((doc) => {
-                const data = doc.data();
-                return {
-                    text: data.text,
-                    time: data.time instanceof Timestamp ? data.time : Timestamp.fromDate(new Date(data.time)),
-                    userId: data.userId,
-                    username: data.username,
-                };
+        const fetchMessages = async () => {
+            if (!user) return;
+    
+            const userDoc = await getDoc(doc(db, 'users', user.uid));
+            const companyName = userDoc?.data()?.company;
+    
+            if (!companyName) {
+                console.error("User's company name not found");
+                return;
+            }
+    
+            const q = query(
+                collection(db, 'chatRooms', channel, 'messages'),
+                where('companyName', '==', companyName),
+                orderBy('time')
+            );
+    
+            // Return the unsubscribe function from onSnapshot
+            return onSnapshot(q, (snapshot) => {
+                const updatedMessages = snapshot.docs.map((doc) => {
+                    const data = doc.data();
+                    return {
+                        text: data.text,
+                        time: data.time instanceof Timestamp ? data.time : Timestamp.fromDate(new Date(data.time)),
+                        userId: data.userId,
+                        username: data.username,
+                    };
+                });
+    
+                setMessages(updatedMessages);
+                setUnreadMessages(updatedMessages.length - lastSeenIndex - 1);
             });
-
-            setMessages(updatedMessages);
-
-
-            const newUnreadCount = updatedMessages.length - lastSeenIndex - 1;
-            setUnreadMessages(newUnreadCount > 0 ? newUnreadCount : 0);
+        };
+    
+        fetchLastSeenIndex();
+    
+        // Fetch messages and handle unsubscribe properly
+        let unsubscribe: (() => void) | undefined;
+        fetchMessages().then((unsub) => {
+            if (unsub) unsubscribe = unsub;
         });
-
-        return () => unsubscribe();
-    }, [channel, lastSeenIndex]);
+    
+        // Clean up the subscription on component unmount
+        return () => {
+            if (unsubscribe) unsubscribe();
+        };
+    }, [channel, lastSeenIndex, user]);
 
 
     useEffect(() => {
@@ -184,7 +295,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel }) => {
             const { scrollTop, clientHeight, scrollHeight } = messageContainerRef.current;
             const isAtBottom = scrollHeight - scrollTop <= clientHeight + 10;
 
-            if (isAtBottom && lastSeenIndex < messages.length - 1 ) {
+            if (isAtBottom && lastSeenIndex < messages.length - 1) {
                 setUnreadMessages(0);
                 updateLastSeenMessage(messages.length - 1);
             }
@@ -233,11 +344,11 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel }) => {
                                     <div
                                         className={`p-2 flex-col flex rounded-lg max-w-xs md:max-w-sm lg:max-w-md xl:max-w-lg break-words text-left
                                             ${msg.userId === hashedCurrentUserId ? ' dark:text-gray-800 bg-[#FFC157]' : 'bg-[#6967ac]'}`}>
-                                        <span className={`text-xs font-semibold  ${msg.userId === hashedCurrentUserId ? " text-[#0e0c4180] " : " text-gray-300" }  `}>{msg.username}</span>
+                                        <span className={`text-xs font-semibold  ${msg.userId === hashedCurrentUserId ? " text-[#0e0c4180] " : " text-gray-300"}  `}>{msg.username}</span>
                                         {msg.text}
-                                    <div className={`text-xs text-right mt-2  ${msg.userId === hashedCurrentUserId ? " text-black text-opacity-50 " : " text-gray-300" }  `}>
-                                        {msg.time.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                    </div>
+                                        <div className={`text-xs text-right mt-2  ${msg.userId === hashedCurrentUserId ? " text-black text-opacity-50 " : " text-gray-300"}  `}>
+                                            {msg.time.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -263,7 +374,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel }) => {
             )}
 
             <div className='dark:bg-[#44427C80] rounded-b-md py-2 md:p-4'>
-            <form className='flex items-center w-full p-1 border rounded-xl bg-white border-gray-500 dark:bg-[#44427C80]  overflow-hidden' onSubmit={handleSendMessage}>
+                <form className='flex items-center w-full p-1 border rounded-xl bg-white border-gray-500 dark:bg-[#44427C80]  overflow-hidden' onSubmit={handleSendMessage}>
                     <textarea
                         ref={textareaRef}
                         className='flex-grow p-2 focus:outline-none dark:bg-inherit dark:text-white resize-none'

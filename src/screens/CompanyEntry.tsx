@@ -68,35 +68,6 @@ const CompanyEntry = () => {
     }
 
 
-    // try {
-    //   console.log("the user => "+JSON.stringify(user));
-
-    //   const emailDomain = user.email.split('@')[1];
-      
-    //   const companyData = {
-    //     companyName: value.trim(),
-    //     domain: emailDomain, 
-    //     createdBy: user.uid,
-    //   };
-
-      
-    //   const companyRef = await addDoc(collection(db, 'companies'), companyData);
-    //   console.log("company ref--> "+JSON.stringify(companyRef));
-      
-    //   const userData = {
-    //     uid: user.uid,
-    //     email: user.email,
-    //     company: value.trim(), 
-    //   };
-
-    //   const userRef = doc(db, 'users', user.uid);
-    //   await setDoc(userRef, userData);
-
-    //   navigate('/interests');
-    // } catch (error) {
-    //   console.error('Error storing company data:', error);
-    //   setMessage('Error: Unable to save company data.');
-    // }
   };
 
   if (loading) {

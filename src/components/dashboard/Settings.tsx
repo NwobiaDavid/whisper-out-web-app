@@ -3,14 +3,28 @@ import { useState } from 'react'
 import { FaGear } from 'react-icons/fa6'
 // import { IoSunnySharp } from 'react-icons/io5';
 import { motion } from 'framer-motion';
+import { signOut } from 'firebase/auth';
+import { auth } from '../../config/firebase';
+import { useNavigate } from 'react-router-dom';
 
 
 const Settings = () => {
 
     const [showStatus, setShowStatus] = useState(true);
+    const navigate = useNavigate();
 
     const handleStatusChange = () => {
         setShowStatus(prevStatus => !prevStatus);
+    }
+
+
+    const handleLogout = async() => {
+        try{
+            await signOut(auth);
+            navigate("/signup")
+        } catch (error) {
+            console.error("error logging out: ", error);
+        }
     }
 
     return (
@@ -103,7 +117,7 @@ const Settings = () => {
 
 
                     <div className=' border border-[#3D3B6F] dark:border-gray-400 overflow-hidden xl:text-lg rounded-md capitalize ' >
-                        <div className=' p-2 xl:p-3 hover:bg-[#3D3B6F] hover:dark:bg-[#353361] text-red-500 font-semibold duration-200 bg-white dark:bg-[#44427C] ' >
+                        <div onClick={handleLogout} className=' p-2 cursor-pointer xl:p-3 hover:bg-[#3D3B6F] hover:dark:bg-[#353361] text-red-500 font-semibold duration-200 bg-white dark:bg-[#44427C] ' >
                             logout
                         </div>
 
