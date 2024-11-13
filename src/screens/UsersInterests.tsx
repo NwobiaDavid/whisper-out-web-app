@@ -77,9 +77,9 @@ const UsersInterests = () => {
 
   return (
     <div
-      className={`w-full max-h-screen h-screen relative bg-cover bg-no-repeat bg-[url('')] lg:bg-[url('/assets/images/bg/auth.png')] dark:bg-[url('')] dark:bg-maindark`}
+      className={`w-full lg:max-h-screen lg:h-screen relative bg-cover bg-no-repeat bg-[url('')] lg:bg-[url('/assets/images/bg/auth.png')] dark:bg-[url('')] dark:bg-maindark`}
     >
-      <div className="w-full h-[93%] px-3 lg:px-0 lg:h-[90%] flex py-7 lg:py-20 xl:py-28 items-center flex-col ">
+      <div className="w-full h-full px-3 lg:px-0 lg:h-[90%] flex py-7 lg:py-20 xl:py-28 items-center flex-col ">
         <div className="flex flex-col items-center mb-3 lg:mb-5">
           <Image src="/assets/logo1.png" className="h-[60px]" alt="company logo" />
           <h1 className="my-5 text-2xl text-center font-bold">
@@ -88,8 +88,8 @@ const UsersInterests = () => {
           <h3 className="font-semibold text-lg">Select your strong 5</h3>
         </div>
 
-        <form className="flex flex-col items-center mt-16 lg:mt-28 w-full xl:w-[60%]" onSubmit={handleSubmit}>
-          <div className="grid w-full lg:grid-cols-3 gap-3 mb-5 lg:mb-10 md:grid-cols-2 grid-cols-1 ">
+        <form className="flex flex-col items-center mt-16 gap-5 lg:gap-10 lg:mt-28 w-full xl:w-[60%]" onSubmit={handleSubmit}>
+          <div className="grid w-full lg:grid-cols-3 gap-3  md:grid-cols-2 grid-cols-1 ">
             {interest.map((item, index) => (
               <div
                 key={index}

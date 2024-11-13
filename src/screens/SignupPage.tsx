@@ -141,7 +141,7 @@ const SignupPage: React.FC = () => {
         transition={{ type: 'spring', stiffness: 50, damping: 20 }}
         className="w-full h-[83%] lg:h-[75%] flex justify-center">
         <div
-          className=" w-[85%] lg:w-[75%] py-10 lg:py-0 rounded-lg xl:w-[70%] border-none lg:border bg-transparent dark:border dark:border-opacity-20 dark:bg-[#44427C] border-gray-200 lg:grid flex flex-col  lg:grid-cols-2"
+          className=" w-[90%] md:w-[85%] lg:w-[75%] py-10 lg:py-0 rounded-lg xl:w-[70%] border-none lg:border bg-transparent dark:border dark:border-opacity-20 lg:dark:bg-[#44427C] border-gray-200 lg:grid flex flex-col  lg:grid-cols-2"
         >
 
           <form
@@ -154,8 +154,16 @@ const SignupPage: React.FC = () => {
               type="email"
               variant="bordered"
               required
-              label="Continue with your company email"
+              label="Continue with your company email and password"
               placeholder=""
+              classNames={{
+                label: "text-black/50 dark:text-white/90 text-sm lg:text-base ",
+                inputWrapper: [
+                  "dark:border-gray-500",
+                  "dark:hover:border-gray-300",
+                  "!cursor-text",
+                ],
+              }}
               labelPlacement="outside"
               isInvalid={isInvalid}
               errorMessage="Please enter a valid email"
@@ -183,8 +191,16 @@ const SignupPage: React.FC = () => {
               radius="sm"
               type={isPasswordVisible ? 'text' : 'password'}
               variant="bordered"
-              label="Enter your password"
+              // label="Enter your password"
               placeholder=""
+              classNames={{
+                label: "text-black/50 capitalize dark:text-white/90 text-sm lg:text-base ",
+                inputWrapper: [
+                  "dark:border-gray-500",
+                  "dark:hover:border-gray-300",
+                  "!cursor-text",
+                ],
+              }}
               required
               labelPlacement="outside"
               onChange={handlePasswordChange}
@@ -219,7 +235,7 @@ const SignupPage: React.FC = () => {
               className={`${!isInvalid && email !== '' && password !== ''
                   ? ' dark:bg-[#FFC157] dark:text-black  dark:hover:bg-[#f1b54d] bg-[#FFC157]   hover:bg-[#f1b54d] text-white'
                   : 'bg-gray-200'
-                } p-3 rounded-lg active:scale-95 dark:bg-[#BBC0CA6E] duration-200 font-semibold w-full mt-3 lg:mt-5`}
+                } p-2 lg:p-3 rounded-lg active:scale-95 dark:bg-[#BBC0CA6E] duration-200 font-semibold w-full mt-3 lg:mt-5`}
             >
               {isSignUp ? 'Sign Up' : 'Log In'}
             </button>
@@ -235,7 +251,7 @@ const SignupPage: React.FC = () => {
               </div>
             )}
 
-            <div className="mt-4 text-center">
+            <div className=" mt-2 lg:text-base text-sm lg:mt-4 text-center">
               {isSignUp ? (
                 <p>
                   Already have an account?{' '}
@@ -248,7 +264,7 @@ const SignupPage: React.FC = () => {
                 </p>
               ) : (
                 <p>
-                  Don't have an account?{' '}
+                  Don't have an account?
                   <span
                     className="text-blue-600 cursor-pointer"
                     onClick={() => setIsSignUp(true)}
@@ -259,7 +275,7 @@ const SignupPage: React.FC = () => {
               )}
             </div>
 
-            <div className="  lg:absolute lg:bottom-[10%] mt-10 lg:mt-0 xl:bottom-[10%] lg:px-7 xl:px-20 text-sm">
+            <div className="  lg:absolute  lg:bottom-[4%] mt-2 sm:mt-4  md:mt-10 lg:mt-0 2xl:bottom-[10%] lg:px-7 xl:px-20 text-xs lg:text-sm">
               <p className="font-light leading-[16px] lg:leading-[15px]">
                 By inserting your email, you confirm your agreement to
                 WhisperOut Terms and Conditions and WhisperOut contacting you
@@ -271,10 +287,10 @@ const SignupPage: React.FC = () => {
             </div>
           </form>
 
-          <div className="flex -order-1 lg:order-1  flex-col justify-center lg:mb-0 mb-16 lg:py-0 lg:px-7 xl:px-20">
-            <h1 className=" text-2xl lg:text-3xl font-bold mb-10">{isSignUp ? 'Say Hello' : 'Log in'} to WhisperOut</h1>
+          <div className="flex -order-1 lg:order-1  flex-col justify-center lg:mb-0 md:mb-16 mb-10 lg:py-0 lg:px-7 xl:px-20">
+            <h1 className=" text-xl md:text-2xl lg:text-3xl font-bold mb-6 lg:mb-10">{isSignUp ? 'Say Hello' : 'Log in'} to WhisperOut</h1>
             <div>
-              <p className="font-light text-[14px] leading-[16px]">
+              <p className="font-light md:text-sm text-xs lg:text-[14px] leading-[16px]">
                 WhisperOut is your go-to spot for real talk, zero judgment. Got
                 questions you’ve been too shy to ask? Or opinions you want to
                 share without the side-eye? WhisperOut lets you dive into
@@ -283,7 +299,7 @@ const SignupPage: React.FC = () => {
                 anything, share your thoughts, and connect with others, all
                 while staying completely under the radar.
               </p>
-              <h3 className="mt-4 font-medium">WhisperOut, Every Voice Matters.</h3>
+              <h3 className="mt-4 lg:text-base text-sm font-medium">WhisperOut, Every Voice Matters.</h3>
             </div>
           </div>
         </div>
