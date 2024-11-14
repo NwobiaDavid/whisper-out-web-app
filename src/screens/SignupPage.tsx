@@ -109,6 +109,8 @@ const SignupPage: React.FC = () => {
       } else if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
         toast.error('User not found. Redirecting to sign-up...');
         setTimeout(() => setIsSignUp(true), 2000);
+      } else if (error.code === 'auth/wrong-password') {
+        toast.error('Incorrect password. Please try again.');
       } else {
         toast.error('Error: ' + error.message);
       }
@@ -241,7 +243,7 @@ const SignupPage: React.FC = () => {
             </button>
 
             {!isSignUp && (
-              <div className="mt-1 w-full flex justify-end">
+              <div className="lg:mt-1 w-full flex justify-end">
                 <span
                   className="text-blue-600 text-sm cursor-pointer"
                   onClick={() => navigate('/forgot-password')}
@@ -251,9 +253,9 @@ const SignupPage: React.FC = () => {
               </div>
             )}
 
-            <div className=" mt-2 lg:text-base text-sm lg:mt-4 text-center">
+            <div className="  text-center">
               {isSignUp ? (
-                <p>
+                <p className='  lg:text-base text-sm mt-2 lg:mt-4 ' >
                   Already have an account?{' '}
                   <span
                     className="text-blue-600 cursor-pointer"
@@ -263,10 +265,10 @@ const SignupPage: React.FC = () => {
                   </span>
                 </p>
               ) : (
-                <p>
+                <p className=' lg:text-base text-sm mt-2 lg:mt-0 2xl:mt-1 ' >
                   Don't have an account?
                   <span
-                    className="text-blue-600 cursor-pointer"
+                    className="text-blue-600 ml-1 cursor-pointer"
                     onClick={() => setIsSignUp(true)}
                   >
                     Sign Up

@@ -52,6 +52,21 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel }) => {
     };
 
 
+    const isSameDay = (timestamp1: Timestamp, timestamp2: Timestamp) => {
+        const date1 = timestamp1.toDate();
+        const date2 = timestamp2.toDate();
+        return (
+            date1.getFullYear() === date2.getFullYear() &&
+            date1.getMonth() === date2.getMonth() &&
+            date1.getDate() === date2.getDate()
+        );
+    };
+
+    const formatDate = (timestamp: Timestamp) => {
+        return timestamp.toDate().toLocaleDateString([], { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    };
+
+
     const scrollToLastSeen = () => {
         if (messageContainerRef.current && lastSeenIndex < messages.length) {
             const lastSeenElement = messageContainerRef.current.children[lastSeenIndex] as HTMLElement;
@@ -336,23 +351,29 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel }) => {
                     <div className='text-gray-900 font-semibold dark:text-gray-100'>No messages yet. Start the conversation!</div>
                 ) : (
                     <>
-                        {messages.map((msg, index) => (
-                            <div
-                                key={index}
-                                className={`mb-3 flex ${msg.userId === hashedCurrentUserId ? 'justify-end' : 'justify-start'}`}>
-                                <div className={`flex flex-col ${msg.userId === hashedCurrentUserId ? 'items-end' : 'items-start'}`}>
-                                    <div
-                                        className={`p-2 flex-col flex rounded-lg max-w-xs md:max-w-sm lg:max-w-md xl:max-w-lg break-words text-left
-                                            ${msg.userId === hashedCurrentUserId ? ' dark:text-gray-800 bg-[#FFC157]' : 'bg-[#6967ac]'}`}>
-                                        <span className={`text-xs font-semibold  ${msg.userId === hashedCurrentUserId ? " text-[#0e0c4180] " : " text-gray-300"}  `}>{msg.username}</span>
-                                        {msg.text}
-                                        <div className={`text-xs text-right mt-2  ${msg.userId === hashedCurrentUserId ? " text-black text-opacity-50 " : " text-gray-300"}  `}>
-                                            {msg.time.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        {messages.map((msg, index) => {
+                            const showDate = index === 0 || !isSameDay(msg.time, messages[index - 1].time);
+                            return (
+                                <React.Fragment key={index}>
+                                    {showDate && (
+                                        <div className="text-center flex justify-center items-center font-semibold text-gray-400 my-2">
+                                            <div className=" px-2 py-1 text-xs w-fit bg-slate-800  rounded-full">{formatDate(msg.time)}</div>
+                                        </div>
+                                    )}
+                                    <div className={`mb-3 flex ${msg.userId === hashedCurrentUserId ? 'justify-end' : 'justify-start'}`}>
+                                        <div className={`flex flex-col ${msg.userId === hashedCurrentUserId ? 'items-end' : 'items-start'}`}>
+                                            <div className={`p-2 flex flex-col rounded-lg max-w-xs md:max-w-sm lg:max-w-md xl:max-w-lg break-words text-left ${msg.userId === hashedCurrentUserId ? 'dark:text-gray-800 bg-[#FFC157]' : 'bg-[#6967ac]'}`}>
+                                                <span className={`text-xs font-semibold ${msg.userId === hashedCurrentUserId ? "text-[#0e0c4180]" : "text-gray-300"}`}>{msg.username}</span>
+                                                {msg.text}
+                                                <div className={`text-xs text-right mt-2 ${msg.userId === hashedCurrentUserId ? "text-black text-opacity-50" : "text-gray-300"}`}>
+                                                    {msg.time.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
-                        ))}
+                                </React.Fragment>
+                            );
+                        })}
                         <div ref={messagesEndRef} />
                     </>
                 )}
