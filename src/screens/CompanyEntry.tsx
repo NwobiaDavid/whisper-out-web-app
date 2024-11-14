@@ -81,17 +81,21 @@ const CompanyEntry = () => {
 
   return (
     <div
-      className={`w-full max-h-screen h-screen relative bg-cover bg-no-repeat bg-[url('')] lg:bg-[url('/assets/images/bg/auth.png')] dark:bg-[url('')] dark:bg-maindark `}
+    className={`w-full  h-screen flex flex-col justify-center items-center relative bg-cover bg-no-repeat bg-[url('')] lg:bg-[url('/assets/images/bg/auth.png')] dark:bg-[url('')] dark:bg-maindark `}
+      // className="w-full h-screen bg-cover bg-no-repeat flex  items-center flex-col lg:justify-center dark:bg-maindark bg-[url('')] lg:bg-[url('/assets/images/bg/auth.png')]"
     >
-      <div className="w-full py-7 lg:py-20 h-[93%] lg:h-[90%] flex xl:py-28 items-center flex-col ">
-        <div className="flex flex-col items-center mb-5">
-          <Image src="/assets/logo1.png" className="h-[60px]" alt="company logo" />
-          <h1 className="my-6 text-2xl font-bold">Welcome to WhisperOut</h1>
-          <h3 className="font-semibold text-lg">New Company? Cool!</h3>
+      <div className="w-full h-full flex flex-col justify-center items-center py-5 lg:w-1/2 xl:w-1/3 lg:py-10 lg:px-8">
+        <div className="flex h-[40%] justify-center flex-col items-center mb-4 lg:mb-8">
+          <Image src="/assets/logo1.png" className="h-[50px] lg:h-[60px]" alt="company logo" />
+          <h1 className="my-4 text-xl lg:text-2xl font-bold text-center">Welcome to WhisperOut</h1>
+          <h3 className="text-md lg:text-lg font-semibold text-center">New Company? Cool!</h3>
         </div>
 
-        <form className="flex flex-col items-center mt-28 w-[90%] lg:w-[40%] xl:w-[30%]" onSubmit={handleSubmit}>
-          <p className="text-lg mb-5 font-medium">Enter your Company Name</p>
+        <form 
+          className="flex flex-col h-[60%] items-center w-[90%] max-w-sm md:w-[70%] lg:w-full mt-20 lg:mt-16 " 
+          onSubmit={handleSubmit}
+        >
+          <p className="text-base lg:text-lg mb-4 font-medium text-center">Enter your Company Name</p>
           <Input
             size="lg"
             radius="md"
@@ -99,6 +103,14 @@ const CompanyEntry = () => {
             variant="bordered"
             placeholder="Enter your company name"
             labelPlacement="inside"
+            classNames={{
+              label: "text-black/50 dark:text-white/90 text-sm lg:text-base ",
+              inputWrapper: [
+                "dark:border-gray-500",
+                "dark:hover:border-gray-300",
+                "!cursor-text",
+              ],
+            }}
             onValueChange={setValue}
             startContent={
               <GoOrganization className="text-2xl dark:text-white text-default-400 pointer-events-none flex-shrink-0" />
@@ -110,15 +122,17 @@ const CompanyEntry = () => {
                 )}
               </div>
             }
+            className="w-full"
           />
           {message && <p className="text-red-500 text-sm mt-2">{message}</p>}
 
           <button
             type="submit"
-            className={`${value !== ''
-              ? 'dark:bg-[#FFC157] dark:text-black dark:hover:bg-[#f1b54d] bg-[#FFC157] hover:bg-[#f1b54d] text-white'
-              : 'bg-blue-100 hidden '
-            } p-3 rounded-lg active:scale-95 dark:bg-[#BBC0CA6E] duration-200 font-semibold w-full mt-5`}
+            className={`${
+              value !== ''
+                ? 'bg-[#FFC157] dark:bg-[#FFC157] hover:bg-[#f1b54d] text-white dark:text-black'
+                : 'bg-blue-100 hidden '
+            } p-3 rounded-lg active:scale-95 duration-200 font-semibold w-full mt-5`}
           >
             Continue
           </button>
