@@ -77,57 +77,56 @@ const UsersInterests = () => {
 
   return (
     <div
-      className={`w-full lg:max-h-screen lg:h-screen relative bg-cover bg-no-repeat bg-[url('')] lg:bg-[url('/assets/images/bg/auth.png')] dark:bg-[url('')] dark:bg-maindark`}
-    >
-      <div className="w-full h-full px-3 lg:px-0 lg:h-[90%] flex py-7 lg:py-20 xl:py-28 items-center flex-col ">
-        <div className="flex flex-col items-center mb-3 lg:mb-5">
-          <Image src="/assets/logo1.png" className="h-[60px]" alt="company logo" />
-          <h1 className="my-5 text-2xl text-center font-bold">
-            What’s the most important things about your company?
-          </h1>
-          <h3 className="font-semibold text-lg">Select your strong 5</h3>
+    className={`w-full h-full sm:h-screen md:h-screen relative bg-cover bg-no-repeat 
+      bg-[url('/assets/images/bg/auth.png')] dark:bg-[url('')] dark:bg-maindark flex flex-col`}
+  >
+    <div className="w-full h-full px-5 md:px-8 lg:px-16 xl:px-20 py-7 lg:py-16 flex items-center flex-col">
+      
+      <div className="flex flex-col items-center h-[40%] justify-center ">
+        <Image src="/assets/logo1.png" className="h-[50px] md:h-[60px]" alt="company logo" />
+        <h1 className="my-2 text-2xl md:text-3xl text-center font-bold">
+          What’s the most important thing about your company?
+        </h1>
+        <h3 className="font-semibold text-lg text-center">
+          Select your top 5
+        </h3>
+      </div>
+
+      <form className="flex flex-col items-center h-[60%] 2xl:justify-center gap-4 md:gap-8 w-full lg:w-3/4 xl:w-1/2" onSubmit={handleSubmit}>
+        <div className="grid w-full gap-3 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
+          {interest.map((item, index) => (
+            <div
+              key={index}
+              onClick={() => addValue(item)}
+              className={`p-4 rounded-md border flex justify-center items-center cursor-pointer
+                ${!value.includes(item) && "hover:backdrop-blur-md hover:border-gray-300"}
+                duration-200 relative`}
+            >
+              {item}
+              {value.includes(item) && (
+                <div className="absolute top-2 right-2">
+                  <IoIosCheckmarkCircleOutline size={20} className="text-green-500" />
+                </div>
+              )}
+            </div>
+          ))}
         </div>
 
-        <form className="flex flex-col items-center mt-16 gap-5 lg:gap-10 lg:mt-28 w-full xl:w-[60%]" onSubmit={handleSubmit}>
-          <div className="grid w-full lg:grid-cols-3 gap-3  md:grid-cols-2 grid-cols-1 ">
-            {interest.map((item, index) => (
-              <div
-                key={index}
-                onClick={() => addValue(item)}
-                className={`p-3 relative rounded-md border flex justify-center items-center cursor-pointer
-                  ${!value.includes(item) && "hover:backdrop-blur-md hover:border-gray-300"}
-                  duration-200`}
-              >
-                {item}
-
-                {value.includes(item) && (
-                  <div className="absolute top-[13.5%] right-[1%] ">
-
-                    <IoIosCheckmarkCircleOutline
-                      size={'20px'}
-                      className="absolute right-2 top-2 text-green-500"
-                    />
-                  </div>
-                )}
-
-              </div>
-            ))}
-          </div>
-
-          <button
-            type="submit"
-            className={`${
-              value.length !== 0
-                ? "dark:bg-[#FFC157] dark:text-black dark:hover:bg-[#f1b54d] bg-[#FFC157] hover:bg-[#f1b54d] text-white"
-                : "bg-blue-100 hidden"
-            } p-3 rounded-lg active:scale-95 dark:bg-[#BBC0CA6E] flex justify-center items-center duration-200 font-semibold w-1/2 mt-3 lg:mt-5`}
-          >
-            Continue
-          </button>
-        </form>
-      </div>
-      <Footer />
+        <button
+          type="submit"
+          className={`${
+            value.length !== 0
+              ? "bg-[#FFC157] text-black hover:bg-[#f1b54d] dark:bg-[#FFC157] dark:text-black dark:hover:bg-[#f1b54d]"
+              : "bg-gray-300 text-gray-500 cursor-not-allowed"
+          } p-3 rounded-lg active:scale-95 flex justify-center items-center duration-200 font-semibold w-2/3 md:w-1/2 lg:w-1/3 mt-4`}
+          disabled={value.length === 0}
+        >
+          Continue
+        </button>
+      </form>
     </div>
+    <Footer />
+  </div>
   )
 }
 

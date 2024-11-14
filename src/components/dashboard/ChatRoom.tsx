@@ -1,6 +1,6 @@
 import { db } from '../../config/firebase';
 import { addDoc, collection, doc, getDoc, onSnapshot, orderBy, query, setDoc, Timestamp, updateDoc, where } from 'firebase/firestore';
-import React, { useState, ChangeEvent, FormEvent, useEffect, useContext, useRef } from 'react';
+import React, { useState, ChangeEvent, FormEvent, useEffect, useContext, useRef, KeyboardEvent } from 'react';
 import CryptoJS from 'crypto-js';
 import { AuthContext } from '../../config/AuthContext.tsx';
 import { FaAngleDown } from "react-icons/fa6";
@@ -82,7 +82,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel }) => {
         }
     };
 
-    const handleSendMessage = async (e: FormEvent<HTMLFormElement>) => {
+    const handleSendMessage = async (e: FormEvent<HTMLFormElement> | KeyboardEvent<HTMLTextAreaElement>) => {
         e.preventDefault();
         if (input.trim()) {
             try {
@@ -149,91 +149,6 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel }) => {
             setLastSeenIndex(index);
         }
     };
-
-
-
-    // useEffect(() => {
-    //     fetchLastSeenIndex();
-
-    //     const q = query(collection(db, 'chatRooms', channel, 'messages'), orderBy('time'));
-
-    //     const unsubscribe = onSnapshot(q, (snapshot) => {
-    //         // const updatedMessages = snapshot.docs.map((doc) => ({
-    //         //     text: doc.data().text,
-    //         //     time: doc.data().time,
-    //         //     userId: doc.data().userId,
-    //         //     username: doc.data().username,
-    //         // }));
-
-    //         const updatedMessages = snapshot.docs.map((doc) => {
-    //             const data = doc.data();
-    //             return {
-    //                 text: data.text,
-    //                 time: data.time instanceof Timestamp ? data.time : Timestamp.fromDate(new Date(data.time)),
-    //                 userId: data.userId,
-    //                 username: data.username,
-    //             };
-    //         });
-
-    //         setMessages(updatedMessages);
-
-
-    //         const newUnreadCount = updatedMessages.length - lastSeenIndex - 1;
-    //         setUnreadMessages(newUnreadCount > 0 ? newUnreadCount : 0);
-    //     });
-
-    //     return () => unsubscribe();
-    // }, [channel, lastSeenIndex]);
-
-    // useEffect(() => {
-    //     fetchLastSeenIndex();
-
-    //     const fetchMessages = async () => {
-    //         if (user) {
-    //             const userDoc = await getDoc(doc(db, 'users', user.uid));
-    //             const companyName = userDoc.data()?.company;
-
-    //             if (!companyName) {
-    //                 console.error("User's company name not found");
-    //                 return;
-    //             }
-
-    //             const q = query(
-    //                 collection(db, 'chatRooms', channel, 'messages'),
-    //                 where('companyName', '==', companyName),
-    //                 orderBy('time')
-    //             );
-
-    //             // Await the unsubscribe function here and return it directly
-    //             return onSnapshot(q, (snapshot) => {
-    //                 const updatedMessages = snapshot.docs.map((doc) => {
-    //                     const data = doc.data();
-    //                     return {
-    //                         text: data.text,
-    //                         time: data.time instanceof Timestamp ? data.time : Timestamp.fromDate(new Date(data.time)),
-    //                         userId: data.userId,
-    //                         username: data.username,
-    //                     };
-    //                 });
-
-    //                 setMessages(updatedMessages);
-    //                 const newUnreadCount = updatedMessages.length - lastSeenIndex - 1;
-    //                 setUnreadMessages(newUnreadCount > 0 ? newUnreadCount : 0);
-    //             });
-    //         }
-    //     };
-
-    //     const initFetch = async () => {
-    //         const unsubscribe = await fetchMessages();
-    //         return unsubscribe;
-    //     };
-
-    //     // Call and clean up unsubscribe
-    //     const unsubscribe = initFetch();
-    //     return () => {
-    //         unsubscribe && unsubscribe.then((unsub) => unsub && unsub());
-    //     };
-    // }, [channel, lastSeenIndex]);
 
 
 
@@ -331,6 +246,11 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel }) => {
         };
     }, [messages]);
 
+    const handleKeyPress = (e: KeyboardEvent<HTMLTextAreaElement>) => {
+        if (e.ctrlKey && e.key === 'Enter') {
+            handleSendMessage(e);
+        }
+    };
 
     const hashedCurrentUserId = user?.uid ? hashUserId(user?.uid) : '';
 
@@ -404,6 +324,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel }) => {
                         placeholder="What's on your mind..."
                         value={input}
                         onChange={handleInputChange}
+                        onKeyDown={handleKeyPress}
                         rows={1}
                     />
                     <button type='submit' className='p-2 ml-2 bg-[#FFC157] hover:bg-[#ffbe4d] duration-200 text-white rounded-full'>
