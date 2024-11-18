@@ -93,6 +93,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel }) => {
                     console.error("User's company name not found");
                     return;
                 }
+                
 
                 await addDoc(collection(db, 'chatRooms', channel, 'messages'), {
                     text: input,

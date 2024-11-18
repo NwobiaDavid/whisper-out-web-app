@@ -9,6 +9,7 @@ import { doc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../../config/firebase';
 import Settings from '../../components/dashboard/Settings';
 import { Spinner } from '@nextui-org/spinner';
+import HomeDash from '../../components/HomeDash';
 
 const Homepage = () => {
 
@@ -101,7 +102,7 @@ const Homepage = () => {
 
         <div className="flex-grow p-1 lg:p-5 lg:py-0 overflow-y-auto h-full w-full lg:w-[70%] 2xl:w-[65%]">
           <Routes>
-            <Route path="/" element={<Navigate to="welfare" />} />
+            <Route path="/" element={<HomeDash />} />
             <Route path="welfare" element={<ChatRoom channel="Welfare" />} />
             <Route path="salaries" element={<ChatRoom channel="Salaries" />} />
             <Route path="office-space" element={<ChatRoom channel="Office Space" />} />

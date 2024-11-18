@@ -3,6 +3,8 @@ import React, { createContext, useEffect, useState, ReactNode } from 'react';
 import { checkAuthStatus } from './firebase';
 import { Spinner } from '@nextui-org/react';
 import { User } from 'firebase/auth'; 
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 
 interface UserType {
@@ -23,6 +25,7 @@ interface AuthProviderProps {
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<UserType | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const navigate = useNavigate();
 
   const handleSetUser = (firebaseUser: User | null) => {
     if (firebaseUser) {
@@ -39,6 +42,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     checkAuthStatus(handleSetUser, setLoading); 
   }, []);
+
+  useEffect(() => {
+    if (user) {
+      const loginTimestamp = localStorage.getItem('loginTimestamp');
+      if (loginTimestamp) {
+        const elapsedTime = Date.now() - parseInt(loginTimestamp, 10);
+        if (elapsedTime > 12 * 60 * 60 * 1000) {
+          toast.warning('Session expired. Please log in again.');
+          localStorage.removeItem('loginTimestamp'); 
+          setUser(null); 
+          navigate('/signup'); 
+        }
+      }
+    }
+  }, [user, navigate]);
 
   if (loading) {
     return (

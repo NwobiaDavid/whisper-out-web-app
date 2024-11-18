@@ -36,6 +36,7 @@ const CompanyEntry = () => {
     }
   }, [user]);
 
+  
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 

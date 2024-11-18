@@ -93,11 +93,17 @@ const SignupPage: React.FC = () => {
 
         await sendEmailVerification(userCredential.user);
         toast.success('Sign up successful! Please verify your email.');
+
+        localStorage.setItem('loginTimestamp', Date.now().toString());
+
         navigate('/verify-email');
 
       } else {
         await signInWithEmailAndPassword(auth, email, password);
         toast.success('Logged in successfully');
+
+        localStorage.setItem('loginTimestamp', Date.now().toString());
+        
         navigate('/home');
       }
     } catch (error: any) {
