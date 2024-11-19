@@ -165,11 +165,12 @@ const SignupPage: React.FC = () => {
               label="Continue with your company email and password"
               placeholder=""
               classNames={{
-                label: "text-black/50 dark:text-white/90 text-sm lg:text-base ",
+                label: "text-black/50 instrument-sans-font dark:text-white/90 text-sm lg:text-base ",
                 inputWrapper: [
                   "dark:border-gray-500",
                   "dark:hover:border-gray-300",
                   "!cursor-text",
+                  "instrument-sans-font",
                 ],
               }}
               labelPlacement="outside"
@@ -296,7 +297,7 @@ const SignupPage: React.FC = () => {
           </form>
 
           <div className="flex -order-1 lg:order-1  flex-col justify-center lg:mb-0 md:mb-16 mb-10 lg:py-0 lg:px-7 xl:px-20">
-            <h1 className=" text-xl md:text-2xl lg:text-3xl font-bold mb-6 lg:mb-10">{isSignUp ? 'Say Hello' : 'Log in'} to WhisperOut</h1>
+            <h1 className=" text-xl md:text-2xl lg:text-3xl instrument-sans-font font-bold mb-6 lg:mb-10">{isSignUp ? 'Say Hello' : 'Log in'} to WhisperOut</h1>
             <div>
               <p className="font-light md:text-sm text-xs lg:text-[14px] leading-[16px]">
                 WhisperOut is your go-to spot for real talk, zero judgment. Got

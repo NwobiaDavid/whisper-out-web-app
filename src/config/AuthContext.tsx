@@ -23,6 +23,41 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+  // const [user, setUser] = useState<UserType | null>(null);
+  // const [loading, setLoading] = useState<boolean>(true);
+  // const navigate = useNavigate();
+
+  // const handleSetUser = (firebaseUser: User | null) => {
+  //   if (firebaseUser) {
+  //     const userData: UserType = {
+  //       uid: firebaseUser.uid,
+  //       email: firebaseUser.email, 
+  //     };
+  //     setUser(userData);
+  //   } else {
+  //     setUser(null);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   checkAuthStatus(handleSetUser, setLoading); 
+  // }, []);
+
+  // useEffect(() => {
+  //   if (user) {
+  //     const loginTimestamp = localStorage.getItem('loginTimestamp');
+  //     if (loginTimestamp) {
+  //       const elapsedTime = Date.now() - parseInt(loginTimestamp, 10);
+  //       if (elapsedTime > 12 * 60 * 60 * 1000) {
+  //         toast.warning('Session expired. Please log in again.');
+  //         localStorage.removeItem('loginTimestamp'); 
+  //         setUser(null); 
+  //         navigate('/signup'); 
+  //       }
+  //     }
+  //   }
+  // }, [user, navigate]);
+
   const [user, setUser] = useState<UserType | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const navigate = useNavigate();
@@ -31,31 +66,70 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     if (firebaseUser) {
       const userData: UserType = {
         uid: firebaseUser.uid,
-        email: firebaseUser.email, 
+        email: firebaseUser.email,
       };
       setUser(userData);
+      if (!localStorage.getItem('loginTimestamp')) {
+        localStorage.setItem('loginTimestamp', Date.now().toString());
+      }
     } else {
       setUser(null);
     }
   };
 
   useEffect(() => {
-    checkAuthStatus(handleSetUser, setLoading); 
+    checkAuthStatus(handleSetUser, setLoading);
   }, []);
 
   useEffect(() => {
-    if (user) {
+    let idleTimer: NodeJS.Timeout | null = null;
+
+    const logoutUser = () => {
+      toast.warning('Session expired due to inactivity.');
+      localStorage.removeItem('loginTimestamp');
+      setUser(null);
+      navigate('/signup');
+    };
+
+    const resetIdleTimer = () => {
+      if (idleTimer) clearTimeout(idleTimer);
+      idleTimer = setTimeout(() => logoutUser(), 15 * 60 * 1000); 
+    };
+
+    const checkTotalSessionDuration = () => {
       const loginTimestamp = localStorage.getItem('loginTimestamp');
       if (loginTimestamp) {
         const elapsedTime = Date.now() - parseInt(loginTimestamp, 10);
-        if (elapsedTime > 12 * 60 * 60 * 1000) {
-          toast.warning('Session expired. Please log in again.');
-          localStorage.removeItem('loginTimestamp'); 
-          setUser(null); 
-          navigate('/signup'); 
+        if (elapsedTime > 12 * 60 * 60 * 1000) { // 12 hours in milliseconds
+          toast.warning('Session expired after 12 hours.');
+          localStorage.removeItem('loginTimestamp');
+          setUser(null);
+          navigate('/signup');
         }
       }
+    };
+
+    const handleUserActivity = () => resetIdleTimer();
+    window.addEventListener('mousemove', handleUserActivity);
+    window.addEventListener('keydown', handleUserActivity);
+    window.addEventListener('click', handleUserActivity);
+
+    if (user) {
+      resetIdleTimer();
+      console.log("idle time reset")
     }
+
+    const sessionInterval = setInterval(() => {
+      if (user) checkTotalSessionDuration();
+    }, 60 * 1000); 
+
+    return () => {
+      if (idleTimer) clearTimeout(idleTimer);
+      clearInterval(sessionInterval);
+      window.removeEventListener('mousemove', handleUserActivity);
+      window.removeEventListener('keydown', handleUserActivity);
+      window.removeEventListener('click', handleUserActivity);
+    };
   }, [user, navigate]);
 
   if (loading) {

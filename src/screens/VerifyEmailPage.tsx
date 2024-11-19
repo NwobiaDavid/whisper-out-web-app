@@ -91,7 +91,7 @@ const VerifyEmailPage = () => {
 
       <div className=' w-full h-[83%] lg:h-[75%]  flex justify-center lg:text-center xl:py-20 py-5 lg:px-10 px-5  ' >
         <div className=' flex items-center flex-col gap-4 ' >
-          <div className='  ' >
+          <div className=' instrument-sans-font ' >
             <h1 className=' text-xl xl:text-3xl font-bold' >Just sent you an email</h1>
             <h2 className='text-lg xl:text-2xl font-semibold tracking-tight ' >Check your inbox to confirm your email address and continue </h2>
           </div>
