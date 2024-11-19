@@ -21,6 +21,7 @@ const Settings = () => {
     const handleLogout = async() => {
         try{
             await signOut(auth);
+            localStorage.removeItem('loginTimestamp');
             navigate("/signup")
         } catch (error) {
             console.error("error logging out: ", error);

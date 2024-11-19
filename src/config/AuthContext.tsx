@@ -1,11 +1,9 @@
-/* eslint-disable react/prop-types */
 import React, { createContext, useEffect, useState, ReactNode } from 'react';
 import { checkAuthStatus } from './firebase';
 import { Spinner } from '@nextui-org/react';
-import { User } from 'firebase/auth'; 
+import { User } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-
 
 interface UserType {
   uid: string;
@@ -23,41 +21,6 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  // const [user, setUser] = useState<UserType | null>(null);
-  // const [loading, setLoading] = useState<boolean>(true);
-  // const navigate = useNavigate();
-
-  // const handleSetUser = (firebaseUser: User | null) => {
-  //   if (firebaseUser) {
-  //     const userData: UserType = {
-  //       uid: firebaseUser.uid,
-  //       email: firebaseUser.email, 
-  //     };
-  //     setUser(userData);
-  //   } else {
-  //     setUser(null);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   checkAuthStatus(handleSetUser, setLoading); 
-  // }, []);
-
-  // useEffect(() => {
-  //   if (user) {
-  //     const loginTimestamp = localStorage.getItem('loginTimestamp');
-  //     if (loginTimestamp) {
-  //       const elapsedTime = Date.now() - parseInt(loginTimestamp, 10);
-  //       if (elapsedTime > 12 * 60 * 60 * 1000) {
-  //         toast.warning('Session expired. Please log in again.');
-  //         localStorage.removeItem('loginTimestamp'); 
-  //         setUser(null); 
-  //         navigate('/signup'); 
-  //       }
-  //     }
-  //   }
-  // }, [user, navigate]);
-
   const [user, setUser] = useState<UserType | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const navigate = useNavigate();
@@ -93,14 +56,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     const resetIdleTimer = () => {
       if (idleTimer) clearTimeout(idleTimer);
-      idleTimer = setTimeout(() => logoutUser(), 15 * 60 * 1000); 
+      idleTimer = setTimeout(logoutUser, 15 * 60 * 1000); // 15 minutes inactivity logout
     };
 
     const checkTotalSessionDuration = () => {
       const loginTimestamp = localStorage.getItem('loginTimestamp');
       if (loginTimestamp) {
         const elapsedTime = Date.now() - parseInt(loginTimestamp, 10);
-        if (elapsedTime > 12 * 60 * 60 * 1000) { // 12 hours in milliseconds
+        if (elapsedTime > 12 * 60 * 60 * 1000) { // 12 hours session max
           toast.warning('Session expired after 12 hours.');
           localStorage.removeItem('loginTimestamp');
           setUser(null);
@@ -116,12 +79,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     if (user) {
       resetIdleTimer();
-      console.log("idle time reset")
     }
 
     const sessionInterval = setInterval(() => {
       if (user) checkTotalSessionDuration();
-    }, 60 * 1000); 
+    }, 60 * 1000); // Check every minute
 
     return () => {
       if (idleTimer) clearTimeout(idleTimer);

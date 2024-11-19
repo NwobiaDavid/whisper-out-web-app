@@ -6,6 +6,9 @@ import { AuthContext } from '../../config/AuthContext.tsx';
 import { FaAngleDown } from "react-icons/fa6";
 import { PiNavigationArrowBold } from "react-icons/pi";
 
+import { v4 as uuidv4 } from 'uuid';
+
+
 interface ChatRoomProps {
     channel: string;
 }
@@ -31,6 +34,7 @@ const secretKey = 'your_secret_key';
 const ChatRoom: React.FC<ChatRoomProps> = ({ channel }) => {
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState<string>('');
+    const [username, setUsername] = useState<string>('');
     const [unreadMessages, setUnreadMessages] = useState<number>(0);
 
     const [lastSeenIndex, setLastSeenIndex] = useState<number>(0);
@@ -47,8 +51,12 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel }) => {
     };
 
 
-    const generateUsername = (userId: string) => {
-        return `User${hashUserId(userId).slice(-5)}`;
+    // const generateUsername = (userId: string) => {
+    //     return `User${hashUserId(userId).slice(-5)}`;
+    // };
+
+    const generateRandomUsername = () => {
+        return `User-${uuidv4().slice(0, 8)}`;
     };
 
 
@@ -99,7 +107,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel }) => {
                     text: input,
                     time: Timestamp.now(),
                     userId: hashUserId(user?.uid || ""),
-                    username: generateUsername(user?.uid || ""),
+                    username: username,
                     companyName: companyName,
                 });
 
@@ -254,6 +262,12 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel }) => {
     };
 
     const hashedCurrentUserId = user?.uid ? hashUserId(user?.uid) : '';
+
+    useEffect(() => {
+        if (user) {
+            setUsername(generateRandomUsername());
+        }
+    }, [user]);
 
     return (
         <div className='flex flex-col h-full'>
