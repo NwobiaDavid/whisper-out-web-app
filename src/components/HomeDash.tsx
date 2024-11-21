@@ -103,8 +103,12 @@ const HomeDash = () => {
   ];
 
   const [showReactions, setShowReactions] = useState<number | null>(null);
-  const [selectedReactions, setSelectedReactions] = useState<Record<number, { icon: JSX.Element; text: string }>>({});
+  // const [selectedReactions, setSelectedReactions] = useState<Record<number, { icon: JSX.Element; text: string }>>({});
+  const [selectedReactions, setSelectedReactions] = useState<Record<number, { icon: JSX.Element; text: string } | null>>({});
 
+  const [hoveredReaction, setHoveredReaction] = useState<string | null>(null); // Track hovered reaction
+
+  
   const reactionOptions = [
     { icon: <AiFillLike size={24} className="bg-blue-500 text-white p-2 rounded-full w-full h-full " />, text: "Like" },
     { icon: <FaHeart size={24} className="bg-red-500 text-white p-2 rounded-full w-full h-full " />, text: "Love" },
@@ -118,6 +122,13 @@ const HomeDash = () => {
       [itemId]: reaction,
     }));
     setShowReactions(null);
+  };
+
+  const handleMainButtonClick = (itemId: number) => {
+    setSelectedReactions((prev) => ({
+      ...prev,
+      [itemId]: prev[itemId] ? null : { icon: <AiFillLike size={24} className="bg-blue-500 text-white p-2 rounded-full h-full w-full " />, text: "Like" },
+    }));
   };
 
   return (
@@ -167,14 +178,15 @@ const HomeDash = () => {
               </div>
 
               <div className="pt-1 relative">
-                <button
-                  className="hover:bg-golden duration-200 hover:text-white px-3 py-2 rounded-md capitalize flex items-center gap-2 "
+              <button
+                  className="hover:bg-golden duration-200 hover:text-white text-golden px-3 py-2 rounded-md capitalize flex items-center gap-2"
+                  onClick={() => handleMainButtonClick(item.id)}
                   onMouseEnter={() => setShowReactions(item.id)}
                   onMouseLeave={() => setShowReactions(null)}
                 >
-                  {selectedReactions[item.id]?.icon || <AiOutlineLike className="text-golden" size={30} />}
+                  {selectedReactions[item.id]?.icon || <AiOutlineLike className=" " size={30} />}
                   <span className="text-xl">
-                    {selectedReactions[item.id]?.text || (<span className="text-golden">Like</span>)}
+                    {selectedReactions[item.id]?.text || <span className=" ">Like</span>}
                   </span>
                 </button>
 
@@ -187,10 +199,17 @@ const HomeDash = () => {
                     {reactionOptions.map((reaction, index) => (
                       <button
                         key={index}
-                        className="hover:scale-125 duration-150"
+                        className="hover:scale-125 duration-150 relative "
+                        onMouseEnter={() => setHoveredReaction(reaction.text)}
+                        onMouseLeave={() => setHoveredReaction(null)}
                         onClick={() => handleReactionClick(item.id, reaction)}
                       >
                         {reaction.icon}
+                        {hoveredReaction === reaction.text && (
+                          <span className="absolute bottom-[-30px] left-1/2 transform -translate-x-1/2 bg-gray-700 text-white text-xs p-1 rounded">
+                            {reaction.text}
+                          </span>
+                        )}
                       </button>
                     ))}
                   </div>
