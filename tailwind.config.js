@@ -13,6 +13,7 @@ export default {
     extend: {
       colors: {
         maindark: '#3D3B6F',
+        golden: '#FFC157'
         
       },
     },

@@ -18,6 +18,7 @@ interface AuthContextType {
 
 const WaitingPage = () => {
   const [approvalStatus, setApprovalStatus] = useState(false);
+  // const [hasCompany, setHasCompany] = useState(false);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -33,7 +34,7 @@ const WaitingPage = () => {
         const companyQuery = query(collection(db, 'companies'), where('createdBy', '==', user.uid));
         const companySnap = await getDocs(companyQuery);
 
-        console.log("comapyda--> "+JSON.stringify(companySnap.docs[0]))
+        console.log("comapyda--> "+JSON.stringify(user))
 
         if (!companySnap.empty) {
           const { isApproved } = companySnap.docs[0].data();
@@ -62,14 +63,6 @@ useEffect(() => {
     const createUser = async () => {
       if (approvalStatus && user) {
         try {
-        //   const emailDomain = user.email.split('@')[1];
-        //   const companyRef = doc(db, 'companies', emailDomain);
-        //   const companySnap = await getDoc(companyRef);
-        //   const companyName = companySnap.exists() ? companySnap.data().companyName : '';
-
-        // const emailDomain = user.email.split('@')[1];
-        //   const companyRef = doc(db, 'companies', emailDomain);
-        //   const companySnap = await getDoc(companyRef);
 
         const companyQuery = query(collection(db, 'companies'), where('createdBy', '==', user.uid));
         const companySnap = await getDocs(companyQuery);

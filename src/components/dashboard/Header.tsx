@@ -5,6 +5,8 @@ import { RootState } from '../../state/store'
 import { GoGear } from "react-icons/go";
 import { useEffect, useState } from 'react';
 import { AiOutlineMenu } from 'react-icons/ai';
+import { doc, getDoc } from 'firebase/firestore';
+import { auth, db } from '../../config/firebase';
 
 
 interface HeaderProps {
@@ -22,11 +24,32 @@ interface HeaderProps {
     //     return location.pathname === path ? ' border-b-5 text-blue-800 border-blue-800 dark:text-yellow-500 dark:border-yellow-500 ' : 'text-gray-700 dark:text-gray-200 ';
     // }
 
+    const user = auth.currentUser;
+
     const [activeChannel, setActiveChannel] = useState(location.pathname);
+    const [company, setCompany] = useState("");
 
     useEffect(() => {
         setActiveChannel(location.pathname);
     }, [location.pathname]);
+
+    useEffect(() => {
+        const getCompanyName = async() => {
+            try {
+                if(user) {
+                    const userDoc = await getDoc(doc(db, "users", user.uid));
+                    if (userDoc.exists() && userDoc.data().company) {
+                        setCompany(userDoc.data().company)
+                    }
+                }
+            } catch (error) {
+                console.error("error fetching the user. loc:header", error)
+            }
+        };
+
+        getCompanyName()
+    
+    }, [])
 
 
     return (
@@ -56,19 +79,24 @@ interface HeaderProps {
                 </div>
             </div> */}
 
-            <div className=' flex  md:w-1/3 justify-center ' >
-                <button
-                    className="lg:hidden text-2xl p-3 "
-                    onClick={toggleDrawer}
-                >
-                    <AiOutlineMenu />
-                </button>
-                <Link to={'/home/settings'} onClick={closeDrawer} className={` text-2xl md:text-3xl  dark:hover:bg-[#44427C] hover:bg-[#d1d1d1] ${activeChannel === "/home/settings" && " bg-[#d1d1d1] dark:bg-[#44427C] "}  p-3 rounded-lg flex items-center group cursor-pointer duration-200`}>
-                    <GoGear className="group-hover:-rotate-45 duration-200 transform" />
-                    <span className="capitalize hidden md:block text-xl ml-3">
-                        settings
-                    </span>
-                </Link>
+            <div className=' flex gap-2 items-center  md:w-1/3 justify-center ' >
+            <div>
+                <span className="text-base font-bold">{company}</span>
+            </div>
+                <div>
+                    <button
+                        className="lg:hidden text-2xl p-3 "
+                        onClick={toggleDrawer}
+                    >
+                        <AiOutlineMenu />
+                    </button>
+                    <Link to={'/home/settings'} onClick={closeDrawer} className={` text-2xl md:text-3xl  dark:hover:bg-[#44427C] hover:bg-[#d1d1d1] ${activeChannel === "/home/settings" && " bg-[#d1d1d1] dark:bg-[#44427C] "}  p-3 rounded-lg flex items-center group cursor-pointer duration-200`}>
+                        <GoGear className="group-hover:-rotate-45 duration-200 transform" />
+                        <span className="capitalize hidden md:block text-xl ml-3">
+                            settings
+                        </span>
+                    </Link>
+                </div>
 
 
             </div>
