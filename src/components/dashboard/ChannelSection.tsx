@@ -2,7 +2,7 @@ import { IoIosAddCircleOutline } from "react-icons/io";
 import ToggleSwitch from '../ui/ToggleSwitch';
 import { Image } from '@nextui-org/image';
 import { Link, useLocation } from 'react-router-dom';
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { collection, doc, getDoc, getDocs, onSnapshot, orderBy, query, Timestamp, where } from "firebase/firestore";
 import { auth, db } from "../../config/firebase";
@@ -20,13 +20,43 @@ const ChannelSection: React.FC<ChannelSectionProps> = ({ onChannelClick }) => {
     const location = useLocation();
     const [activeChannel, setActiveChannel] = useState(location.pathname);
     // const [unreadCounts, setUnreadCounts] = useState<Record<string, number>>({});
-
+    const containerRef = useRef<HTMLDivElement>(null);
 
     const unreadCounts = useSelector((state: any) => state.unreadMessages);
 
     useEffect(() => {
         setActiveChannel(location.pathname);
     }, [location.pathname]);
+
+    // useEffect(() => {
+    //     const handleClickOutside = (event: MouseEvent) => {
+    //         if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+    //             onChannelClick?.();
+    //         }
+    //     };
+
+    //     document.addEventListener("mousedown", handleClickOutside);
+    //     return () => {
+    //         document.removeEventListener("mousedown", handleClickOutside);
+    //     };
+    // }, [onChannelClick]);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (
+                containerRef.current &&
+                !containerRef.current.contains(event.target as Node) &&
+                !(event.target as HTMLElement).closest("a") // Allow clicks on links
+            ) {
+                onChannelClick?.();
+            }
+        };
+    
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [onChannelClick]);
 
     const channels = [
         { title: "welfare", img_dark: "/assets/images/icons/channels/channels_light/welfare-pension-insurance-premium_svgrepo.com (1).png", img_light: "/assets/images/icons/channels/welfare-pension-insurance-premium_svgrepo.com.png", link: "welfare" },
@@ -88,6 +118,7 @@ const ChannelSection: React.FC<ChannelSectionProps> = ({ onChannelClick }) => {
     //     fetchUnreadCounts();
     // }, [channels]);
 
+    
     console.log("the link-> " + activeChannel)
     console.log("the unread channels--> " + JSON.stringify(unreadCounts))
 
@@ -104,9 +135,9 @@ const ChannelSection: React.FC<ChannelSectionProps> = ({ onChannelClick }) => {
 
 
     return (
-        <div className="absolute w-full h-full inset-0 top-0 p-4 lg:p-2 xl:p-4 pt-2 xl:pt-4 2xl:pt-8 bg-white dark:bg-maindark z-50 overflow-y-auto lg:static lg:bg-transparent lg:dark:bg-transparent">
+        <div ref={containerRef} className="absolute w-[80%] lg:w-full h-[70%] lg:h-full inset-0 top-0 p-2 lg:p-2 xl:p-4 pt-2 xl:pt-4 2xl:pt-8 bg-white dark:bg-maindark z-50 overflow-y-auto lg:static lg:bg-transparent lg:dark:bg-transparent">
 
-            <div className="flex flex-col h-full py-2 lg:py-3 xl:py-0 overflow-y-auto">
+            <div className="flex flex-col h-full py-0 md:py-2 lg:py-3 xl:py-0 ">
 
                 {/* Suggest Channel Button */}
                 <div className="h-[12%] hidden lg:block xl:h-[10%]">
@@ -122,7 +153,7 @@ const ChannelSection: React.FC<ChannelSectionProps> = ({ onChannelClick }) => {
                 </div>
 
                 {/* Channels List */}
-                <div className="lg:bg-white px-0 lg:px-2 xl:px-3 py-4 h-[78%] xl:h-[80%] rounded-md lg:dark:bg-[#44427C80]">
+                <div className="lg:bg-white overflow-y-auto px-0 lg:px-2 xl:px-3 py-4 h-[78%] xl:h-[80%] rounded-md lg:dark:bg-[#44427C80]">
                     <div className="space-y-3 flex-grow">
                         {channels.map((item, index) => (
                             <Link
@@ -160,7 +191,7 @@ const ChannelSection: React.FC<ChannelSectionProps> = ({ onChannelClick }) => {
                 <div className="h-[12%] w-full flex justify-center items-center lg:hidden xl:h-[10%]">
                     <div
                         onClick={createChannel}
-                        className="mb-4 p-2 xl:p-3 text-center w-[50%] bg-[#FFC157] hover:bg-[#FFC157] duration-200 flex justify-center items-center text-sm whitespace-nowrap xl:text-xl 2xl:text-lg text-black font-medium rounded-md cursor-pointer"
+                        className="lg:mb-4 py-2 px-20 xl:p-3 text-center w-[50%] bg-[#FFC157] hover:bg-[#FFC157] duration-200 flex justify-center items-center text-sm whitespace-nowrap xl:text-xl 2xl:text-lg text-black font-medium rounded-md cursor-pointer"
                     >
                         Suggest Channel
                         <div className="ml-1 xl:ml-2 text-xl xl:text-2xl">

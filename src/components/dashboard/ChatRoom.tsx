@@ -58,6 +58,10 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel }) => {
     const dispatch = useDispatch<AppDispatch>();
 
 
+    // const generateUsername = (userId: string) => {
+    //     return `User${hashUserId(userId).slice(-5)}`;
+    // };
+
     const generateRandomUsername = () => {
         return `User-${uuidv4().slice(0, 8)}`;
     };
@@ -91,6 +95,17 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel }) => {
             updateLastSeenMessage(messages.length - 1);
             setUnreadMessagess(0);
         }
+
+        // if (messagesEndRef.current) {
+        //     messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+        // }
+
+        console.log(
+            'Scroll Details:',
+            messageContainerRef.current?.scrollTop,
+            messageContainerRef.current?.scrollHeight,
+            messageContainerRef.current?.clientHeight
+        );
     };
 
     const handleSendMessage = async (e: FormEvent<HTMLFormElement> | KeyboardEvent<HTMLTextAreaElement>) => {
@@ -118,7 +133,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel }) => {
                 if (textareaRef.current) {
                     textareaRef.current.style.height = 'auto';
                 }
-                scrollToBottom();
+                setTimeout(scrollToBottom, 50); 
             } catch (err) {
                 console.error('Error adding message to Firestore:', err);
             }
@@ -173,7 +188,6 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel }) => {
             where('companyName', '==', companyName),
             orderBy('time')
         );
-
 
         const unsubscribe = onSnapshot(q, (snapshot) => {
             const updatedMessages = snapshot.docs.map((doc) => {
@@ -337,9 +351,9 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel }) => {
                                 </React.Fragment>
                             );
                         })}
-                        <div ref={messagesEndRef} />
                     </>
                 )}
+                <div ref={messagesEndRef} />
             </div>
 
             {unreadMessages > 0 && (

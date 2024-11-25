@@ -12,10 +12,10 @@ import { auth, db } from '../../config/firebase';
 interface HeaderProps {
     toggleDrawer: () => void;
     closeDrawer: () => void;
-  }
+}
 
-  
-  const Header: React.FC<HeaderProps> = ({ toggleDrawer, closeDrawer  }) => {
+
+const Header: React.FC<HeaderProps> = ({ toggleDrawer, closeDrawer }) => {
     const darkMode = useSelector((state: RootState) => state.theme.darkMode);
 
     const location = useLocation();
@@ -28,15 +28,16 @@ interface HeaderProps {
 
     const [activeChannel, setActiveChannel] = useState(location.pathname);
     const [company, setCompany] = useState("");
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
     useEffect(() => {
         setActiveChannel(location.pathname);
     }, [location.pathname]);
 
     useEffect(() => {
-        const getCompanyName = async() => {
+        const getCompanyName = async () => {
             try {
-                if(user) {
+                if (user) {
                     const userDoc = await getDoc(doc(db, "users", user.uid));
                     if (userDoc.exists() && userDoc.data().company) {
                         setCompany(userDoc.data().company)
@@ -48,9 +49,18 @@ interface HeaderProps {
         };
 
         getCompanyName()
-    
+
     }, [])
 
+
+    const handleDrawerToggle = () => {
+        if (isDrawerOpen) {
+            closeDrawer();
+        } else {
+            toggleDrawer();
+        }
+        setIsDrawerOpen(!isDrawerOpen); 
+    };
 
     return (
         <div className='xl:px-8 md:px-5 px-1 h-[8%]  border-b border-gray-300 dark:border-gray-300 top-0 flex fixed w-full justify-between md:flex-row flex-row-reverse items-center'>
@@ -80,13 +90,13 @@ interface HeaderProps {
             </div> */}
 
             <div className=' flex gap-2 items-center  md:w-1/3 justify-center ' >
-            <div>
-                <span className="text-base font-bold">{company}</span>
-            </div>
                 <div>
+                    <span className="text-base font-bold">{company}</span>
+                </div>
+                <div className=' flex -order-1 lg:order-1  ' >
                     <button
                         className="lg:hidden text-2xl p-3 "
-                        onClick={toggleDrawer}
+                        onClick={handleDrawerToggle}
                     >
                         <AiOutlineMenu />
                     </button>
