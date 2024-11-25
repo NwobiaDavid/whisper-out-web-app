@@ -1,10 +1,10 @@
 import { Input } from "@nextui-org/input"
 import { useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import { AuthContext } from '../config/AuthContext.tsx';
 import { FiSearch } from "react-icons/fi";
 import { AiFillLike, AiOutlineLike } from "react-icons/ai";
-import { FaSmile, FaHeart, FaThumbsUp, FaLaugh } from "react-icons/fa";
+import { FaSmile, FaHeart, FaLaugh } from "react-icons/fa";
 
 
 interface UserType {
@@ -19,8 +19,8 @@ interface AuthContextType {
 
 const HomeDash = () => {
   const [value, setValue] = useState('');
-  const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
+  // const [loading, setLoading] = useState(true);
+  // const navigate = useNavigate();
 
 
   const authContext = useContext(AuthContext) as AuthContextType | undefined;
@@ -28,7 +28,7 @@ const HomeDash = () => {
 
   useEffect(() => {
     if (user !== undefined) {
-      setLoading(false);
+      // setLoading(false);
     }
   }, [user]);
 
@@ -131,12 +131,17 @@ const HomeDash = () => {
     }));
   };
 
+
+  const handleSearch = () => {
+    console.log(value);
+  }
+
   return (
     <div className=" w-full h-full " >
 
       <div className="flex w-full py-3 gap-3 justify-center items-center " >
         <div>
-          <div className="p-3 bg-white dark:bg-[#44427C] text-xl rounded-md ">
+          <div onClick={handleSearch} className="p-3 bg-white dark:bg-[#44427C] text-xl rounded-md ">
             <FiSearch />
           </div>
         </div>

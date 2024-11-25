@@ -23,7 +23,7 @@ const VerifyEmailPage = () => {
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("")
-  const [isChecking, setIsChecking] = useState<boolean>(true);
+  // const [isChecking, setIsChecking] = useState<boolean>(true);
 
   // const authContext = useContext(AuthContext) as AuthContextType | undefined;
   // const user = authContext?.user;

@@ -4,8 +4,8 @@ import { Image } from '@nextui-org/image';
 import { Link, useLocation } from 'react-router-dom';
 import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
-import { collection, doc, getDoc, getDocs, onSnapshot, orderBy, query, Timestamp, where } from "firebase/firestore";
-import { auth, db } from "../../config/firebase";
+// import { collection, doc, getDoc, getDocs, onSnapshot, orderBy, query, Timestamp, where } from "firebase/firestore";
+// import { auth, db } from "../../config/firebase";
 // import { AiOutlineClose } from "react-icons/ai";
 // import { useSelector } from 'react-redux';
 

@@ -5,7 +5,7 @@ import { User } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { doc, updateDoc, serverTimestamp, onSnapshot } from 'firebase/firestore';
-import { auth, db } from './firebase';
+import { db } from './firebase';
 
 interface UserType {
   uid: string;
