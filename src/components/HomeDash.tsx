@@ -192,7 +192,7 @@ const HomeDash = () => {
 
                 {showReactions === item.id && (
                   <div
-                    className="absolute top-10 left-0 bg-white shadow-md rounded-md flex gap-3 p-3"
+                    className="absolute top-10 left-0 bg-white dark:bg-[#696794]  shadow-md rounded-md flex gap-3 p-3"
                     onMouseEnter={() => setShowReactions(item.id)}
                     onMouseLeave={() => setShowReactions(null)}
                   >

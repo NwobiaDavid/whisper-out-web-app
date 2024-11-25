@@ -6,7 +6,11 @@ import { AuthContext } from '../../config/AuthContext.tsx';
 import { FaAngleDown } from "react-icons/fa6";
 import { PiNavigationArrowBold } from "react-icons/pi";
 
+import { useDispatch } from 'react-redux';
+import { setUnreadMessages } from '../../state/unreadMessages/unreadMessagesSlice.ts';
+
 import { v4 as uuidv4 } from 'uuid';
+import { AppDispatch } from '../../state/store.ts';
 
 
 interface ChatRoomProps {
@@ -35,7 +39,8 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel }) => {
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState<string>('');
     const [username, setUsername] = useState<string>('');
-    const [unreadMessages, setUnreadMessages] = useState<number>(0);
+    const [unreadMessages, setUnreadMessagess] = useState<number>(0);
+    const [activeUsers, setActiveUsers] = useState<number>(0);
 
     const [lastSeenIndex, setLastSeenIndex] = useState<number>(0);
 
@@ -50,10 +55,8 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel }) => {
         return CryptoJS.HmacSHA256(userId, secretKey).toString();
     };
 
+    const dispatch = useDispatch<AppDispatch>();
 
-    // const generateUsername = (userId: string) => {
-    //     return `User${hashUserId(userId).slice(-5)}`;
-    // };
 
     const generateRandomUsername = () => {
         return `User-${uuidv4().slice(0, 8)}`;
@@ -86,7 +89,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel }) => {
         if (messageContainerRef.current) {
             messageContainerRef.current.scrollTo({ top: messageContainerRef.current.scrollHeight, behavior: 'smooth' });
             updateLastSeenMessage(messages.length - 1);
-            setUnreadMessages(0);
+            setUnreadMessagess(0);
         }
     };
 
@@ -141,12 +144,6 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel }) => {
                 console.error("Error fetching last seen index:", error);
             }
 
-            // const userDoc = await getDoc(userDocRef);
-            // if (userDoc.exists()) {
-            //     console.log("last seen index--> "+userDoc.data().lastSeenIndex);
-            //     setLastSeenIndex(userDoc.data().lastSeenIndex || 0);
-            // }
-
         }
     };
 
@@ -160,55 +157,62 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel }) => {
     };
 
 
+    const fetchMessages = async () => {
+        if (!user) return;
+
+        const userDoc = await getDoc(doc(db, 'users', user.uid));
+        const companyName = userDoc?.data()?.company;
+
+        if (!companyName) {
+            console.error("User's company name not found");
+            return;
+        }
+
+        const q = query(
+            collection(db, 'chatRooms', channel, 'messages'),
+            where('companyName', '==', companyName),
+            orderBy('time')
+        );
+
+
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+            const updatedMessages = snapshot.docs.map((doc) => {
+                const data = doc.data();
+                return {
+                    text: data.text,
+                    time: data.time instanceof Timestamp ? data.time : Timestamp.fromDate(new Date(data.time)),
+                    userId: data.userId,
+                    username: data.username,
+                };
+            });
+
+            const newUnreadCount = updatedMessages.length - lastSeenIndex - 1;
+            setMessages(updatedMessages);
+            setUnreadMessagess(newUnreadCount);
+
+            dispatch(setUnreadMessages({ channel, count: newUnreadCount }));
+        });
+
+        return unsubscribe;
+    };
 
     useEffect(() => {
-        const fetchMessages = async () => {
-            if (!user) return;
-    
-            const userDoc = await getDoc(doc(db, 'users', user.uid));
-            const companyName = userDoc?.data()?.company;
-    
-            if (!companyName) {
-                console.error("User's company name not found");
-                return;
-            }
-    
-            const q = query(
-                collection(db, 'chatRooms', channel, 'messages'),
-                where('companyName', '==', companyName),
-                orderBy('time')
-            );
-    
-            // Return the unsubscribe function from onSnapshot
-            return onSnapshot(q, (snapshot) => {
-                const updatedMessages = snapshot.docs.map((doc) => {
-                    const data = doc.data();
-                    return {
-                        text: data.text,
-                        time: data.time instanceof Timestamp ? data.time : Timestamp.fromDate(new Date(data.time)),
-                        userId: data.userId,
-                        username: data.username,
-                    };
-                });
-    
-                setMessages(updatedMessages);
-                setUnreadMessages(updatedMessages.length - lastSeenIndex - 1);
-            });
-        };
-    
         fetchLastSeenIndex();
-    
-        // Fetch messages and handle unsubscribe properly
+
         let unsubscribe: (() => void) | undefined;
-        fetchMessages().then((unsub) => {
-            if (unsub) unsubscribe = unsub;
-        });
-    
-        // Clean up the subscription on component unmount
+
+        const setupMessages = async () => {
+            unsubscribe = await fetchMessages();
+        };
+
+        setupMessages();
+
         return () => {
             if (unsubscribe) unsubscribe();
         };
-    }, [channel, lastSeenIndex, user]);
+    }, [channel, lastSeenIndex, user, dispatch]);
+
+
 
 
     useEffect(() => {
@@ -216,6 +220,28 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel }) => {
             scrollToLastSeen();
         }
     }, [lastSeenIndex, messages]);
+
+
+
+
+    
+    useEffect(() => {
+        const activeUsersQuery = query(
+          collection(db, 'users'),
+          where('isActive', '==', true)
+        );
+      
+        const unsubscribe = onSnapshot(activeUsersQuery, (snapshot) => {
+          const activeUsers = snapshot.docs.map((doc) => doc.data());
+          setActiveUsers(activeUsers.length); // Update active users count
+        });
+      
+        return () => unsubscribe();
+      }, []);
+
+
+
+
 
 
     const handleInputChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
@@ -235,7 +261,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel }) => {
             const isAtBottom = scrollHeight - scrollTop <= clientHeight + 10;
 
             if (isAtBottom && lastSeenIndex < messages.length - 1) {
-                setUnreadMessages(0);
+                setUnreadMessagess(0);
                 updateLastSeenMessage(messages.length - 1);
             }
         }
@@ -276,7 +302,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel }) => {
 
                 <div className='flex justify-center items-center' >
                     <div className=' min-w-[6px] min-h-[6px] mr-1 bg-green-500 rounded-full ' ></div>
-                    <span className="font-semibold text-green-500 ">121 active users</span>
+                    <span className="font-semibold text-green-500 ">{activeUsers} active users</span>
                 </div>
             </div>
 

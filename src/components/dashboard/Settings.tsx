@@ -1,31 +1,74 @@
-import { useState } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 // import { FaRegMoon } from 'react-icons/fa';
 import { FaGear } from 'react-icons/fa6'
 // import { IoSunnySharp } from 'react-icons/io5';
 import { motion } from 'framer-motion';
 import { signOut } from 'firebase/auth';
-import { auth } from '../../config/firebase';
+// import { auth } from '../../config/firebase';
+import { auth, db } from '../../config/firebase';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 
 
 const Settings = () => {
 
-    const [showStatus, setShowStatus] = useState(true);
+    const [showStatus, setShowStatus] = useState(true);    
     const navigate = useNavigate();
 
-    const handleStatusChange = () => {
-        setShowStatus(prevStatus => !prevStatus);
-    }
+    // const userId = useMemo(() => auth.currentUser?.uid, [auth.currentUser]);
+
+    const userId = useMemo(() => auth.currentUser?.uid || null, [auth.currentUser]);
+
+    useEffect(() => {
+        if (!userId) return;
+
+        const fetchActiveStatus = async () => {
+            try {
+                const userDoc = await getDoc(doc(db, 'users', userId));
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+                    setShowStatus(userData?.isActive ?? true);
+                }
+            } catch (error) {
+                console.error('Error fetching active status:', error);
+            }
+        };
+
+        fetchActiveStatus();
+    }, [userId]);
+
+    const handleStatusChange = async () => {
+        if (!userId) return;
+
+        try {
+            const newStatus = !showStatus;
+            setShowStatus(newStatus);
+            await updateDoc(doc(db, 'users', userId), { isActive: newStatus });
+        } catch (error) {
+            console.error('Error updating active status:', error);
+        }
+    };
+
+    useEffect(() => {
+        console.log('Current userId:', userId);
+    }, [userId]);
+    
+    // const handleStatusChange = () => {
+    //     setShowStatus(prevStatus => !prevStatus);
+    // }
 
 
     const handleLogout = async() => {
-        try{
+        try {
+            if (userId) {
+              await updateDoc(doc(db, 'users', userId), { isActive: false }); // Mark as inactive on logout
+            }
             await signOut(auth);
             localStorage.removeItem('loginTimestamp');
-            navigate("/signup")
-        } catch (error) {
-            console.error("error logging out: ", error);
-        }
+            navigate('/signup');
+          } catch (error) {
+            console.error('Error logging out: ', error);
+          }
     }
 
     return (
@@ -73,6 +116,7 @@ const Settings = () => {
                             <div>
                                 <motion.div
                                     onClick={handleStatusChange}
+                                    aria-label="Toggle Active Status"
                                     className="w-14 h-7 flex items-center rounded-full p-1 cursor-pointer"
                                     animate={{
                                         backgroundColor: showStatus ? '#10B981' : '#9CA3AF',

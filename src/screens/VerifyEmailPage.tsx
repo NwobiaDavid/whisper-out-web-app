@@ -23,7 +23,7 @@ const VerifyEmailPage = () => {
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("")
-
+  const [isChecking, setIsChecking] = useState<boolean>(true);
 
   // const authContext = useContext(AuthContext) as AuthContextType | undefined;
   // const user = authContext?.user;
@@ -33,11 +33,17 @@ const VerifyEmailPage = () => {
     const checkEmailVerification = async () => {
       const currentUser = auth.currentUser;
       setEmail(currentUser?.email || "");
+
       if (currentUser) {
         await currentUser.reload();
         if (currentUser.emailVerified) {
           const uid = currentUser.uid;
           const emailDomain = currentUser.email?.split('@')[1];
+
+          if (!emailDomain) {
+            console.error('Invalid email domain.');
+            return;
+          }
 
           const companyQuery = query(collection(db, 'companies'), where('domain', '==', emailDomain));
           const companySnapshot = await getDocs(companyQuery);
@@ -52,6 +58,7 @@ const VerifyEmailPage = () => {
                 uid,
                 email: currentUser.email,
                 company: companyName,
+                isActive: true,
               });
 
               navigate('/interests');

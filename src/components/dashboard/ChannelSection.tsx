@@ -4,7 +4,11 @@ import { Image } from '@nextui-org/image';
 import { Link, useLocation } from 'react-router-dom';
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { collection, doc, getDoc, getDocs, onSnapshot, orderBy, query, Timestamp, where } from "firebase/firestore";
+import { auth, db } from "../../config/firebase";
 // import { AiOutlineClose } from "react-icons/ai";
+// import { useSelector } from 'react-redux';
+
 
 
 interface ChannelSectionProps {
@@ -15,6 +19,10 @@ interface ChannelSectionProps {
 const ChannelSection: React.FC<ChannelSectionProps> = ({ onChannelClick }) => {
     const location = useLocation();
     const [activeChannel, setActiveChannel] = useState(location.pathname);
+    // const [unreadCounts, setUnreadCounts] = useState<Record<string, number>>({});
+
+
+    const unreadCounts = useSelector((state: any) => state.unreadMessages);
 
     useEffect(() => {
         setActiveChannel(location.pathname);
@@ -32,8 +40,63 @@ const ChannelSection: React.FC<ChannelSectionProps> = ({ onChannelClick }) => {
 
     const darkMode = useSelector((state: any) => state.theme.darkMode);
 
+    // useEffect(() => {
+    //     const fetchUnreadCounts = async () => {
+    //         const user = auth.currentUser;
+    //         if (!user) return;
+
+    //         const unreadCountsTemp: Record<string, number> = {};
+    //         const userDoc = await getDoc(doc(db, 'users', user.uid));
+    //         const companyName = userDoc?.data()?.company;
+
+    //         if (!companyName) {
+    //             console.error("User's company name not found");
+    //             return;
+    //         }
+
+    //         const unsubscribeListeners: (() => void)[] = [];
+
+    //         for (const channel of channels) {
+    //             try {
+    //                 const userLastSeenRef = doc(db, 'chatRooms', channel.link, 'userLastSeen', user.uid);
+    //                 const lastSeenDoc = await getDoc(userLastSeenRef);
+    //                 const lastSeenIndex = lastSeenDoc.exists() ? lastSeenDoc.data()?.lastSeenIndex || 0 : 0;
+
+    //                 console.log("last seen index -> "+lastSeenIndex)
+
+    //                 const messagesQuery = query(
+    //                     collection(db, 'chatRooms', channel.link, 'messages'),
+    //                     where('companyName', '==', companyName),
+    //                     orderBy('time')
+    //                 );
+
+    //                 const unsubscribe = onSnapshot(messagesQuery, (snapshot) => {
+    //                     const unreadCount = snapshot.docs.length - lastSeenIndex - 1;
+    //                     unreadCountsTemp[channel.link] = unreadCount > 0 ? unreadCount : 0;
+    //                     setUnreadCounts({ ...unreadCountsTemp });
+    //                 });
+
+    //                 unsubscribeListeners.push(unsubscribe);
+
+    //             } catch (error) {
+    //                 console.error(`Error fetching unread counts for ${channel.title}:`, error);
+    //             }
+    //         }
+    //         setUnreadCounts(unreadCountsTemp);
+    //     };
+
+    //     fetchUnreadCounts();
+    // }, [channels]);
 
     console.log("the link-> " + activeChannel)
+    console.log("the unread channels--> " + JSON.stringify(unreadCounts))
+
+
+    const capitalizeFirstLetter = (text: string): string => {
+        if (!text) return '';
+        return text.charAt(0).toUpperCase() + text.slice(1);
+    };
+
 
     const createChannel = () => {
 
@@ -69,11 +132,20 @@ const ChannelSection: React.FC<ChannelSectionProps> = ({ onChannelClick }) => {
                                 className={`flex items-center p-2 xl:p-3 rounded-lg cursor-pointer duration-200   text-sm xl:text-base font-medium capitalize ${activeChannel === "/home/" + item.link ? "bg-[#F2F2F2] dark:bg-maindark border border-gray-300" : "lg:hover:bg-gray-300 border border-gray-200 lg:border-transparent lg:dark:border-transparent dark:border-gray-100 dark:border-opacity-20 dark:hover:bg-maindark"}`
                                 }
                             >
-                                <Image
-                                    src={!darkMode ? item.img_dark : item.img_light}
-                                    className="mr-2 xl:mr-3 rounded-none "
-                                />
-                                {item.title}
+                                <div className=" flex items-center " >
+                                    <Image
+                                        src={!darkMode ? item.img_dark : item.img_light}
+                                        className="mr-2 xl:mr-3 rounded-none "
+                                    />
+                                    {item.title}
+                                </div>
+
+                                { unreadCounts[capitalizeFirstLetter(item.link)] > 0 && (
+                                    <span className="ml-auto bg-golden text-white text-xs px-2 py-1 rounded-full">
+                                        {/* {console.log("Unread count for", item.link, ":", unreadCounts[capitalizeFirstLetter(item.link)])} */}
+                                        {unreadCounts[capitalizeFirstLetter(item.link)]}
+                                    </span>
+                                )}
                             </Link>
                         ))}
                     </div>

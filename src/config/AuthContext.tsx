@@ -1,17 +1,21 @@
-import React, { createContext, useEffect, useState, ReactNode } from 'react';
+import React, { createContext, useEffect, useState, ReactNode, useMemo } from 'react';
 import { checkAuthStatus } from './firebase';
 import { Spinner } from '@nextui-org/react';
 import { User } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { doc, updateDoc, serverTimestamp, onSnapshot } from 'firebase/firestore';
+import { auth, db } from './firebase';
 
 interface UserType {
   uid: string;
   email: string | null;
+  isActive?: boolean;
 }
 
 interface AuthContextType {
   user: UserType | null;
+  toggleUserStatus: (status: boolean) => void;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -25,54 +29,107 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [loading, setLoading] = useState<boolean>(true);
   const navigate = useNavigate();
 
-  const handleSetUser = (firebaseUser: User | null) => {
+  // const updateUserStatusInFirestore = async (uid: string, isActive: boolean) => {
+  //   try {
+  //     const userDocRef = doc(db, 'users', uid);
+  //     await updateDoc(userDocRef, { isActive });
+  //   } catch (error) {
+  //     console.error('Error updating user status in Firestore:', error);
+  //   }
+  // };
+
+  // const toggleUserStatus = (status: boolean) => {
+  //   if (user) {
+  //     updateUserStatusInFirestore(user.uid, status);
+  //     setUser((prevUser) => (prevUser ? { ...prevUser, isActive: status } : null));
+  //   }
+  // };
+
+  const updateUserStatusInFirestore = async (uid: string, isActive: boolean) => {
+    try {
+      const userDocRef = doc(db, 'users', uid);
+      await updateDoc(userDocRef, { isActive, lastUpdated: serverTimestamp() });
+    } catch (error) {
+      console.error('Error updating user status in Firestore:', error);
+    }
+  };
+
+  const toggleUserStatus = (status: boolean) => {
+    if (user) {
+      updateUserStatusInFirestore(user.uid, status);
+      setUser((prevUser) => (prevUser ? { ...prevUser, isActive: status } : null));
+    }
+  };
+
+
+  const handleSetUser = async (firebaseUser: User | null) => {
     if (firebaseUser) {
       const userData: UserType = {
         uid: firebaseUser.uid,
         email: firebaseUser.email,
+        isActive: true,
       };
       setUser(userData);
+
       if (!localStorage.getItem('loginTimestamp')) {
         localStorage.setItem('loginTimestamp', Date.now().toString());
       }
+
+      await updateUserStatusInFirestore(firebaseUser.uid, true);
     } else {
       setUser(null);
     }
   };
 
+  // const handleSetUser = async (firebaseUser: User | null) => {
+  //   if (firebaseUser) {
+  //     const userData: UserType = {
+  //       uid: firebaseUser.uid,
+  //       email: firebaseUser.email,
+  //       isActive: true,
+  //     };
+  //     setUser(userData);
+
+  //     if (!localStorage.getItem('loginTimestamp')) {
+  //       localStorage.setItem('loginTimestamp', Date.now().toString());
+  //     }
+
+  //     await updateUserStatusInFirestore(firebaseUser.uid, true);
+  //   } else {
+  //     setUser(null);
+  //   }
+  // };
+
   useEffect(() => {
-    checkAuthStatus(handleSetUser, setLoading);
+    checkAuthStatus(handleSetUser, setLoading); // Pass both required arguments
   }, []);
 
+  // Monitor authentication status
+  // useEffect(() => {
+  //   checkAuthStatus(handleSetUser, setLoading);
+  // }, []);
+
+  // Monitor user activity (Idle timer and session expiration)
   useEffect(() => {
     let idleTimer: NodeJS.Timeout | null = null;
 
     const logoutUser = () => {
       toast.warning('Session expired due to inactivity.');
       localStorage.removeItem('loginTimestamp');
+      toggleUserStatus(false);
       setUser(null);
       navigate('/signup');
     };
 
     const resetIdleTimer = () => {
       if (idleTimer) clearTimeout(idleTimer);
-      idleTimer = setTimeout(logoutUser, 15 * 60 * 1000); // 15 minutes inactivity logout
+      idleTimer = setTimeout(logoutUser, 15 * 60 * 1000); // 15 minutes
     };
 
-    const checkTotalSessionDuration = () => {
-      const loginTimestamp = localStorage.getItem('loginTimestamp');
-      if (loginTimestamp) {
-        const elapsedTime = Date.now() - parseInt(loginTimestamp, 10);
-        if (elapsedTime > 12 * 60 * 60 * 1000) { // 12 hours session max
-          toast.warning('Session expired after 12 hours.');
-          localStorage.removeItem('loginTimestamp');
-          setUser(null);
-          navigate('/signup');
-        }
-      }
+    const handleUserActivity = (): void => {
+      resetIdleTimer();
     };
 
-    const handleUserActivity = () => resetIdleTimer();
     window.addEventListener('mousemove', handleUserActivity);
     window.addEventListener('keydown', handleUserActivity);
     window.addEventListener('click', handleUserActivity);
@@ -81,18 +138,44 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       resetIdleTimer();
     }
 
-    const sessionInterval = setInterval(() => {
-      if (user) checkTotalSessionDuration();
-    }, 60 * 1000); // Check every minute
-
     return () => {
       if (idleTimer) clearTimeout(idleTimer);
-      clearInterval(sessionInterval);
       window.removeEventListener('mousemove', handleUserActivity);
       window.removeEventListener('keydown', handleUserActivity);
       window.removeEventListener('click', handleUserActivity);
     };
   }, [user, navigate]);
+
+
+  useEffect(() => {
+    if (user?.uid) {
+      const userDocRef = doc(db, 'users', user.uid);
+  
+      const unsubscribe = onSnapshot(userDocRef, (doc) => {
+        if (doc.exists()) {
+          const data = doc.data();
+          if (data && data.isActive !== user.isActive) {
+            setUser((prevUser) =>
+              prevUser
+                ? { ...prevUser, isActive: data.isActive }
+                : null
+            );
+          }
+        }
+      });
+  
+      return () => unsubscribe();
+    }
+  }, [user?.uid]);
+
+  // Cleanup on unmount or logout
+  // useEffect(() => {
+  //   return () => {
+  //     if (user) toggleUserStatus(false);
+  //   };
+  // }, [user]);
+
+  const value = useMemo(() => ({ user, toggleUserStatus }), [user]);
 
   if (loading) {
     return (
@@ -103,7 +186,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }
 
   return (
-    <AuthContext.Provider value={{ user }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );
