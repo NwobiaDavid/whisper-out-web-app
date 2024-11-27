@@ -5,17 +5,24 @@ import Header from '../../components/dashboard/Header'
 import { Route, Routes, Navigate, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 // import { AuthContext } from '../../config/AuthContext';
-import { doc, getDoc } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs } from 'firebase/firestore';
 import { auth, db } from '../../config/firebase';
 import Settings from '../../components/dashboard/Settings';
 import { Spinner } from '@nextui-org/spinner';
 import HomeDash from '../../components/HomeDash';
+
+
+interface ChatRoomData {
+  id: string;
+  title: string;
+}
 
 const Homepage = () => {
 
   const [isVerified, setIsVerified] = useState(false);
   const [hasCompany, setHasCompany] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [chatRooms, setChatRooms] = useState<ChatRoomData[]>([]);
   // const authContext = useContext(AuthContext);
 
   const [isChannelOpen, setIsChannelOpen] = useState(false);
@@ -54,6 +61,25 @@ const Homepage = () => {
 
     checkAccessPermissions();
   }, [user, navigate]);
+
+
+  useEffect(() => {
+    const fetchChatRooms = async () => {
+      try {
+        const chatRoomsSnapshot = await getDocs(collection(db, 'chatRoom'));
+        const rooms: ChatRoomData[] = chatRoomsSnapshot.docs.map((doc) => ({
+          id: doc.id,
+          title: doc.data().title,
+        }));
+        setChatRooms(rooms);
+        console.log("everything-> "+JSON.stringify(chatRooms))
+      } catch (error) {
+        console.error('Error fetching chat rooms:', error);
+      }
+    };
+
+    fetchChatRooms();
+  }, []);
 
 
   //   useEffect(() => {
@@ -103,16 +129,24 @@ const Homepage = () => {
         <div className="flex-grow p-1 lg:p-5 lg:py-0 overflow-y-auto h-full w-full lg:w-[70%] 2xl:w-[65%]">
           <Routes>
             <Route path="/" element={<HomeDash />} />
-            <Route path="welfare" element={<ChatRoom channel="Welfare" />} />
+            {/* <Route path="welfare" element={<ChatRoom channel="Welfare" />} />
             <Route path="salaries" element={<ChatRoom channel="Salaries" />} />
             <Route path="office-space" element={<ChatRoom channel="Office Space" />} />
             <Route path="tech-jobs" element={<ChatRoom channel="Tech Jobs" />} />
             <Route path="finance" element={<ChatRoom channel="Finance" />} />
-            <Route path="internship" element={<ChatRoom channel="Internship" />} />
+            <Route path="internship" element={<ChatRoom channel="Internship" />} /> */}
+
+            {chatRooms.map((room) => (
+              <Route
+                key={room.id}
+                path={`${room.title}`}
+                element={<ChatRoom channel={room.id} channelTitle={room.title} />}  
+              />
+            ))}
             <Route path="settings" element={<Settings />} />
           </Routes>
         </div>
-        
+
         <AdSection />
       </div>
     </div>

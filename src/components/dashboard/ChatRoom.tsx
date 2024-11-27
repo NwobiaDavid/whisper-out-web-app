@@ -15,6 +15,7 @@ import { AppDispatch } from '../../state/store.ts';
 
 interface ChatRoomProps {
     channel: string;
+    channelTitle: string;
 }
 
 interface UserType {
@@ -33,9 +34,10 @@ interface Message {
     username: string;
 }
 
+
 const secretKey = 'your_secret_key';
 
-const ChatRoom: React.FC<ChatRoomProps> = ({ channel }) => {
+const ChatRoom: React.FC<ChatRoomProps> = ({ channel, channelTitle }) => {
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState<string>('');
     const [username, setUsername] = useState<string>('');
@@ -121,7 +123,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel }) => {
                 }
                 
 
-                await addDoc(collection(db, 'chatRooms', channel, 'messages'), {
+                await addDoc(collection(db, 'chatRoom', channel, 'messages'), {
                     text: input,
                     time: Timestamp.now(),
                     userId: hashUserId(user?.uid || ""),
@@ -145,7 +147,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel }) => {
 
     const fetchLastSeenIndex = async () => {
         if (user) {
-            const userDocRef = doc(db, 'chatRooms', channel, 'userLastSeen', user.uid);
+            const userDocRef = doc(db, 'chatRoom', channel, 'userLastSeen', user.uid);
 
             try {
                 const userDoc = await getDoc(userDocRef);
@@ -165,7 +167,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel }) => {
 
     const updateLastSeenMessage = async (index: number) => {
         if (user) {
-            const userDocRef = doc(db, 'chatRooms', channel, 'userLastSeen', user.uid);
+            const userDocRef = doc(db, 'chatRoom', channel, 'userLastSeen', user.uid);
             await updateDoc(userDocRef, { lastSeenIndex: index });
             setLastSeenIndex(index);
         }
@@ -184,7 +186,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel }) => {
         }
 
         const q = query(
-            collection(db, 'chatRooms', channel, 'messages'),
+            collection(db, 'chatRoom', channel, 'messages'),
             where('companyName', '==', companyName),
             orderBy('time')
         );
@@ -204,7 +206,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel }) => {
             setMessages(updatedMessages);
             setUnreadMessagess(newUnreadCount);
 
-            dispatch(setUnreadMessages({ channel, count: newUnreadCount }));
+            dispatch(setUnreadMessages({ channelTitle, count: newUnreadCount }));
         });
 
         return unsubscribe;
@@ -312,7 +314,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel }) => {
     return (
         <div className='flex flex-col h-full'>
             <div className=' flex justify-between h-[8%] items-center  ' >
-                <div className='text-xl font-bold  text-[#FFC157] '>{channel} Chat</div>
+                <div className='text-xl font-bold  text-[#FFC157] '>{channelTitle} Chat</div>
 
                 <div className='flex justify-center items-center' >
                     <div className=' min-w-[6px] min-h-[6px] mr-1 bg-green-500 rounded-full ' ></div>
