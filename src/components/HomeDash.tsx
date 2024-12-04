@@ -7,6 +7,9 @@ import { AiFillLike, AiOutlineLike } from "react-icons/ai";
 import { FaSmile, FaHeart, FaLaugh } from "react-icons/fa";
 import { addDoc, collection, doc, getDoc, getDocs, increment, setDoc } from "firebase/firestore";
 import { db } from "../config/firebase.ts"
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { BsFillHandThumbsDownFill } from "react-icons/bs";
 
 interface UserType {
   uid: string;
@@ -42,10 +45,21 @@ const HomeDash = () => {
   const user = authContext?.user;
 
   const reactionOptions = [
-    { icon: <AiFillLike size={24} />, text: "Like" },
-    { icon: <FaHeart size={24} />, text: "Love" },
-    { icon: <FaSmile size={24} />, text: "Smile" },
-    { icon: <FaLaugh size={24} />, text: "Laugh" },
+    { icon: <AiFillLike size={24} />, text: "thumbsUp" }, // 👍
+    { icon: <BsFillHandThumbsDownFill size={24} />, text: "thumbsDown" }, // 👎
+    { icon: <span role="img" aria-label="fire">🔥</span>, text: "fire" }, // 🔥
+    { icon: <FaLaugh size={24} />, text: "laugh" }, // 😂
+    { icon: <span role="img" aria-label="cry">😭</span>, text: "cry" }, // 😭
+    { icon: <span role="img" aria-label="party">🥳</span>, text: "party" }, // 🥳
+    { icon: <span role="img" aria-label="shrug">🤷‍♂️</span>, text: "shrug" }, // 🤷‍♂️
+    { icon: <span role="img" aria-label="heart">❤️</span>, text: "heart" }, // ❤️
+    { icon: <span role="img" aria-label="brokenHeart">💔</span>, text: "brokenHeart" }, // 💔
+    { icon: <span role="img" aria-label="starstruck">🤩</span>, text: "starstruck" }, // 🤩
+    { icon: <span role="img" aria-label="cool">😎</span>, text: "cool" }, // 😎
+    { icon: <span role="img" aria-label="relieved">😌</span>, text: "relieved" }, // 😌
+    { icon: <span role="img" aria-label="weary">😩</span>, text: "weary" }, // 😩
+    { icon: <span role="img" aria-label="sad">😔</span>, text: "sad" }, // 😔
+    { icon: <span role="img" aria-label="frown">☹️</span>, text: "frown" }, // ☹️
   ];
 
   useEffect(() => {
@@ -85,7 +99,7 @@ const HomeDash = () => {
 
   const fetchReactions = async (updateId: string): Promise<Record<string, number>> => {
     try {
-      const reactionsRef = collection(db, "updates", updateId, "reactions");
+      const reactionsRef = collection(db, "updates", updateId, "reactions2");
       const reactionsSnapshot = await getDocs(reactionsRef);
 
       const reactionCounts: Record<string, number> = {};
@@ -109,7 +123,7 @@ const HomeDash = () => {
     if (!user) return;
 
     try {
-      const reactionRef = collection(db, "updates", updateId, "reactions");
+      const reactionRef = collection(db, "updates", updateId, "reactions2");
       await addDoc(reactionRef, {
         reaction: reactionType,
         createdDate: new Date().toISOString(),
@@ -251,7 +265,7 @@ const HomeDash = () => {
                         {reaction.icon}
 
                         {hoveredReaction === reaction.text && (
-                          <span className="absolute bottom-[-30px] left-1/2 transform -translate-x-1/2 bg-gray-700 text-white text-xs p-1 rounded">
+                          <span className="absolute capitalize bottom-[-30px] left-1/2 transform -translate-x-1/2 bg-gray-700 text-white text-xs p-1 rounded">
                             {reaction.text}
                           </span>
                         )}
@@ -270,6 +284,7 @@ const HomeDash = () => {
           </div>
         ))}
       </div>
+      <ToastContainer position="top-right" autoClose={5000} hideProgressBar closeOnClick pauseOnHover />
     </div>
   )
 }

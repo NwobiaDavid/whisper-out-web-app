@@ -5,11 +5,12 @@ import Header from '../../components/dashboard/Header'
 import { Route, Routes, Navigate, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 // import { AuthContext } from '../../config/AuthContext';
-import { collection, doc, getDoc, getDocs } from 'firebase/firestore';
+import { updateDoc, query, where, collection, doc, getDoc, getDocs } from 'firebase/firestore';
 import { auth, db } from '../../config/firebase';
 import Settings from '../../components/dashboard/Settings';
 import { Spinner } from '@nextui-org/spinner';
 import HomeDash from '../../components/HomeDash';
+// import { updateDoc, query, where } from 'firebase/firestore';
 
 
 interface ChatRoomData {
@@ -36,6 +37,14 @@ const Homepage = () => {
   const toggleDrawer = () => setIsChannelOpen(!isChannelOpen);
   const closeDrawer = () => setIsChannelOpen(false);
 
+  const channels = [
+    { title: "welfare", img_dark: "/assets/images/icons/channels/channels_light/welfare-pension-insurance-premium_svgrepo.com (1).png", img_light: "/assets/images/icons/channels/welfare-pension-insurance-premium_svgrepo.com.png", link: "welfare" },
+    { title: "salaries", img_dark: "/assets/images/icons/channels/channels_light/salary-wage_svgrepo.com (1).png", img_light: "/assets/images/icons/channels/salary-wage_svgrepo.com.png", link: "salaries" },
+    { title: "office space", img_dark: "/assets/images/icons/channels/channels_light/office-chair_svgrepo.com (1).png", img_light: "/assets/images/icons/channels/office-chair_svgrepo.com.png", link: "office space" },
+    { title: "tech jobs", img_dark: "/assets/images/icons/channels/channels_light/jobsmajor_svgrepo.com (1).png", img_light: "/assets/images/icons/channels/jobsmajor_svgrepo.com.png", link: "tech jobs" },
+    { title: "finance", img_dark: "/assets/images/icons/channels/channels_light/salary-wage_svgrepo.com (1).png", img_light: "/assets/images/icons/channels/finance_svgrepo.com.png", link: "finance" },
+    { title: "internship", img_dark: "/assets/images/icons/channels/channels_light/student-duotone_svgrepo.com (2).png", img_light: "/assets/images/icons/channels/student-duotone_svgrepo.com.png", link: "internships" },
+];
 
   useEffect(() => {
     const checkAccessPermissions = async () => {
@@ -69,10 +78,10 @@ const Homepage = () => {
         const chatRoomsSnapshot = await getDocs(collection(db, 'chatRoom'));
         const rooms: ChatRoomData[] = chatRoomsSnapshot.docs.map((doc) => ({
           id: doc.id,
-          title: doc.data().title,
+          title: doc.data().title.toLowerCase(),
         }));
         setChatRooms(rooms);
-        console.log("everything-> "+JSON.stringify(chatRooms))
+        console.log("everything chatroom -> "+JSON.stringify(chatRooms))
       } catch (error) {
         console.error('Error fetching chat rooms:', error);
       }
@@ -81,6 +90,60 @@ const Homepage = () => {
     fetchChatRooms();
   }, []);
 
+  // useEffect(() => {
+  //   const updateDefaultChannels = async () => {
+  //     try {
+  //       const channelTitles = channels.map((channel) => channel.title); 
+  
+  //       for (const title of channelTitles) {
+  //         const channelQuery = query(
+  //           collection(db, 'chatRoom'), 
+  //           where('title', '==', title)
+  //         );
+  
+  //         const querySnapshot = await getDocs(channelQuery);
+  
+  //         querySnapshot.forEach(async (doc) => {
+  //           await updateDoc(doc.ref, { isDefault: true });
+  //         });
+  //       }
+  
+  //       console.log('Default channels updated successfully.');
+  //     } catch (error) {
+  //       console.error('Error updating default channels:', error);
+  //     }
+  //   };
+  
+  //   updateDefaultChannels();
+  // }, [channels]);
+
+
+  useEffect(() => {
+    const updateDefaultChannels = async () => {
+      try {
+        const channelTitles = channels.map((channel) => channel.title.toLowerCase()); // Normalize to lowercase
+
+        for (const title of channelTitles) {
+          const channelQuery = query(
+            collection(db, 'chatRoom'), // Replace with the actual collection name
+            where('title', '==', title) // Compare in lowercase
+          );
+
+          const querySnapshot = await getDocs(channelQuery);
+
+          querySnapshot.forEach(async (doc) => {
+            await updateDoc(doc.ref, { isDefault: true });
+          });
+        }
+
+        console.log('Default channels updated successfully.');
+      } catch (error) {
+        console.error('Error updating default channels:', error);
+      }
+    };
+
+    updateDefaultChannels();
+  }, []);
 
   //   useEffect(() => {
   //   const handleResize = () => {
@@ -118,9 +181,6 @@ const Homepage = () => {
       )}
 
       <div className='flex-grow flex px-2 md:px-5 2xl:px-20 py-0 h-[90%]'>
-        {/* {isChannelOpen && (
-          <ChannelSection />
-        )} */}
 
         <div className="hidden lg:block lg:w-[20%]  ">
           <ChannelSection onChannelClick={closeDrawer} />

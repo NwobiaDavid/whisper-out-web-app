@@ -12,6 +12,8 @@ import { setUnreadMessages } from '../../state/unreadMessages/unreadMessagesSlic
 import { v4 as uuidv4 } from 'uuid';
 import { AppDispatch } from '../../state/store.ts';
 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 interface ChatRoomProps {
     channel: string;
@@ -45,6 +47,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel, channelTitle }) => {
     const [activeUsers, setActiveUsers] = useState<number>(0);
 
     const [lastSeenIndex, setLastSeenIndex] = useState<number>(0);
+    const [isApproved, setIsApproved] = useState<boolean | null>(null);
 
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
     const textareaRef = useRef<HTMLTextAreaElement | null>(null);
@@ -60,14 +63,68 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel, channelTitle }) => {
     const dispatch = useDispatch<AppDispatch>();
 
 
-    // const generateUsername = (userId: string) => {
-    //     return `User${hashUserId(userId).slice(-5)}`;
-    // };
+    const [contextMenu, setContextMenu] = useState<{ visible: boolean; x: number; y: number; messageId: string | null }>({
+        visible: false,
+        x: 0,
+        y: 0,
+        messageId: null,
+    });
+
+    const handleRightClick = (event: React.MouseEvent, messageId: string) => {
+        event.preventDefault();
+        setContextMenu({
+            visible: true,
+            x: event.pageX,
+            y: event.pageY,
+            messageId,
+        });
+    };
+    const handleCloseContextMenu = () => {
+        setContextMenu({ visible: false, x: 0, y: 0, messageId: null });
+    };
+
+    const handleReportMessage = () => {
+        if (contextMenu.messageId) {
+            console.log(`Reported message ID: ${contextMenu.messageId}`);
+            // Add logic to handle reporting (e.g., update Firestore, notify admins)
+            toast.info('Message has been reported.');
+        }
+        handleCloseContextMenu();
+    };
+
+    useEffect(() => {
+        const handleClickOutside = () => {
+            if (contextMenu.visible) {
+                handleCloseContextMenu();
+            }
+        };
+        window.addEventListener('click', handleClickOutside);
+        return () => window.removeEventListener('click', handleClickOutside);
+    }, [contextMenu]);
+
 
     const generateRandomUsername = () => {
         return `User-${uuidv4().slice(0, 8)}`;
     };
 
+    useEffect(() => {
+        // Fetch channel approval status
+        const fetchChannelApprovalStatus = async () => {
+            const channelDocRef = doc(db, 'chatRoom', channel);
+            try {
+                const channelDoc = await getDoc(channelDocRef);
+                if (channelDoc.exists()) {
+                    setIsApproved(channelDoc.data().isApproved || false);
+                } else {
+                    console.error("Channel document not found.");
+                }
+            } catch (err) {
+                console.error("Error fetching channel approval status:", err);
+            }
+        };
+
+        fetchChannelApprovalStatus();
+    }, [channel]);
 
     const isSameDay = (timestamp1: Timestamp, timestamp2: Timestamp) => {
         const date1 = timestamp1.toDate();
@@ -311,10 +368,22 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel, channelTitle }) => {
         }
     }, [user]);
 
+
+    if (isApproved === false) {
+        // Show approval message if the channel is not approved
+        return (
+            <div className='flex flex-col items-center justify-center h-full'>
+                <p className='text-xl font-semibold text-gray-800 dark:text-gray-200'>
+                    This channel needs to be approved before you can send or view messages.
+                </p>
+            </div>
+        );
+    }
+
     return (
         <div className='flex flex-col h-full'>
             <div className=' flex justify-between h-[8%] items-center  ' >
-                <div className='text-xl font-bold  text-[#FFC157] '>{channelTitle} Chat</div>
+                <div className='text-xl font-bold capitalize  text-[#FFC157] '>{channelTitle} Chat</div>
 
                 <div className='flex justify-center items-center' >
                     <div className=' min-w-[6px] min-h-[6px] mr-1 bg-green-500 rounded-full ' ></div>
@@ -339,8 +408,8 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel, channelTitle }) => {
                                             <div className=" px-2 opacity-100  py-1 text-xs w-fit bg-slate-800  rounded-full">{formatDate(msg.time)}</div>
                                         </div>
                                     )}
-                                    <div className={`mb-3 flex ${msg.userId === hashedCurrentUserId ? 'justify-end' : 'justify-start'}`}>
-                                        <div className={`flex flex-col ${msg.userId === hashedCurrentUserId ? 'items-end' : 'items-start'}`}>
+                                    <div onContextMenu={(e) => handleRightClick(e, msg.userId)}  className={`mb-3  flex ${msg.userId === hashedCurrentUserId ? 'justify-end' : 'justify-start'}`}>
+                                        <div className={`flex  flex-col ${msg.userId === hashedCurrentUserId ? 'items-end' : 'items-start'}`}>
                                             <div className={`p-2 flex flex-col rounded-lg max-w-xs md:max-w-sm lg:max-w-md xl:max-w-lg break-words text-left ${msg.userId === hashedCurrentUserId ? 'dark:text-gray-800 bg-[#FFC157]' : 'bg-[#6967ac]'}`}>
                                                 <span className={`text-xs font-semibold ${msg.userId === hashedCurrentUserId ? "text-[#0e0c4180]" : "text-gray-300"}`}>{msg.username}</span>
                                                 {msg.text}
@@ -348,6 +417,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel, channelTitle }) => {
                                                     {msg.time.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                                 </div>
                                             </div>
+                                        
                                         </div>
                                     </div>
                                 </React.Fragment>
@@ -357,6 +427,21 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel, channelTitle }) => {
                 )}
                 <div ref={messagesEndRef} />
             </div>
+
+            {/* Context Menu */}
+            {contextMenu.visible && (
+                <div
+                    className="absolute z-50  bg-white dark:text-black border rounded shadow-md"
+                    style={{ top: contextMenu.y, left: contextMenu.x }}
+                >
+                    <button
+                        className="block px-4 py-2 text-sm hover:bg-gray-200 w-full text-left"
+                        onClick={handleReportMessage}
+                    >
+                        Report Message
+                    </button>
+                </div>
+            )}
 
             {unreadMessages > 0 && (
                 <div className='relative w-full'>
@@ -389,6 +474,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel, channelTitle }) => {
                     </button>
                 </form>
             </div>
+            <ToastContainer position="top-right" autoClose={5000} hideProgressBar closeOnClick pauseOnHover />
         </div>
     );
 };
