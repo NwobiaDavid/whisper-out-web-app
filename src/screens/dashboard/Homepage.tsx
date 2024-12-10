@@ -73,6 +73,21 @@ const Homepage = () => {
 
 
   useEffect(() => {
+
+    // const fetchWithRetries = async (fetchFunc, retries = 3) => {
+    //   let attempts = 0;
+    //   while (attempts < retries) {
+    //     try {
+    //       return await fetchFunc();
+    //     } catch (error) {
+    //       attempts++;
+    //       if (attempts >= retries) throw error;
+    //       await new Promise((resolve) => setTimeout(resolve, attempts * 1000)); // Exponential backoff
+    //     }
+    //   }
+    // };
+
+    
     const fetchChatRooms = async () => {
       try {
         const chatRoomsSnapshot = await getDocs(collection(db, 'chatRoom'));
@@ -204,6 +219,7 @@ const Homepage = () => {
               />
             ))}
             <Route path="settings" element={<Settings />} />
+            <Route path="settings/notifications" element={<Settings />} />
           </Routes>
         </div>
 

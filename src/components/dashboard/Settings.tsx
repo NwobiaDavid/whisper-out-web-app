@@ -71,6 +71,7 @@ const Settings = () => {
           }
     }
 
+
     return (
         <div>
             <div className=' text-xl xl:text-3xl flex items-center mb-7 ' >
