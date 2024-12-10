@@ -1,7 +1,7 @@
 import { IoIosAddCircleOutline } from "react-icons/io";
 import ToggleSwitch from '../ui/ToggleSwitch';
 import { Image } from '@nextui-org/image';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import {
@@ -16,7 +16,7 @@ import { addDoc, collection, doc, getDoc, getDocs, updateDoc, query, Timestamp, 
 import { db, auth } from "../../config/firebase";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
+import { IoArrowBackSharp } from "react-icons/io5";
 
 
 interface ChannelSectionProps {
@@ -38,6 +38,7 @@ interface Channel {
 
 const ChannelSection: React.FC<ChannelSectionProps> = ({ onChannelClick }) => {
     const location = useLocation();
+    const navigate = useNavigate();
     const [activeChannel, setActiveChannel] = useState(location.pathname);
     const containerRef = useRef<HTMLDivElement>(null);
 
@@ -362,8 +363,15 @@ const ChannelSection: React.FC<ChannelSectionProps> = ({ onChannelClick }) => {
 
 
                 {/* Toggle Switch */}
-                <div className=" h-[10%] p-1 flex items-center">
+                <div className=" h-[10%] p-1 flex justify-between items-center">
                     <ToggleSwitch />
+
+                    <div
+                        className="px-5 rounded-md  capitalize py-3 items-center flex font-medium bg-golden hover:bg-yellow-600 dark:bg-black dark:text-white cursor-pointer"
+                        onClick={() => navigate(-1)} >
+                        <IoArrowBackSharp className=" mr-2 " />
+                        back
+                    </div>
                 </div>
             </div>
 
