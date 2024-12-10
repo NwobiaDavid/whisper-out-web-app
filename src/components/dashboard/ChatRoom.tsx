@@ -30,6 +30,7 @@ interface AuthContextType {
 }
 
 interface Message {
+    id: string;
     text: string;
     time: Timestamp;
     userId: string;
@@ -83,12 +84,50 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel, channelTitle }) => {
         setContextMenu({ visible: false, x: 0, y: 0, messageId: null });
     };
 
-    const handleReportMessage = () => {
-        if (contextMenu.messageId) {
-            console.log(`Reported message ID: ${contextMenu.messageId}`);
-            // Add logic to handle reporting (e.g., update Firestore, notify admins)
-            toast.info('Message has been reported.');
+    const handleReportMessage = async () => {
+        if (contextMenu.messageId && user) {
+            try {
+                console.log('Reporting message ID:', contextMenu.messageId);
+    
+                const messageRef = doc(db, 'chatRoom', channel, 'messages', contextMenu.messageId);
+                console.log('Message Ref:', messageRef.path);
+    
+                const messageDoc = await getDoc(messageRef);
+    
+                if (!messageDoc.exists()) {
+                    console.error("Message does not exist at path:", messageRef.path);
+                    toast.error('Message not found.');
+                    return;
+                }
+    
+                const messageData = messageDoc.data();
+                console.log('Message Data:', messageData);  // Check the data
+    
+                if (!messageData) {
+                    console.error('Message data is undefined!');
+                    return;
+                }  
+    
+                const reportData = {
+                    messageId: contextMenu.messageId,
+                    reportedBy: user.email,
+                    username: user?.email || 'Anonymous',
+                    messageText: messageData.text,
+                    messageTimestamp: messageData.time,
+                    reportedAt: Timestamp.now(),
+                    channel: channel,
+                    status: 'Pending',
+                };
+    
+                await addDoc(collection(db, 'requests'), reportData);
+                toast.info('Message has been reported.');
+    
+            } catch (err) {
+                console.error("Error reporting message:", err);
+                toast.error('Failed to report message.');
+            }
         }
+    
         handleCloseContextMenu();
     };
 
@@ -180,13 +219,18 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel, channelTitle }) => {
                 }
                 
 
-                await addDoc(collection(db, 'chatRoom', channel, 'messages'), {
+                const newMessageRef = await addDoc(collection(db, 'chatRoom', channel, 'messages'), {
                     text: input,
                     time: Timestamp.now(),
                     userId: hashUserId(user?.uid || ""),
                     username: username,
                     companyName: companyName,
                 });
+    
+                // Save the message ID in the document
+                await setDoc(newMessageRef, {
+                    id: newMessageRef.id,  // Save the Firestore-generated ID in the 'messageId' field
+                }, { merge: true });
 
                 setInput('');
                 if (textareaRef.current) {
@@ -252,6 +296,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel, channelTitle }) => {
             const updatedMessages = snapshot.docs.map((doc) => {
                 const data = doc.data();
                 return {
+                    id: data.id,
                     text: data.text,
                     time: data.time instanceof Timestamp ? data.time : Timestamp.fromDate(new Date(data.time)),
                     userId: data.userId,
@@ -408,7 +453,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel, channelTitle }) => {
                                             <div className=" px-2 opacity-100  py-1 text-xs w-fit bg-slate-800  rounded-full">{formatDate(msg.time)}</div>
                                         </div>
                                     )}
-                                    <div onContextMenu={(e) => handleRightClick(e, msg.userId)}  className={`mb-3  flex ${msg.userId === hashedCurrentUserId ? 'justify-end' : 'justify-start'}`}>
+                                    <div onContextMenu={(e) => handleRightClick(e, msg.id)}  className={`mb-3  flex ${msg.userId === hashedCurrentUserId ? 'justify-end' : 'justify-start'}`}>
                                         <div className={`flex  flex-col ${msg.userId === hashedCurrentUserId ? 'items-end' : 'items-start'}`}>
                                             <div className={`p-2 flex flex-col rounded-lg max-w-xs md:max-w-sm lg:max-w-md xl:max-w-lg break-words text-left ${msg.userId === hashedCurrentUserId ? 'dark:text-gray-800 bg-[#FFC157]' : 'bg-[#6967ac]'}`}>
                                                 <span className={`text-xs font-semibold ${msg.userId === hashedCurrentUserId ? "text-[#0e0c4180]" : "text-gray-300"}`}>{msg.username}</span>
