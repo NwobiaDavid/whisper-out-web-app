@@ -315,7 +315,7 @@ const ChannelSection: React.FC<ChannelSectionProps> = ({ onChannelClick }) => {
                                     key={index}
                                     onClick={() => { setActiveChannel(`/home/${item.title}`); onChannelClick?.(); }}
                                     className={`flex items-center group p-2 xl:p-3 rounded-lg cursor-pointer duration-200 text-sm xl:text-base font-medium capitalize 
-        ${showExtraChannels ? "filter-none lg:hover:bg-gray-300 " : "blur-md  transition-all"} `}
+        ${showExtraChannels ? "filter-none lg:hover:bg-gray-300 " : "blur-md  z-90 text-maindark transition-all"} `}
                                 >
                                     <div className="flex items-center">
                                         {item.img_dark && item.img_light ? (
@@ -324,7 +324,7 @@ const ChannelSection: React.FC<ChannelSectionProps> = ({ onChannelClick }) => {
                                                 className="mr-2 xl:mr-3 rounded-none"
                                             />
                                         ) : (
-                                            <div className=" h-[25px] group-hover:bg-gray-500 duration-200 w-[25px] bg-gray-300 rounded-md mr-2 xl:mr-3" > </div>
+                                            <div className={` h-[25px] ${showExtraChannels ? "group-hover:bg-gray-500 bg-gray-300 " : " bg-inherit"}  duration-200 w-[25px]  rounded-md mr-2 xl:mr-3 `} > </div>
                                         )}
                                         {item.title}
                                     </div>
@@ -367,7 +367,7 @@ const ChannelSection: React.FC<ChannelSectionProps> = ({ onChannelClick }) => {
                     <ToggleSwitch />
 
                     <div
-                        className="px-5 rounded-md  capitalize py-3 items-center flex font-medium bg-golden hover:bg-yellow-600 dark:bg-black dark:text-white cursor-pointer"
+                        className="px-5 rounded-md  capitalize py-3 items-center flex font-medium bg-golden hover:bg-yellow-600 dark:bg-[#44427C] dark:text-white cursor-pointer"
                         onClick={() => navigate(-1)} >
                         <IoArrowBackSharp className=" mr-2 " />
                         back

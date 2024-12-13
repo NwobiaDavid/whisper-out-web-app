@@ -14,7 +14,7 @@ import { VscKey } from "react-icons/vsc";
 import { FiEye, FiEyeOff } from 'react-icons/fi';
 
 
-import { motion } from 'framer-motion'; 
+import { motion } from 'framer-motion';
 
 import Emailheader from '../components/Emailheader.tsx';
 import Footer from '../components/Footer.tsx';
@@ -28,6 +28,7 @@ import 'react-toastify/dist/ReactToastify.css';
 interface UserType {
   uid: string;
   email: string;
+  isActive: boolean;
 }
 
 interface AuthContextType {
@@ -37,9 +38,9 @@ interface AuthContextType {
 
 const SignupPage: React.FC = () => {
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState(''); 
+  const [password, setPassword] = useState('');
   // const [confirmPassword, setConfirmPassword] = useState('');
-  const [isSignUp, setIsSignUp] = useState(true); 
+  const [isSignUp, setIsSignUp] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [passwordStrength, setPasswordStrength] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
@@ -52,6 +53,7 @@ const SignupPage: React.FC = () => {
   const user = authContext?.user;
 
   useEffect(() => {
+    console.log("lonely useffect-> " + user)
     if (user) {
       navigate('/home');
     }
@@ -99,11 +101,32 @@ const SignupPage: React.FC = () => {
         navigate('/verify-email');
 
       } else {
-        await signInWithEmailAndPassword(auth, email, password);
-        toast.success('Logged in successfully');
+        console.log("the input data-> email" + email + " the password: " + password + " the auth: " + JSON.stringify(auth))
 
-        localStorage.setItem('loginTimestamp', Date.now().toString());
-        
+        // await signInWithEmailAndPassword(auth, email, password);
+        // console.log("passed the signin funct")
+        // toast.success('Logged in successfully');
+
+        // localStorage.setItem('loginTimestamp', Date.now().toString());
+
+        // navigate('/home');
+
+
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+
+        // Update the AuthContext with the logged-in user
+        if (authContext) {
+          const firebaseUser = userCredential.user;
+          const userData: UserType = {
+            uid: firebaseUser.uid,
+            email: firebaseUser.email || "",
+            isActive: true,
+          };
+          authContext.toggleUserStatus(true); // Set the user status as active
+          localStorage.setItem('loginTimestamp', Date.now().toString());
+        }
+
+        toast.success('Logged in successfully');
         navigate('/home');
       }
     } catch (error: any) {
@@ -111,7 +134,7 @@ const SignupPage: React.FC = () => {
 
       if (error.code === 'auth/email-already-in-use') {
         toast.error('Email already in use. Please log in instead.');
-        setIsSignUp(false); 
+        setIsSignUp(false);
       } else if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
         toast.error('User not found. Redirecting to sign-up...');
         setTimeout(() => setIsSignUp(true), 2000);
@@ -120,7 +143,7 @@ const SignupPage: React.FC = () => {
       } else {
         toast.error('Error: ' + error.message);
       }
-      
+
     }
   };
 
@@ -221,7 +244,7 @@ const SignupPage: React.FC = () => {
                 />
               }
               endContent={
-                <div onClick={togglePasswordVisibility} className={` ${passwordStrength !== 'Strong' && password != "" && 'text-red-600' } cursor-pointer`}>
+                <div onClick={togglePasswordVisibility} className={` ${passwordStrength !== 'Strong' && password != "" && 'text-red-600'} cursor-pointer`}>
                   {isPasswordVisible ? (
                     <FiEyeOff size={'20px'} />
                   ) : (
@@ -242,8 +265,8 @@ const SignupPage: React.FC = () => {
             <button
               type="submit"
               className={`${!isInvalid && email !== '' && password !== ''
-                  ? ' dark:bg-[#FFC157] dark:text-black  dark:hover:bg-[#f1b54d] bg-[#FFC157]   hover:bg-[#f1b54d] text-white'
-                  : 'bg-gray-200'
+                ? ' dark:bg-[#FFC157] dark:text-black  dark:hover:bg-[#f1b54d] bg-[#FFC157]   hover:bg-[#f1b54d] text-white'
+                : 'bg-gray-200'
                 } p-2 lg:p-3 rounded-lg active:scale-95 dark:bg-[#BBC0CA6E] duration-200 font-semibold w-full mt-3 lg:mt-5`}
             >
               {isSignUp ? 'Sign Up' : 'Log In'}

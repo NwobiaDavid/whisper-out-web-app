@@ -29,21 +29,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [loading, setLoading] = useState<boolean>(true);
   const navigate = useNavigate();
 
-  // const updateUserStatusInFirestore = async (uid: string, isActive: boolean) => {
-  //   try {
-  //     const userDocRef = doc(db, 'users', uid);
-  //     await updateDoc(userDocRef, { isActive });
-  //   } catch (error) {
-  //     console.error('Error updating user status in Firestore:', error);
-  //   }
-  // };
-
-  // const toggleUserStatus = (status: boolean) => {
-  //   if (user) {
-  //     updateUserStatusInFirestore(user.uid, status);
-  //     setUser((prevUser) => (prevUser ? { ...prevUser, isActive: status } : null));
-  //   }
-  // };
 
   const updateUserStatusInFirestore = async (uid: string, isActive: boolean) => {
     try {
@@ -81,33 +66,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  // const handleSetUser = async (firebaseUser: User | null) => {
-  //   if (firebaseUser) {
-  //     const userData: UserType = {
-  //       uid: firebaseUser.uid,
-  //       email: firebaseUser.email,
-  //       isActive: true,
-  //     };
-  //     setUser(userData);
-
-  //     if (!localStorage.getItem('loginTimestamp')) {
-  //       localStorage.setItem('loginTimestamp', Date.now().toString());
-  //     }
-
-  //     await updateUserStatusInFirestore(firebaseUser.uid, true);
-  //   } else {
-  //     setUser(null);
-  //   }
-  // };
 
   useEffect(() => {
     checkAuthStatus(handleSetUser, setLoading); // Pass both required arguments
   }, []);
 
-  // Monitor authentication status
-  // useEffect(() => {
-  //   checkAuthStatus(handleSetUser, setLoading);
-  // }, []);
 
   // Monitor user activity (Idle timer and session expiration)
   useEffect(() => {
@@ -168,12 +131,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   }, [user?.uid]);
 
-  // Cleanup on unmount or logout
-  // useEffect(() => {
-  //   return () => {
-  //     if (user) toggleUserStatus(false);
-  //   };
-  // }, [user]);
 
   const value = useMemo(() => ({ user, toggleUserStatus }), [user]);
 
