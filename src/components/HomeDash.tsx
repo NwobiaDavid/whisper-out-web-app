@@ -12,6 +12,7 @@ import { AiFillLike, AiOutlineLike } from "react-icons/ai";
 import { BsFillHandThumbsDownFill } from "react-icons/bs";
 import { ImSad2 } from "react-icons/im";
 import { BiSolidParty } from "react-icons/bi";
+import { Spinner } from "@nextui-org/spinner";
 
 interface UserType {
   uid: string;
@@ -42,6 +43,7 @@ const HomeDash = () => {
   const [hoveredReaction, setHoveredReaction] = useState<string | null>(null);
   const [updates, setUpdates] = useState<Update[]>([]);
   const [selectedReactions, setSelectedReactions] = useState<Record<string, { icon: JSX.Element; text: string } | null>>({});
+  const [isLoading, setIsLoading] = useState(true)
 
   const authContext = useContext(AuthContext) as AuthContextType | undefined;
   const user = authContext?.user;
@@ -79,6 +81,7 @@ const HomeDash = () => {
       }
 
       setUpdates(fetchedUpdates);
+      setIsLoading(false)
     } catch (error) {
       console.error("Error fetching updates:", error);
     }
@@ -325,10 +328,18 @@ const HomeDash = () => {
   };
 
   useEffect(() => {
-  
+
     console.log("the selected reactions-> " + JSON.stringify(selectedReactions))
   }, [])
 
+
+  if (isLoading) {
+    return (
+      <div className="w-full h-screen flex justify-center items-center">
+        <Spinner />
+      </div>
+    );
+  }
 
   return (
     <div className=" w-full h-full " >
@@ -383,8 +394,8 @@ const HomeDash = () => {
                   onMouseLeave={() => setShowReactions(null)}
                   onClick={() => handleReactionClick(update.id, { icon: <AiFillLike size={30} />, text: "Like" })}
                 >
-                  {selectedReactions[update.id]?.icon || <AiOutlineLike size={30} />}
-                  
+                  {selectedReactions[update.id]?.icon || <AiOutlineLike size={30} a />}
+
 
                   <span className="text-xl">
                     {selectedReactions[update.id]?.text || "Like"}

@@ -33,6 +33,7 @@ interface UserType {
 
 interface AuthContextType {
   user: UserType | null;
+  toggleUserStatus: (isActive: boolean) => void; 
 }
 
 
@@ -244,7 +245,7 @@ const SignupPage: React.FC = () => {
                 />
               }
               endContent={
-                <div onClick={togglePasswordVisibility} className={` ${passwordStrength !== 'Strong' && password != "" && 'text-red-600'} cursor-pointer`}>
+                <div onClick={togglePasswordVisibility} className={` ${passwordStrength !== 'Strong' && password != "" && isSignUp && 'text-red-600'} cursor-pointer`}>
                   {isPasswordVisible ? (
                     <FiEyeOff size={'20px'} />
                   ) : (
@@ -254,34 +255,35 @@ const SignupPage: React.FC = () => {
               }
             />
             {password && (
-              <div className="w-full px-1 flex">
-                <p className={`mb-3 font-light text-xs  ${passwordStrength === 'Bad' ? 'text-red-600' : passwordStrength === 'Good' ? 'text-yellow-600' : 'text-green-600'}`}>
+              <div className={` ${isSignUp ? "flex" : "hidden"} w-full px-1 `}>
+                <p className={` font-light text-xs  ${passwordStrength === 'Bad' ? 'text-red-600' : passwordStrength === 'Good' ? 'text-yellow-600' : 'text-green-600'}`}>
                   Password strength: {passwordStrength}
                 </p>
               </div>
             )}
 
-            {error && <p className="text-red-600 mt-2">{error}</p>}
-            <button
-              type="submit"
-              className={`${!isInvalid && email !== '' && password !== ''
-                ? ' dark:bg-[#FFC157] dark:text-black  dark:hover:bg-[#f1b54d] bg-[#FFC157]   hover:bg-[#f1b54d] text-white'
-                : 'bg-gray-200'
-                } p-2 lg:p-3 rounded-lg active:scale-95 dark:bg-[#BBC0CA6E] duration-200 font-semibold w-full mt-3 lg:mt-5`}
-            >
-              {isSignUp ? 'Sign Up' : 'Log In'}
-            </button>
-
-            {!isSignUp && (
-              <div className="lg:mt-1 w-full flex justify-end">
+{!isSignUp && (
+              <div className=" w-full flex justify-end">
                 <span
-                  className="text-blue-600 text-sm cursor-pointer"
+                  className="text-blue-600 text-xs cursor-pointer"
                   onClick={() => navigate('/forgot-password')}
                 >
                   Forgot Password?
                 </span>
               </div>
             )}
+
+            <button
+              type="submit"
+              className={`${!isInvalid && email !== '' && password !== ''
+                ? ' dark:bg-[#FFC157] dark:text-black  dark:hover:bg-[#f1b54d] bg-[#FFC157]   hover:bg-[#f1b54d] text-white'
+                : 'bg-gray-200'
+                } p-2 lg:p-3 rounded-lg active:scale-95 dark:bg-[#BBC0CA6E] duration-200 font-semibold w-full mt-3 `}
+            >
+              {isSignUp ? 'Sign Up' : 'Log In'}
+            </button>
+
+            
 
             <div className="  text-center">
               {isSignUp ? (

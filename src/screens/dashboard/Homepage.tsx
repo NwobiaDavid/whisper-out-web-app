@@ -10,6 +10,7 @@ import { auth, db } from '../../config/firebase';
 import Settings from '../../components/dashboard/Settings';
 import { Spinner } from '@nextui-org/spinner';
 import HomeDash from '../../components/HomeDash';
+import ChangePassword from '../../components/dashboard/settingsPages/ChangePassword';
 // import { updateDoc, query, where } from 'firebase/firestore';
 
 
@@ -44,7 +45,7 @@ const Homepage = () => {
     { title: "tech jobs", img_dark: "/assets/images/icons/channels/channels_light/jobsmajor_svgrepo.com (1).png", img_light: "/assets/images/icons/channels/jobsmajor_svgrepo.com.png", link: "tech jobs" },
     { title: "finance", img_dark: "/assets/images/icons/channels/channels_light/salary-wage_svgrepo.com (1).png", img_light: "/assets/images/icons/channels/finance_svgrepo.com.png", link: "finance" },
     { title: "internship", img_dark: "/assets/images/icons/channels/channels_light/student-duotone_svgrepo.com (2).png", img_light: "/assets/images/icons/channels/student-duotone_svgrepo.com.png", link: "internships" },
-];
+  ];
 
   useEffect(() => {
     const checkAccessPermissions = async () => {
@@ -87,7 +88,7 @@ const Homepage = () => {
     //   }
     // };
 
-    
+
     const fetchChatRooms = async () => {
       try {
         const chatRoomsSnapshot = await getDocs(collection(db, 'chatRoom'));
@@ -96,7 +97,7 @@ const Homepage = () => {
           title: doc.data().title.toLowerCase(),
         }));
         setChatRooms(rooms);
-        console.log("everything chatroom -> "+JSON.stringify(chatRooms))
+        console.log("everything chatroom -> " + JSON.stringify(chatRooms))
       } catch (error) {
         console.error('Error fetching chat rooms:', error);
       }
@@ -109,26 +110,26 @@ const Homepage = () => {
   //   const updateDefaultChannels = async () => {
   //     try {
   //       const channelTitles = channels.map((channel) => channel.title); 
-  
+
   //       for (const title of channelTitles) {
   //         const channelQuery = query(
   //           collection(db, 'chatRoom'), 
   //           where('title', '==', title)
   //         );
-  
+
   //         const querySnapshot = await getDocs(channelQuery);
-  
+
   //         querySnapshot.forEach(async (doc) => {
   //           await updateDoc(doc.ref, { isDefault: true });
   //         });
   //       }
-  
+
   //       console.log('Default channels updated successfully.');
   //     } catch (error) {
   //       console.error('Error updating default channels:', error);
   //     }
   //   };
-  
+
   //   updateDefaultChannels();
   // }, [channels]);
 
@@ -215,11 +216,18 @@ const Homepage = () => {
               <Route
                 key={room.id}
                 path={`${room.title}`}
-                element={<ChatRoom channel={room.id} channelTitle={room.title} />}  
+                element={<ChatRoom channel={room.id} channelTitle={room.title} />}
               />
             ))}
             <Route path="settings" element={<Settings />} />
-            <Route path="settings/notifications" element={<Settings />} />
+
+            {/* <Route path="settings" element={<Settings />}>
+              <Route path="*" element={<div>Settings page not found</div>} />
+            </Route> */}
+              <Route path="settings/change-password" element={<ChangePassword />} />
+
+            {/* <Route path="settings/notifications" element={<Settings />} />
+            <Route path="settings/change-password" element={<ChangePassword />} /> */}
           </Routes>
         </div>
 

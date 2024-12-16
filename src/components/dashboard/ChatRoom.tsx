@@ -437,7 +437,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel, channelTitle }) => {
             </div>
 
 
-            <div ref={messageContainerRef}  className="flex-grow h-[94%]  bg-[rgba(255,255,255,0.6)] dark:bg-[#3D3B6F] bg-blend-lighten dark:bg-blend-overlay relative overflow-y-auto overflow-x-hidden p-2 md:p-4 
+            <div ref={messageContainerRef}  className="flex-grow h-[94%]  bg-[rgba(255,255,255,0.6)] dark:bg-[#3D3B6F] bg-blend-lighten dark:bg-blend-soft-light relative overflow-y-auto overflow-x-hidden p-2 md:p-4 
                            bg-fixed bg-[url('/assets/images/bg/chatroom/chatroom_light.png')]  dark:bg-[url('/assets/images/bg/chatroom/chatroom_dark.png')] 
                            bg-no-repeat bg-fill bg-center rounded-t-md">
                 {messages.length === 0 ? (
