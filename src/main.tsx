@@ -23,6 +23,7 @@ import ForgotPassword from './screens/ForgotPassword.tsx';
 import Homepage from './screens/dashboard/Homepage.tsx';
 import VerifyEmailPage from './screens/VerifyEmailPage.tsx';
 import WaitingPage from './screens/WaitingPage.tsx';
+import CompanyInfo from './screens/CompanyInfo.tsx';
 
 
 createRoot(document.getElementById('root') as HTMLElement).render(
@@ -37,6 +38,7 @@ createRoot(document.getElementById('root') as HTMLElement).render(
                 <Route path="/confirmation" element={<ConfirmationPage />} />
                 <Route path="/finishSignUp" element={<FinishSignUp />} />
                 <Route path="/company-entry" element={<CompanyEntry />} />
+                <Route path="/company-info" element={<CompanyInfo />} />
                 <Route path="/interests" element={<UsersInterests />} />
                 <Route path="/verify-email" element={<VerifyEmailPage />} />
                 <Route path="/waiting-page" element={<WaitingPage />} />

@@ -2,7 +2,7 @@ import { motion } from "framer-motion"
 
 import Emailheader from "../components/Emailheader"
 import Footer from "../components/Footer"
-import { reauthenticateWithCredential, sendPasswordResetEmail, updatePassword } from "firebase/auth";
+import { sendPasswordResetEmail, updatePassword } from "firebase/auth";
 import { auth } from "../config/firebase"
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
@@ -13,7 +13,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { IoCaretBackOutline } from "react-icons/io5";
 import { FiEye, FiEyeOff } from "react-icons/fi";
-import { EmailAuthProvider } from "firebase/auth/web-extension";
+// import { EmailAuthProvider } from "firebase/auth/web-extension";
 
 
 const ForgotPassword = () => {
@@ -21,13 +21,13 @@ const ForgotPassword = () => {
   const [email, setEmail] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
+  // const [error, setError] = useState<string | null>(null);
+  // const [success, setSuccess] = useState<string | null>(null);
   const [isInvalid, setIsInvalid] = useState(false);
   const [step, setStep] = useState<"email" | "reset">("email");
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isConfirmPasswordVisible, setConfirmIsPasswordVisible] = useState(false);
-  const [passwordStrength, setPasswordStrength] = useState("");
+  // const [passwordStrength, setPasswordStrength] = useState("");
 
   const navigate = useNavigate();
 
@@ -35,15 +35,15 @@ const ForgotPassword = () => {
     value.match(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i);
 
 
-  const evaluatePasswordStrength = (password: string): string => {
-    if (password.length >= 8 && /[A-Z]/.test(password) && /\d/.test(password)) {
-      return "Strong";
-    }
-    if (password.length >= 6) {
-      return "Moderate";
-    }
-    return "Weak";
-  };
+  // const evaluatePasswordStrength = (password: string): string => {
+  //   if (password.length >= 8 && /[A-Z]/.test(password) && /\d/.test(password)) {
+  //     return "Strong";
+  //   }
+  //   if (password.length >= 6) {
+  //     return "Moderate";
+  //   }
+  //   return "Weak";
+  // };
 
   const togglePasswordVisibility = () => {
     setIsPasswordVisible(!isPasswordVisible);
@@ -56,15 +56,15 @@ const ForgotPassword = () => {
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const pwd = e.target.value;
     setNewPassword(pwd);
-    const strength = evaluatePasswordStrength(pwd);
-    setPasswordStrength(strength);
+    // const strength = evaluatePasswordStrength(pwd);
+    // setPasswordStrength(strength);
   };
 
 
   const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
-    setSuccess(null);
+    // setError(null);
+    // setSuccess(null);
 
     if (!validateEmail(email)) {
       setIsInvalid(true);
@@ -89,55 +89,55 @@ const ForgotPassword = () => {
   };
 
 
-  const handleReauthenticateAndResetPassword = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-    setSuccess(null);
+  // const handleReauthenticateAndResetPassword = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   // setError(null);
+  //   // setSuccess(null);
   
-    try {
-      // Collect user's credentials (current password)
-      const currentPassword = prompt("Please enter your current password for verification:");
-      if (!currentPassword) {
-        toast.error("Password verification is required.");
-        return;
-      }
+  //   try {
+  //     // Collect user's credentials (current password)
+  //     const currentPassword = prompt("Please enter your current password for verification:");
+  //     if (!currentPassword) {
+  //       toast.error("Password verification is required.");
+  //       return;
+  //     }
   
-      // Get the current user
-      const user = auth.currentUser;
-      if (!user) throw new Error("User not authenticated.");
+  //     // Get the current user
+  //     const user = auth.currentUser;
+  //     if (!user) throw new Error("User not authenticated.");
   
-      // Create credentials for reauthentication
-      const credential = EmailAuthProvider.credential(user.email!, currentPassword);
+  //     // Create credentials for reauthentication
+  //     const credential = EmailAuthProvider.credential(user.email!, currentPassword);
   
-      // Reauthenticate the user
-      await reauthenticateWithCredential(user, credential);
+  //     // Reauthenticate the user
+  //     await reauthenticateWithCredential(user, credential);
   
-      // Update the password after successful reauthentication
-      if (newPassword !== confirmPassword) {
-        toast.error("Passwords do not match.");
-        return;
-      }
+  //     // Update the password after successful reauthentication
+  //     if (newPassword !== confirmPassword) {
+  //       toast.error("Passwords do not match.");
+  //       return;
+  //     }
   
-      if (newPassword.length < 6) {
-        toast.error("Password must be at least 6 characters long.");
-        return;
-      }
+  //     if (newPassword.length < 6) {
+  //       toast.error("Password must be at least 6 characters long.");
+  //       return;
+  //     }
   
-      await updatePassword(user, newPassword);
+  //     await updatePassword(user, newPassword);
   
-      toast.success("Password reset successfully. Redirecting...");
-      setTimeout(() => navigate("/signin"), 3000); // Redirect to login
-    } catch (error: any) {
-      console.error("Error resetting password:", error);
-      toast.error(error.message || "Failed to reset password. Please try again.");
-    }
-  };
+  //     toast.success("Password reset successfully. Redirecting...");
+  //     setTimeout(() => navigate("/signin"), 3000); // Redirect to login
+  //   } catch (error: any) {
+  //     console.error("Error resetting password:", error);
+  //     toast.error(error.message || "Failed to reset password. Please try again.");
+  //   }
+  // };
 
 
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
-    setSuccess(null);
+    // setError(null);
+    // setSuccess(null);
 
     if (newPassword !== confirmPassword) {
       toast.error("Passwords do not match.");
@@ -169,9 +169,9 @@ const ForgotPassword = () => {
 
   const handleBack = () => {
     if (step === "reset") {
-      setStep("email"); // Go back to the email input step
+      setStep("email"); 
     } else {
-      navigate("/signup"); // Navigate back to the main authentication page
+      navigate("/signup"); 
     }
   };
 
@@ -192,11 +192,11 @@ const ForgotPassword = () => {
       >
 
 
-        <div className=" w-[85%] relative lg:w-[75%] py-10 lg:py-0 rounded-lg xl:w-[70%] border-none lg:border bg-transparent dark:border dark:border-opacity-20 dark:bg-[#44427C] border-gray-200 lg:grid flex flex-col  lg:grid-cols-2">
+        <div className=" w-[85%] relative lg:w-[75%] py-14 lg:py-0 rounded-lg xl:w-[70%] bg-white dark:bg-inherit lg:dark:bg-[#44427C] border border-transparent dark:border-transparent  lg:border-gray-300 lg:grid flex flex-col  lg:grid-cols-2">
 
           <button
             type="button"
-            className="m-4 absolute z-30 bg-gray-300 p-4 cursor-pointer rounded-full active:scale-95 duration-200 font-semibold  dark:bg-maindark dark:text-white"
+            className="lg:m-4 m-0 absolute top-0 z-30 bg-gray-300 p-4 cursor-pointer rounded-full active:scale-95 duration-200 font-semibold dark:bg-[#44427C] lg:dark:bg-maindark dark:text-white"
             onClick={handleBack}
           >
             <IoCaretBackOutline />
@@ -208,10 +208,10 @@ const ForgotPassword = () => {
               onSubmit={handleEmailSubmit}
               className="xl:px-20 lg:px-7 flex flex-col relative justify-center items-center"
             >
-              <h1 className="text-2xl lg:text-3xl font-bold mb-2">Reset Your Password</h1>
+              {/* <h1 className="text-2xl lg:text-3xl font-bold mb-2">Reset Your Password</h1>
               <p className="text-sm text-gray-500 mb-10">
                 Enter your email below to verify your account.
-              </p>
+              </p> */}
 
               <Input
                 size="lg"
@@ -219,7 +219,15 @@ const ForgotPassword = () => {
                 type="email"
                 variant="bordered"
                 required
-                label="Your email"
+                classNames={{
+                  label: "text-black/50  dark:text-white/90 text-sm lg:text-base ",
+                  inputWrapper: [
+                    "dark:border-gray-500",
+                    "dark:hover:border-gray-300",
+                    "!cursor-text",
+                  ],
+                }}
+                label="Enter your email"
                 placeholder=""
                 labelPlacement="outside"
                 isInvalid={isInvalid}
@@ -245,7 +253,7 @@ const ForgotPassword = () => {
 
               <button
                 type="submit"
-                className={`mt-4 ${email !== "" && !isInvalid
+                className={`mt-10 ${email !== "" && !isInvalid
                   ? "dark:bg-[#FFC157] dark:text-black dark:hover:bg-[#f1b54d] bg-[#FFC157] hover:bg-[#f1b54d] text-white"
                   : "bg-gray-200 cursor-not-allowed "
                   } p-3 rounded-lg active:scale-95 dark:bg-[#BBC0CA6E] duration-200 font-semibold w-full`}
@@ -312,11 +320,23 @@ const ForgotPassword = () => {
           )}
 
           <div className="flex -order-1 lg:order-1  flex-col justify-center lg:mb-0 mb-16 lg:py-0 lg:px-7 xl:px-20">
-            <h1 className=" text-2xl lg:text-3xl font-bold mb-10">Reset Your Password with WhisperOut</h1>
+            <h1 className=" text-2xl lg:text-3xl font-bold mb-10">Forgot your password?</h1>
             <div>
-              <p className="font-light text-[14px] leading-[16px]">
-                WhisperOut ensures that you can reset your password anytime you forget it. Your security is our top priority.
+              <p className="font-light text-[14px] mb-5 leading-[16px]">
+              You forgot your password, enter your already registered email to proceed to updating your password
               </p>
+              <div>
+              <p className="font-light md:text-sm text-xs lg:text-[14px] leading-[16px]">
+                WhisperOut is your go-to spot for real talk, zero judgment. Got
+                questions you’ve been too shy to ask? Or opinions you want to
+                share without the side-eye? WhisperOut lets you dive into
+                honest, anonymous conversations about your company that&apos;s all
+                about keeping it real. It’s where curiosity meets freedom. Ask
+                anything, share your thoughts, and connect with others, all
+                while staying completely under the radar.
+              </p>
+              <h3 className="mt-4 lg:text-base text-sm font-medium">WhisperOut, Every Voice Matters.</h3>
+            </div>
             </div>
           </div>
 

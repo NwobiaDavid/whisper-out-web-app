@@ -1,28 +1,28 @@
-import { useState, useEffect, useMemo } from 'react'
+// import { useState } from 'react'
 // import { FaRegMoon } from 'react-icons/fa';
 import { FaGear } from 'react-icons/fa6'
 // import { IoSunnySharp } from 'react-icons/io5';
-import { motion } from 'framer-motion';
+// import { motion } from 'framer-motion';
 // import { signOut } from 'firebase/auth';
 // import { auth } from '../../config/firebase';
 // import { auth, db } from '../../config/firebase';
 // import { doc, getDoc, updateDoc } from 'firebase/firestore';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 
 
 const Notifications = () => {
 
-    const [sendUpdates, setSendUpdates] = useState(true);
-    const navigate = useNavigate();
+    // const [sendUpdates, setSendUpdates] = useState(true);
+    // const navigate = useNavigate();
 
-    const handleSendUpdates = () => {
+    // const handleSendUpdates = () => {
 
 
-    }
+    // }
 
-    const handleDeleteAccount = () => {
+    // const handleDeleteAccount = () => {
 
-    }
+    // }
 
     return (
         <div>
@@ -54,7 +54,7 @@ const Notifications = () => {
                         <div className='p-2 xl:p-3 hover:bg-[#3D3B6F] flex items-center justify-between hover:dark:bg-[#353361] cursor-pointer dark:bg-[#44427C] hover:text-white duration-200 bg-white  ' >
                             <span>show active status</span>
 
-                            <div>
+                            {/* <div>
                                 <div>
                                     <motion.div
                                         onClick={handleSendUpdates}
@@ -77,7 +77,7 @@ const Notifications = () => {
                                         />
                                     </motion.div>
                                 </div>
-                            </div>
+                            </div> */}
                         </div>
                         <hr className=' border-[#3D3B6F] dark:border-gray-400  ' />
                         <div className=' p-3 hover:bg-[#3D3B6F] hover:dark:bg-[#353361] cursor-pointer dark:bg-[#44427C] hover:text-white  duration-200 bg-white ' >

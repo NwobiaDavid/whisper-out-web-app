@@ -6,6 +6,7 @@ import { AuthContext } from '../../config/AuthContext.tsx';
 import { FaAngleDown } from "react-icons/fa6";
 import { PiNavigationArrowBold } from "react-icons/pi";
 
+
 import { useDispatch } from 'react-redux';
 import { setUnreadMessages } from '../../state/unreadMessages/unreadMessagesSlice.ts';
 
@@ -437,9 +438,11 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel, channelTitle }) => {
             </div>
 
 
-            <div ref={messageContainerRef}  className="flex-grow h-[94%]  bg-[rgba(255,255,255,0.6)] dark:bg-[#3D3B6F] bg-blend-lighten dark:bg-blend-soft-light relative overflow-y-auto overflow-x-hidden p-2 md:p-4 
+            <div ref={messageContainerRef}  
+            className="flex-grow h-[94%]  bg-[rgba(255,255,255,0.6)] dark:bg-[rgba(68,66,124,0.9)] bg-blend-lighten dark:bg-blend-soft-light relative overflow-y-auto overflow-x-hidden p-2 md:p-4 
                            bg-fixed bg-[url('/assets/images/bg/chatroom/chatroom_light.png')]  dark:bg-[url('/assets/images/bg/chatroom/chatroom_dark.png')] 
-                           bg-no-repeat bg-fill bg-center rounded-t-md">
+                           bg-no-repeat bg-fill bg-center rounded-t-md  "
+                           >
                 {messages.length === 0 ? (
                     <div className='text-gray-900 font-semibold dark:text-gray-100'>No messages yet. Start the conversation!</div>
                 ) : (

@@ -2,7 +2,7 @@
 import React from 'react';
 import { Input } from '@nextui-org/react';
 import { useState, useMemo, useEffect, useContext } from 'react';
-import { createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
 import { AuthContext } from '../config/AuthContext.tsx';
 import { auth } from '../config/firebase.ts';
 import { useNavigate } from 'react-router-dom';
@@ -42,7 +42,7 @@ const SignupPage: React.FC = () => {
   const [password, setPassword] = useState('');
   // const [confirmPassword, setConfirmPassword] = useState('');
   const [isSignUp, setIsSignUp] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  // const [error, setError] = useState<string | null>(null);
   const [passwordStrength, setPasswordStrength] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
@@ -54,7 +54,7 @@ const SignupPage: React.FC = () => {
   const user = authContext?.user;
 
   useEffect(() => {
-    console.log("lonely useffect-> " + user)
+    // console.log("lonely useffect-> " + user)
     if (user) {
       navigate('/home');
     }
@@ -86,7 +86,7 @@ const SignupPage: React.FC = () => {
   const handleAuth = async (e: { preventDefault: () => void; }) => {
     e.preventDefault();
 
-    setError(null);
+    // setError(null);
 
     // const emailDomain = email.split('@')[1];
 
@@ -113,22 +113,23 @@ const SignupPage: React.FC = () => {
         // navigate('/home');
 
 
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        // const userCredential = await signInWithEmailAndPassword(auth, email, password);
 
         // Update the AuthContext with the logged-in user
         if (authContext) {
-          const firebaseUser = userCredential.user;
-          const userData: UserType = {
-            uid: firebaseUser.uid,
-            email: firebaseUser.email || "",
-            isActive: true,
-          };
+          // const firebaseUser = userCredential.user;
+          // const userData: UserType = {
+          //   uid: firebaseUser.uid,
+          //   email: firebaseUser.email || "",
+          //   isActive: true,
+          // };
           authContext.toggleUserStatus(true); // Set the user status as active
           localStorage.setItem('loginTimestamp', Date.now().toString());
         }
 
         toast.success('Logged in successfully');
         navigate('/home');
+        window.location.reload();
       }
     } catch (error: any) {
       console.error('Error with authentication:', error);
@@ -173,7 +174,7 @@ const SignupPage: React.FC = () => {
         transition={{ type: 'spring', stiffness: 50, damping: 20 }}
         className="w-full h-[83%] lg:h-[75%] flex justify-center">
         <div
-          className=" w-[90%] md:w-[85%] lg:w-[75%] py-10 lg:py-0 rounded-lg xl:w-[70%] border-none lg:border bg-transparent dark:border dark:border-opacity-20 lg:dark:bg-[#44427C] border-gray-200 lg:grid flex flex-col  lg:grid-cols-2"
+          className=" w-[90%] md:w-[85%] lg:w-[75%] py-10 lg:py-0 rounded-lg xl:w-[70%]  bg-white dark:bg-inherit lg:dark:bg-[#44427C] border border-transparent dark:border-transparent  lg:border-gray-300  lg:grid flex flex-col  lg:grid-cols-2"
         >
 
           <form
@@ -265,7 +266,7 @@ const SignupPage: React.FC = () => {
 {!isSignUp && (
               <div className=" w-full flex justify-end">
                 <span
-                  className="text-blue-600 text-xs cursor-pointer"
+                  className="text-blue-600 dark:text-golden text-xs cursor-pointer"
                   onClick={() => navigate('/forgot-password')}
                 >
                   Forgot Password?
@@ -290,7 +291,7 @@ const SignupPage: React.FC = () => {
                 <p className='  lg:text-base text-sm mt-2 lg:mt-4 ' >
                   Already have an account?{' '}
                   <span
-                    className="text-blue-600 cursor-pointer"
+                    className="text-blue-600 dark:text-golden cursor-pointer"
                     onClick={() => setIsSignUp(false)}
                   >
                     Log In
@@ -300,7 +301,7 @@ const SignupPage: React.FC = () => {
                 <p className=' lg:text-base text-sm mt-2 lg:mt-0 2xl:mt-1 ' >
                   Don't have an account?
                   <span
-                    className="text-blue-600 ml-1 cursor-pointer"
+                    className="text-blue-600 dark:text-golden ml-1 cursor-pointer"
                     onClick={() => setIsSignUp(true)}
                   >
                     Sign Up
@@ -309,12 +310,19 @@ const SignupPage: React.FC = () => {
               )}
             </div>
 
-            <div className="  lg:absolute  lg:bottom-[4%] mt-2 sm:mt-4  md:mt-10 lg:mt-0 2xl:bottom-[10%] lg:px-7 xl:px-20 text-xs lg:text-sm">
-              <p className="font-light leading-[16px] lg:leading-[15px]">
+            <div className="  lg:absolute  lg:bottom-[4%] mt-4  md:mt-10 lg:mt-0 2xl:bottom-[10%] lg:px-7 xl:px-20 text-xs lg:text-sm">
+              <p className="font-light lg:block hidden leading-[16px] lg:leading-[15px]">
                 By inserting your email, you confirm your agreement to
                 WhisperOut Terms and Conditions and WhisperOut contacting you
                 about our products and services. You can opt at any time by
                 deleting your account. Find out more about our
+                <span className="italic lg:hidden inline ml-1 font-medium">Privacy Policy</span>
+              </p>
+
+              <p className="font-light lg:hidden block leading-[16px] lg:leading-[15px]">
+              By entering your email, you agree to WhisperOut's Terms and Conditions and consent to 
+              being contacted about our products and services. 
+              You can opt out anytime by deleting your account. Learn more in our
                 <span className="italic lg:hidden inline ml-1 font-medium">Privacy Policy</span>
               </p>
               <h4 className="italic hidden lg:flex font-normal">Privacy Policy</h4>

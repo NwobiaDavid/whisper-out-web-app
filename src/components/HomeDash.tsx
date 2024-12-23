@@ -1,18 +1,20 @@
-import { Input } from "@nextui-org/input"
+// import { Input } from "@nextui-org/input"
 import { useContext, useEffect, useState } from "react";
 // import { useNavigate } from "react-router-dom";
 import { AuthContext } from '../config/AuthContext.tsx';
-import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, increment, query, setDoc, where } from "firebase/firestore";
+import { addDoc, collection, deleteDoc,  getDocs, query, where } from "firebase/firestore";
 import { db } from "../config/firebase.ts"
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { FaSmile, FaHeart, FaLaugh, FaSadCry } from "react-icons/fa";
-import { FiSearch } from "react-icons/fi";
-import { AiFillLike, AiOutlineLike } from "react-icons/ai";
+import { FaLaughBeam } from "react-icons/fa";
+// import { FiSearch } from "react-icons/fi";
+import { AiFillLike } from "react-icons/ai";
 import { BsFillHandThumbsDownFill } from "react-icons/bs";
-import { ImSad2 } from "react-icons/im";
-import { BiSolidParty } from "react-icons/bi";
+// import { ImSad2 } from "react-icons/im";
+// import { BiSolidParty } from "react-icons/bi";
 import { Spinner } from "@nextui-org/spinner";
+// import { PiBellSimpleBold } from "react-icons/pi";
+import { TbBulbFilled } from "react-icons/tb";
 
 interface UserType {
   uid: string;
@@ -38,7 +40,7 @@ interface Update {
 }
 
 const HomeDash = () => {
-  const [value, setValue] = useState("");
+  // const [value, setValue] = useState("");
   const [showReactions, setShowReactions] = useState<string | null>(null);
   const [hoveredReaction, setHoveredReaction] = useState<string | null>(null);
   const [updates, setUpdates] = useState<Update[]>([]);
@@ -49,13 +51,14 @@ const HomeDash = () => {
   const user = authContext?.user;
 
   const reactionOptions = [
-    { icon: <AiFillLike size={30} />, text: "Like" }, // 👍
-    { icon: <BsFillHandThumbsDownFill size={30} />, text: "Dislike" }, // 👎
-    { icon: <FaLaugh size={30} />, text: "laugh" }, // 😂
-    { icon: <FaSadCry size={30} />, text: "cry" },  // 😭
-    { icon: <FaHeart size={30} />, text: "love" },  // ❤️
-    { icon: <BiSolidParty size={30} />, text: "party" },  // 🥳
-    { icon: <ImSad2 size={30} />, text: "sad" },  // 😔
+    { icon: <AiFillLike className=" text-[#21CB6E] bg-[#CCE9D9] p-2 rounded-full " size={40} />, text: "Like" }, // 👍
+    { icon: <BsFillHandThumbsDownFill className=" text-[#FF3A2F] bg-[#E5C8C7] p-2 rounded-full " size={40} />, text: "Dislike" }, // 👎
+    { icon: <FaLaughBeam className=" text-[#FFC157] bg-[#F7F3CB] p-2 rounded-full " size={40} />, text: "Laugh" }, // 😂
+    { icon: <TbBulbFilled className=" text-[#44427C] bg-[#B9B8CB] p-2  rounded-full " size={40} />, text: "Inspiration" },  // 😭
+    
+    // { icon: <FaHeart size={30} />, text: "love" },  // ❤️
+    // { icon: <BiSolidParty size={30} />, text: "party" },  // 🥳
+    // { icon: <ImSad2 size={30} />, text: "sad" },  // 😔
   ];
 
   useEffect(() => {
@@ -116,93 +119,8 @@ const HomeDash = () => {
     }
   };
 
-  // const addReaction = async (updateId: string, newReactionType: string) => {
-  //   if (!user) return;
-
-  //   try {
-  //     const reactionRef = collection(db, "updates", updateId, "reactions2");
-
-  //     // Check if the user has already reacted
-  //     const userReactionsQuery = query(
-  //       reactionRef,
-  //       where("creatorId", "==", user.uid)
-  //     );
-  //     const userReactionsSnapshot = await getDocs(userReactionsQuery);
-
-  //     if (!userReactionsSnapshot.empty) {
-  //       const existingReactionDoc = userReactionsSnapshot.docs[0];
-  //       const existingReactionType = existingReactionDoc.data().reaction;
-
-  //       if (existingReactionType === newReactionType) {
-  //         // If the same reaction is clicked again, remove it
-  //         await deleteDoc(existingReactionDoc.ref);
-
-  //         // Update UI to decrement the count of the reaction
-  //         setUpdates((prevUpdates) =>
-  //           prevUpdates.map((update) =>
-  //             update.id === updateId
-  //               ? {
-  //                   ...update,
-  //                   reactions: {
-  //                     ...update.reactions,
-  //                     [existingReactionType]: Math.max(update.reactions[existingReactionType] - 1, 0),
-  //                   },
-  //                 }
-  //               : update
-  //           )
-  //         );
-  //         toast.info(`Removed ${existingReactionType}!`);
-  //         return;
-  //       } else {
-  //         // If a different reaction is selected, remove the old reaction
-  //         await deleteDoc(existingReactionDoc.ref);
-
-  //         // Update UI to decrement the old reaction and increment the new reaction
-  //         setUpdates((prevUpdates) =>
-  //           prevUpdates.map((update) =>
-  //             update.id === updateId
-  //               ? {
-  //                   ...update,
-  //                   reactions: {
-  //                     ...update.reactions,
-  //                     [existingReactionType]: Math.max(update.reactions[existingReactionType] - 1, 0),
-  //                     [newReactionType]: (update.reactions[newReactionType] || 0) + 1,
-  //                   },
-  //                 }
-  //               : update
-  //           )
-  //         );
-  //       }
-  //     } else {
-  //       // If the user hasn't reacted yet, add the new reaction
-  //       setUpdates((prevUpdates) =>
-  //         prevUpdates.map((update) =>
-  //           update.id === updateId
-  //             ? {
-  //                 ...update,
-  //                 reactions: {
-  //                   ...update.reactions,
-  //                   [newReactionType]: (update.reactions[newReactionType] || 0) + 1,
-  //                 },
-  //               }
-  //             : update
-  //         )
-  //       );
-  //     }
-
-  //     // Add the new reaction
-  //     await addDoc(reactionRef, {
-  //       reaction: newReactionType,
-  //       createdDate: new Date().toISOString(),
-  //       creatorId: user.uid,
-  //     });
-
-  //     toast.success(`${newReactionType} updated!`);
-  //   } catch (error) {
-  //     console.error("Error updating reaction:", error);
-  //     toast.error("Something went wrong!");
-  //   }
-  // };
+  
+  
 
   const addReaction = async (updateId: string, newReactionType: string) => {
     if (!user) return;
@@ -264,6 +182,7 @@ const HomeDash = () => {
         if (existingReactionType === newReactionType) {
           // Remove reaction
           await deleteDoc(existingReactionDoc.ref);
+          setSelectedReactions((prev) => ({ ...prev, [updateId]: null }));
           toast.info(`Removed ${existingReactionType}!`);
         } else {
           // Switch reaction
@@ -282,6 +201,10 @@ const HomeDash = () => {
           createdDate: new Date().toISOString(),
           creatorId: user.uid,
         });
+        setSelectedReactions((prev) => ({
+          ...prev,
+          [updateId]: reactionOptions.find((r) => r.text === newReactionType) || null,
+        }));
         toast.success(`${newReactionType} added!`);
       }
     } catch (error) {
@@ -290,9 +213,9 @@ const HomeDash = () => {
     }
   };
 
-  const handleSearch = () => {
-    console.log(value);
-  };
+  // const handleSearch = () => {
+  //   console.log(value);
+  // };
 
   // const handleReactionClick = (updateId: string, reaction: { text: string }) => {
   //   addReaction(updateId, reaction.text);
@@ -310,22 +233,22 @@ const HomeDash = () => {
   };
 
 
-  const handleMainButtonClick = (updateId: string) => {
-    setSelectedReactions((prev) => {
-      const currentReaction = prev[updateId];
-      if (currentReaction) {
-        return {
-          ...prev,
-          [updateId]: null,
-        };
-      } else {
-        return {
-          ...prev,
-          [updateId]: { icon: <AiFillLike size={30} className="text-golden" />, text: "Like" },
-        };
-      }
-    });
-  };
+  // const handleMainButtonClick = (updateId: string) => {
+  //   setSelectedReactions((prev) => {
+  //     const currentReaction = prev[updateId];
+  //     if (currentReaction) {
+  //       return {
+  //         ...prev,
+  //         [updateId]: null,
+  //       };
+  //     } else {
+  //       return {
+  //         ...prev,
+  //         [updateId]: { icon: <AiFillLike size={30} className="text-golden" />, text: "Like" },
+  //       };
+  //     }
+  //   });
+  // };
 
   useEffect(() => {
 
@@ -342,9 +265,16 @@ const HomeDash = () => {
   }
 
   return (
-    <div className=" w-full h-full " >
+    <div className=" w-full h-full  " >
 
-      <div className="flex w-full py-3 gap-3 justify-center items-center " >
+      <div className=" w-full py-5 px-3 flex items-center " >
+        {/* <PiBellSimpleBold className=" text-lg lg:text-3xl " /> */}
+        <div className="ml-2 text-2xl font-semibold capitalize " >
+          updates
+        </div>
+      </div>
+
+      {/* <div className="flex w-full py-3 gap-3 justify-center items-center " >
         <div>
           <div onClick={handleSearch} className="p-3 bg-white dark:bg-[#44427C] text-xl rounded-md ">
             <FiSearch />
@@ -373,39 +303,40 @@ const HomeDash = () => {
             className="w-full"
           />
         </div>
-      </div>
+      </div> */}
 
       <div className="border dark:border-gray-400 bg-white dark:bg-[#44427C] rounded-md">
         {updates.map((update) => (
           <div key={update.id} className="py-4 2xl:py-8 border-b dark:border-gray-400 ">
             <div className="px-5 2xl:px-10">
-              <div className="pb-3 flex justify-between items-center">
-                <h1 className="font-bold capitalize text-3xl text-golden">Admin</h1>
+              <div className=" flex justify-between items-center">
+                <h1 className="font-bold capitalize text-xl lg:text-3xl text-golden">Admin</h1>
                 <p className="text-lg text-[#3D3B6F] dark:text-gray-200 ">{update.createdDate}</p>
               </div>
               <div className="pt-3 pb-5">
                 <p>{update.content}</p>
               </div>
 
-              <div className="pt-1 relative">
+              <div className=" relative">
                 <button
-                  className="hover:bg-golden duration-200 hover:text-white text-golden px-3 py-2 rounded-md capitalize flex items-center gap-2"
+                  className="dark:hover:bg-golden hover:bg-gray-400 duration-200 bg-gray-200  dark:bg-maindark  px-3 py-2 rounded-md capitalize flex items-center gap-2"
                   onMouseEnter={() => setShowReactions(update.id)}
                   onMouseLeave={() => setShowReactions(null)}
-                  onClick={() => handleReactionClick(update.id, { icon: <AiFillLike size={30} />, text: "Like" })}
+                  onClick={() => setShowReactions((prev) => (prev === update.id ? null : update.id))}
+                // onClick={() => handleReactionClick(update.id, { icon: <AiFillLike size={30} />, text: "Like" })}
                 >
-                  {selectedReactions[update.id]?.icon || <AiOutlineLike size={30} a />}
+                  {selectedReactions[update.id]?.icon}
 
 
-                  <span className="text-xl">
-                    {selectedReactions[update.id]?.text || "Like"}
+                  <span className="  lg:text-xl">
+                    {selectedReactions[update.id]?.text || "React"}
                   </span>
                 </button>
 
 
                 {showReactions === update.id && (
                   <div
-                    className="absolute top-10 left-0 bg-gray-200 dark:bg-[#696794] shadow-md rounded-md flex gap-3 p-3"
+                    className="absolute top-10 left-0 bg-white border dark:border-transparent dark:bg-[#696794] shadow-md rounded-full flex gap-3 p-2 "
                     onMouseEnter={() => setShowReactions(update.id)}
                     onMouseLeave={() => setShowReactions(null)}
                   >
@@ -418,13 +349,13 @@ const HomeDash = () => {
                         onClick={() => handleReactionClick(update.id, reaction)}
                       >
                         {reaction.icon}
-                        <span className="text-sm text-gray-700 dark:text-gray-300">
+                        {/* <span className="text-xs text-gray-700 dark:text-gray-300">
                           {update.reactions[reaction.text] || 0}
-                        </span>
+                        </span> */}
 
                         {hoveredReaction === reaction.text && (
-                          <span className="absolute capitalize bottom-[-30px] left-1/2 transform -translate-x-1/2 bg-gray-700 text-white text-xs p-1 rounded">
-                            {reaction.text}
+                          <span className="absolute capitalize bottom-[-30px] whitespace-nowrap left-1/2 transform -translate-x-1/2 bg-gray-700 text-white text-xs p-1 rounded">
+                            {update.reactions[reaction.text] || 0} | {reaction.text}
                           </span>
                         )}
                       </button>

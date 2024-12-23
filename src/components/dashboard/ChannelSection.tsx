@@ -17,6 +17,9 @@ import { db, auth } from "../../config/firebase";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { IoArrowBackSharp } from "react-icons/io5";
+// import { FaHome } from "react-icons/fa";
+import { PiBellSimpleBold } from "react-icons/pi";
+import { motion } from "framer-motion";
 
 
 interface ChannelSectionProps {
@@ -24,7 +27,7 @@ interface ChannelSectionProps {
 }
 
 interface Channel {
-    title?: string;
+    title: string;
     img_dark?: string;
     img_light?: string;
     link?: string;
@@ -46,7 +49,7 @@ const ChannelSection: React.FC<ChannelSectionProps> = ({ onChannelClick }) => {
     const darkMode = useSelector((state: any) => state.theme.darkMode);
 
 
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    // const [isModalOpen, setIsModalOpen] = useState(false);
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const [channelName, setChannelName] = useState("");
     const [reason, setReason] = useState("");
@@ -93,18 +96,42 @@ const ChannelSection: React.FC<ChannelSectionProps> = ({ onChannelClick }) => {
         const fetchChatrooms = async () => {
             try {
                 const querySnapshot = await getDocs(collection(db, "chatRoom"));
-                const fetchedChatrooms = querySnapshot.docs.map(doc => ({
-                    id: doc.id,
-                    ...doc.data()
-                }));
+                // const fetchedChatrooms = querySnapshot.docs.map(doc => ({
+                //     id: doc.id,
+                //     ...doc.data(),
+                //     timestamp: doc.data().timestamp ?? { toMillis: () => 0 },
+                // }));
+                const fetchedChatrooms = querySnapshot.docs.map(doc => {
+                    const data = doc.data();
+                    return {
+                        id: doc.id,
+                        title: data.title ?? undefined, // Ensure title is explicitly handled
+                        img_dark: data.img_dark ?? undefined,
+                        img_light: data.img_light ?? undefined,
+                        link: data.link ?? undefined,
+                        timestamp: data.timestamp ?? { toMillis: () => 0 },
+                        isDefault: data.isDefault ?? undefined,
+                    } as Channel;
+                });
 
                 // Merge fetched chatrooms with static image data
+                // const mergedChannels = fetchedChatrooms.map(chatroom => {
+                //     const staticChannel = staticChannels.find(
+                //         channel => channel.title.toLowerCase() === chatroom?.title.toLowerCase()
+                //     );
+                //     return {
+                //         ...chatroom,
+                //         ...staticChannel
+                //     };
+                // });
                 const mergedChannels = fetchedChatrooms.map(chatroom => {
                     const staticChannel = staticChannels.find(
-                        channel => channel.title.toLowerCase() === chatroom?.title.toLowerCase()
+                        channel => channel.title.toLowerCase() === (chatroom?.title?.toLowerCase() || "")
                     );
+                
                     return {
                         ...chatroom,
+                        title: chatroom.title || "Untitled",
                         ...staticChannel
                     };
                 });
@@ -114,6 +141,7 @@ const ChannelSection: React.FC<ChannelSectionProps> = ({ onChannelClick }) => {
                 const sortedChannels = mergedChannels.sort((a, b) => {
                     const isAStatic = staticChannelSet.has(a.title?.toLowerCase() || "");
                     const isBStatic = staticChannelSet.has(b.title?.toLowerCase() || "");
+                    
 
                     if (isAStatic && isBStatic) {
                         // Maintain the order from staticChannels array
@@ -153,10 +181,10 @@ const ChannelSection: React.FC<ChannelSectionProps> = ({ onChannelClick }) => {
         return text.charAt(0).toUpperCase() + text.slice(1);
     };
 
-    const handleSuggestChannelClick = () => {
-        setIsModalOpen(true);
-        onOpen();
-    };
+    // const handleSuggestChannelClick = () => {
+    //     setIsModalOpen(true);
+    //     onOpen();
+    // };
 
 
 
@@ -232,7 +260,7 @@ const ChannelSection: React.FC<ChannelSectionProps> = ({ onChannelClick }) => {
     const handleScroll = () => {
         if (containerRef.current) {
             const scrollTop = containerRef.current.scrollTop;
-            console.log("the scroll-> " + scrollTop);
+            // console.log("the scroll-> " + scrollTop);
             setShowExtraChannels(scrollTop > 100);
         }
     };
@@ -260,20 +288,60 @@ const ChannelSection: React.FC<ChannelSectionProps> = ({ onChannelClick }) => {
     }
 
 
+    // const staggerContainerVariants = {
+    //     hidden: { opacity: 0 },
+    //     visible: {
+    //         opacity: 1,
+    //         transition: {
+    //             staggerChildren: 0.1,
+    //         },
+    //     },
+    // };
+
+    // const itemVariants = {
+    //     hidden: { opacity: 0, y: 20 },
+    //     visible: { opacity: 1, y: 0 },
+    // };
+
+
+    const containerVariants = {
+        hidden: { opacity: 0 },
+        show: {
+            opacity: 1,
+            transition: {
+                staggerChildren: 0.2, // Stagger effect
+                when: "beforeChildren", // Ensure parent animates first
+            },
+        },
+    };
+    
+    const itemVariants = {
+        hidden: { opacity: 0, y: 20 },
+        show: { opacity: 1, y: 0, transition: { duration: 0.3 } },
+    };
+    
     return (
         <div className="absolute w-[80%] lg:w-full h-[70%] lg:h-full inset-0 top-0 p-2 lg:p-2 xl:p-4 pt-2 xl:pt-4 2xl:pt-8 bg-white dark:bg-maindark z-50 overflow-y-auto lg:static lg:bg-transparent lg:dark:bg-transparent">
 
             <div className="flex flex-col h-full py-0 md:py-2 lg:py-3 xl:py-0 ">
 
                 {/* Suggest Channel Button */}
-                <div className=" hidden lg:block h-[10%]">
-                    <div
-                        onClick={onOpen}
-                        className="mb-4 p-2 xl:p-3 text-center bg-[#FFC157] hover:bg-[#FFC157] duration-200 flex justify-center items-center text-base xl:text-xl 2xl:text-lg text-black font-medium rounded-md cursor-pointer"
-                    >
-                        Suggest Channel
-                        <div className="ml-1 xl:ml-2 text-xl xl:text-2xl">
-                            <IoIosAddCircleOutline />
+                <div className=" hidden lg:flex mb-3  gap-2 h-[8%]">
+                    <div className=" w-full h-full  ">
+                        <div
+                            onClick={onOpen}
+                            className="  mb-4 h-full w-full px-2 py-1 xl:px-3 xl:py-2  text-center bg-golden dark:bg-white active:scale-95 duration-200 flex justify-center items-center text-base lg:text-sm whitespace-nowrap xl:text-xl 2xl:text-lg text-black font-medium rounded-md cursor-pointer"
+                        >
+                            Suggest Channel
+                            <div className="ml-1 xl:ml-2 text-xl xl:text-2xl">
+                                <IoIosAddCircleOutline />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="w-[30%] " >
+                        <div onClick={() => navigate("/home")} className="h-full rounded-lg border cursor-pointer duration-200  dark:hover:bg-golden bg-white hover:bg-gray-300 dark:bg-[#44427C80] dark:hover:text-white  dark:text-[#FFC157] dark:border-[#FFC157] p-3 w-full flex justify-center items-center ">
+                            <PiBellSimpleBold className=" text-xl xl:text-2xl " />
                         </div>
                     </div>
                 </div>
@@ -281,7 +349,7 @@ const ChannelSection: React.FC<ChannelSectionProps> = ({ onChannelClick }) => {
 
 
                 {/* Channels List */}
-                <div className="lg:bg-white px-0 lg:px-2 xl:px-3 py-4 h-[80%] rounded-md lg:dark:bg-[#44427C80]">
+                <div className="lg:bg-white px-0 lg:px-2 xl:px-3 py-4 h-[82%] rounded-md lg:dark:bg-[#44427C80]">
 
                     <div ref={containerRef} className=" h-[80%]  overflow-y-auto " >
                         <div className="space-y-3 flex-grow">
@@ -309,32 +377,48 @@ const ChannelSection: React.FC<ChannelSectionProps> = ({ onChannelClick }) => {
                             ))}
 
                             {/* Extra Channels (Blurred initially) */}
-                            {channels.filter(channel => !staticChannels.some(staticChannel => staticChannel.title === channel.title)).map((item, index) => (
-                                <Link
-                                    to={`${showExtraChannels ? item.title : "#"}`}
-                                    key={index}
-                                    onClick={() => { setActiveChannel(`/home/${item.title}`); onChannelClick?.(); }}
-                                    className={`flex items-center group p-2 xl:p-3 rounded-lg cursor-pointer duration-200 text-sm xl:text-base font-medium capitalize 
-        ${showExtraChannels ? "filter-none lg:hover:bg-gray-300 " : "blur-md  z-90 text-maindark transition-all"} `}
-                                >
-                                    <div className="flex items-center">
-                                        {item.img_dark && item.img_light ? (
-                                            <Image
-                                                src={!darkMode ? item.img_dark : item.img_light}
-                                                className="mr-2 xl:mr-3 rounded-none"
-                                            />
-                                        ) : (
-                                            <div className={` h-[25px] ${showExtraChannels ? "group-hover:bg-gray-500 bg-gray-300 " : " bg-inherit"}  duration-200 w-[25px]  rounded-md mr-2 xl:mr-3 `} > </div>
-                                        )}
-                                        {item.title}
-                                    </div>
-                                    {unreadCounts[capitalizeFirstLetter(item.title)] > 0 && (
-                                        <span className="ml-auto bg-golden text-white text-xs px-2 py-1 rounded-full">
-                                            {unreadCounts[capitalizeFirstLetter(item?.title)]}
-                                        </span>
-                                    )}
-                                </Link>
-                            ))}
+                            <motion.div
+    variants={containerVariants}
+    initial="hidden"
+    animate={showExtraChannels ? "show" : "hidden"}
+>
+    {channels
+        .filter(channel => !staticChannels.some(staticChannel => staticChannel.title === channel.title))
+        .map((item, index) => (
+            <motion.div key={index} variants={itemVariants}>
+                <Link
+                    to={`${showExtraChannels ? item.title : "#"}`}
+                    onClick={() => {
+                        setActiveChannel(`/home/${item.title}`);
+                        onChannelClick?.();
+                    }}
+                    className={`flex items-center group p-2 xl:p-3 rounded-lg cursor-pointer duration-200 text-sm xl:text-base font-medium capitalize 
+                        ${showExtraChannels ? "filter-none lg:hover:bg-gray-300 dark:hover:bg-maindark " : "blur-md text-white dark:text-maindark"} `}
+                >
+                    <div className="flex items-center">
+                        {item.img_dark && item.img_light ? (
+                            <Image
+                                src={!darkMode ? item.img_dark : item.img_light}
+                                className="mr-2 xl:mr-3 rounded-none"
+                            />
+                        ) : (
+                            <div
+                                className={`h-[25px] ${
+                                    showExtraChannels ? "group-hover:bg-gray-500 bg-gray-300 " : " bg-inherit"
+                                } duration-200 w-[25px] rounded-md mr-2 xl:mr-3`}
+                            ></div>
+                        )}
+                        {item.title}
+                    </div>
+                    {unreadCounts[capitalizeFirstLetter(item.title)] > 0 && (
+                        <span className="ml-auto bg-golden text-white text-xs px-2 py-1 rounded-full">
+                            {unreadCounts[capitalizeFirstLetter(item.title)]}
+                        </span>
+                    )}
+                </Link>
+            </motion.div>
+        ))}
+</motion.div>
                         </div>
                     </div>
 

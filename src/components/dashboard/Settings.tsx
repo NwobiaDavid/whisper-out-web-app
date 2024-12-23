@@ -10,6 +10,9 @@ import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 
 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 const Settings = () => {
 
     const [showStatus, setShowStatus] = useState(true);
@@ -57,9 +60,12 @@ const Settings = () => {
     //     setShowStatus(prevStatus => !prevStatus);
     // }
 
+
     const handleDeleteAccount = async () => {
         if (!userId) {
             console.error("No user ID found.");
+            toast.error("An error occurred. Please try again later.")
+            // alert("An error occurred. Please try again later.");
             return;
         }
 
@@ -75,17 +81,32 @@ const Settings = () => {
             // Deactivate user in Firestore (set isActive to false)
             await updateDoc(doc(db, 'users', userId), { isActive: false });
 
+            const user = auth.currentUser;
+        if (!user) {
+            throw new Error("User not authenticated. Please log in again.");
+        }
+
             // Delete the user account from Firebase Authentication
-            await auth.currentUser.delete();
+            // await auth.currentUser.delete();
+            await user.delete();
 
             // Clear local storage and navigate to the signup page
             localStorage.removeItem('loginTimestamp');
             navigate('/signup');
 
-            alert("Your account has been successfully deactivated or deleted.");
-        } catch (error) {
+            toast.success("Your account has been successfully deactivated or deleted.");
+        } catch (error: any) {
             console.error("Error deleting account:", error);
-            alert("An error occurred while trying to delete your account. Please try again.");
+            if (error?.code === "auth/requires-recent-login") {
+                toast.error(
+                    "Your session has expired. Please log in again to confirm account deletion."
+                );
+                // Redirect to login or trigger a reauthentication flow here
+            } else {
+                toast.error(
+                    "An error occurred while trying to delete your account. Please try again later."
+                );
+            }
         }
     };
 
@@ -178,7 +199,7 @@ const Settings = () => {
 
                     <div className=' mt-5 border border-[#3D3B6F] dark:border-gray-400 overflow-hidden  xl:text-lg rounded-md capitalize ' >
                         <div onClick={handleDeleteAccount} className='p-2 xl:p-3 hover:bg-[#3D3B6F] hover:dark:bg-[#353361] cursor-pointer text-red-500 dark:bg-[#44427C] hover:text-red-500  duration-200 bg-white  ' >
-                            Deactivate or Delete Account
+                            Delete Account
                         </div>
                     </div>
                 </div>
@@ -209,6 +230,7 @@ const Settings = () => {
                 </div>
 
             </div>
+            <ToastContainer position="top-right" autoClose={5000} hideProgressBar closeOnClick pauseOnHover />
         </div>
     )
 }

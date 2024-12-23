@@ -77,14 +77,14 @@ const UsersInterests = () => {
 
   return (
     <div
-    className={`w-full h-full sm:h-screen md:h-screen relative bg-cover bg-no-repeat 
+    className={`w-full max-h-screen h-screen relative bg-cover bg-no-repeat 
       bg-[url('/assets/images/bg/auth.png')] dark:bg-[url('')] dark:bg-maindark flex flex-col`}
   >
-    <div className="w-full h-full px-5 md:px-8 lg:px-16 xl:px-20 py-7 lg:py-16 flex items-center flex-col">
+    <div className="w-full h-[93%] px-5 md:px-8 lg:px-16 xl:px-20 py-7 lg:py-16 flex items-center flex-col">
       
-      <div className="flex flex-col items-center h-[40%] justify-center ">
+      <div className="flex flex-col items-center h-[30%] lg:h-[40%] justify-center ">
         <Image src="/assets/logo1.png" className="h-[50px] md:h-[60px]" alt="company logo" />
-        <h1 className="my-2 text-2xl md:text-3xl text-center font-bold">
+        <h1 className="my-2 text-xl md:text-3xl text-center font-bold">
           What’s the most important thing about your company?
         </h1>
         <h3 className="font-semibold text-lg text-center">
@@ -92,13 +92,13 @@ const UsersInterests = () => {
         </h3>
       </div>
 
-      <form className="flex flex-col items-center h-[60%] 2xl:justify-center gap-4 md:gap-8 w-full lg:w-3/4 xl:w-1/2" onSubmit={handleSubmit}>
+      <form className="flex flex-col items-center h-[70%] lg:h-[60%] 2xl:justify-center gap-4 md:gap-8 w-full lg:w-3/4 xl:w-1/2" onSubmit={handleSubmit}>
         <div className="grid w-full gap-3 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
           {interest.map((item, index) => (
             <div
               key={index}
               onClick={() => addValue(item)}
-              className={`p-4 rounded-md border flex justify-center items-center cursor-pointer
+              className={`p-4 rounded-md border flex bg-white  justify-center items-center cursor-pointer
                 ${!value.includes(item) && "hover:backdrop-blur-md hover:border-gray-300"}
                 duration-200 relative`}
             >
@@ -125,6 +125,7 @@ const UsersInterests = () => {
         </button>
       </form>
     </div>
+    
     <Footer />
   </div>
   )
