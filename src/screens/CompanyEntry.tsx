@@ -3,7 +3,7 @@ import { useState, useContext, useEffect, FormEvent, useMemo } from 'react';
 // import { GoOrganization } from 'react-icons/go';
 // import { IoIosCheckmarkCircleOutline } from 'react-icons/io';
 import { useNavigate } from 'react-router-dom';
-import { collection, addDoc } from 'firebase/firestore';
+import { collection, addDoc, query, getDocs, where } from 'firebase/firestore';
 import { db } from '../config/firebase.ts';
 import Footer from '../components/Footer.tsx';
 import { AuthContext } from '../config/AuthContext.tsx';
@@ -40,11 +40,53 @@ const CompanyEntry = () => {
 
   // const { user } = useContext(AuthContext);
 
+
+
+  // useEffect(() => {
+  //   // console.log("lonely useffect-> " + user)
+  //   if (user) {
+  //     navigate('/home');
+  //   }
+  // }, []);
+
+
   useEffect(() => {
-    if (user !== undefined) {
+
+    const checkStatus = async () => {
+      
+      const emailDomain = user?.email?.split('@')[1];
+
+      const companyQuery = query(collection(db, 'companies'), where('domain', '==', emailDomain));
+      const companySnapshot = await getDocs(companyQuery);
+      if (!companySnapshot.empty) {
+        const companyDoc = companySnapshot.docs[0].data();
+        const approvalStatus = companyDoc.isApproved;
+
+        if (approvalStatus === true) {
+          navigate('/home');
+        } else {
+          navigate('/waiting-page');
+        }
+      } 
+      // else {
+      //   navigate('/company-entry');
+      // }
+
+    }
+
+    if (!user) {
+      navigate('/signup');
+    } else {
+      checkStatus()
       setLoading(false);
     }
-  }, [user]);
+  }, [user, navigate]);
+
+  // useEffect(() => {
+  //   if (user !== undefined) {
+  //     setLoading(false);
+  //   }
+  // }, [user]);
 
 
   const selectedValue = useMemo(
@@ -76,7 +118,7 @@ const CompanyEntry = () => {
         companyName: companyName.trim(),
         companyAbbreviation: companyAbbrev.trim(),
         companyLocation: companyLoc.trim(),
-         companySize: companySizeArray,
+        companySize: companySizeArray,
         domain: emailDomain,
         createdBy: user.uid,
         isApproved: false,
@@ -122,12 +164,12 @@ const CompanyEntry = () => {
             className="xl:px-20 lg:px-7  flex flex-col relative justify-center items-center"
           >
             <div className="h-full flex flex-col justify-center w-full ">
-            
+
               <div className="flex w-full mb-5 lg:mb-10">
                 <h2 className=' text-xl lg:text-2xl capitalize font-semibold instrument-sans-font '>company information</h2>
               </div>
               <Input
-                
+
                 radius="sm"
                 type="text"
                 variant="bordered"
@@ -182,7 +224,7 @@ const CompanyEntry = () => {
                 onValueChange={setCompanyLoc}
               />
 
-               <Dropdown>
+              <Dropdown>
                 <DropdownTrigger className=' dark:border-gray-500 rounded-md dark:hover:border-gray-300 active:border-black ' >
                   <Button className="capitalize  p-6 " variant="bordered">
                     {selectedValue}
@@ -206,7 +248,7 @@ const CompanyEntry = () => {
                   </DropdownSection>
                 </DropdownMenu>
               </Dropdown>
-              
+
               <button
                 type="submit"
                 className={`${companyAbbrev != "" && companyName != "" && companyLoc != ""
@@ -216,7 +258,7 @@ const CompanyEntry = () => {
               >
                 Continue
               </button>
-          </div>
+            </div>
 
 
 
@@ -235,8 +277,8 @@ const CompanyEntry = () => {
                 while staying completely under the radar.
               </p>
               <p className="font-light block lg:hidden md:text-sm text-xs lg:text-[14px] leading-[16px]">
-              WhisperOut is your go-to for honest, anonymous conversations. 
-              Ask questions, share opinions, and connect—no judgment, just real talk.
+                WhisperOut is your go-to for honest, anonymous conversations.
+                Ask questions, share opinions, and connect—no judgment, just real talk.
               </p>
               <h3 className="mt-4 lg:text-base text-sm font-medium">WhisperOut, Every Voice Matters.</h3>
             </div>

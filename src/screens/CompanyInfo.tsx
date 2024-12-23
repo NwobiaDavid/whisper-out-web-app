@@ -58,10 +58,42 @@ const CompanyInfo = () => {
     const user = authContext?.user;
 
     useEffect(() => {
-        if (user !== undefined) {
-            setLoading(false);
+
+        const checkStatus = async () => {
+          
+          const emailDomain = user?.email?.split('@')[1];
+    
+          const companyQuery = query(collection(db, 'companies'), where('domain', '==', emailDomain));
+          const companySnapshot = await getDocs(companyQuery);
+          if (!companySnapshot.empty) {
+            const companyDoc = companySnapshot.docs[0].data();
+            const approvalStatus = companyDoc.isApproved;
+    
+            if (approvalStatus === true) {
+              navigate('/home');
+            } else {
+              navigate('/waiting-page');
+            }
+          } 
+          // else {
+          //   navigate('/company-entry');
+          // }
+    
         }
-    }, [user]);
+    
+        if (!user) {
+          navigate('/signup');
+        } else {
+          checkStatus()
+          setLoading(false);
+        }
+      }, [user, navigate]);
+
+    // useEffect(() => {
+    //     if (user !== undefined) {
+    //         setLoading(false);
+    //     }
+    // }, [user]);
 
     // const handleSelectionChange = (key: any) => {
     //   setSelectedIndustry(key);

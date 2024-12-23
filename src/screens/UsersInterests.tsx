@@ -98,7 +98,7 @@ const UsersInterests = () => {
             <div
               key={index}
               onClick={() => addValue(item)}
-              className={`p-4 rounded-md border flex bg-white  justify-center items-center cursor-pointer
+              className={`p-4 rounded-md border flex bg-white dark:bg-inherit  justify-center items-center cursor-pointer
                 ${!value.includes(item) && "hover:backdrop-blur-md hover:border-gray-300"}
                 duration-200 relative`}
             >

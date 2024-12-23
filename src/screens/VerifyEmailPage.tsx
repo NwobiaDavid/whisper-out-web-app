@@ -69,6 +69,8 @@ const VerifyEmailPage = () => {
             navigate('/company-entry');
           }
         }
+      }else {
+        navigate('/signup')
       }
     };
 
