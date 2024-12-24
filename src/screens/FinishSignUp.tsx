@@ -76,7 +76,7 @@ const FinishSignUp: React.FC  = () => {
                       email: authUser.email,
                       company: companyName,
                     });
-                    navigate('/interests');
+                    navigate('/home');
                   }
                 } else {
                   console.log('User is not authenticated.');

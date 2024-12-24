@@ -79,7 +79,7 @@ useEffect(() => {
             company: companyName,
           });
 
-          navigate('/interests');
+          navigate('/home');
         } catch (error) {
           console.error('Error creating user after company approval:', error);
         }

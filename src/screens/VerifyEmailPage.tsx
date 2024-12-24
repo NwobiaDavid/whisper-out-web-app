@@ -61,7 +61,7 @@ const VerifyEmailPage = () => {
                 isActive: true,
               });
 
-              navigate('/interests');
+              navigate('/home');
             } else {
               navigate('/waiting-page');
             }
