@@ -72,6 +72,36 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, []);
 
 
+  useEffect(() => {
+    if (user?.uid) {
+      const intervalId = setInterval(() => {
+        updateUserStatusInFirestore(user.uid, true);
+      }, 60 * 1000); // Update every minute
+
+      return () => clearInterval(intervalId); // Cleanup on unmount
+    }
+  }, [user?.uid]);
+  
+
+
+  // Monitor user disconnection (e.g., closing the tab or navigating away)
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      // console.log("---hello from auth context--")
+      if (user?.uid) {
+        updateUserStatusInFirestore(user.uid, false);
+      }
+
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [user?.uid]);
+
+
   // Monitor user activity (Idle timer and session expiration)
   useEffect(() => {
     let idleTimer: NodeJS.Timeout | null = null;

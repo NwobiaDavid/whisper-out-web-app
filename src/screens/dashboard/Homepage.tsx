@@ -41,8 +41,8 @@ const Homepage = () => {
   const channels = [
     { title: "welfare", img_dark: "/assets/images/icons/channels/channels_light/welfare-pension-insurance-premium_svgrepo.com (1).png", img_light: "/assets/images/icons/channels/welfare-pension-insurance-premium_svgrepo.com.png", link: "welfare" },
     { title: "salaries", img_dark: "/assets/images/icons/channels/channels_light/salary-wage_svgrepo.com (1).png", img_light: "/assets/images/icons/channels/salary-wage_svgrepo.com.png", link: "salaries" },
-    { title: "office space", img_dark: "/assets/images/icons/channels/channels_light/office-chair_svgrepo.com (1).png", img_light: "/assets/images/icons/channels/office-chair_svgrepo.com.png", link: "office space" },
-    { title: "tech jobs", img_dark: "/assets/images/icons/channels/channels_light/jobsmajor_svgrepo.com (1).png", img_light: "/assets/images/icons/channels/jobsmajor_svgrepo.com.png", link: "tech jobs" },
+    { title: "office space", img_dark: "/assets/images/icons/channels/channels_light/office-chair_svgrepo.com (1).png", img_light: "/assets/images/icons/channels/office-chair_svgrepo.com.png", link: "office_space" },
+    { title: "tech jobs", img_dark: "/assets/images/icons/channels/channels_light/jobsmajor_svgrepo.com (1).png", img_light: "/assets/images/icons/channels/jobsmajor_svgrepo.com.png", link: "tech_jobs" },
     { title: "finance", img_dark: "/assets/images/icons/channels/channels_light/salary-wage_svgrepo.com (1).png", img_light: "/assets/images/icons/channels/finance_svgrepo.com.png", link: "finance" },
     { title: "internship", img_dark: "/assets/images/icons/channels/channels_light/student-duotone_svgrepo.com (2).png", img_light: "/assets/images/icons/channels/student-duotone_svgrepo.com.png", link: "internships" },
   ];
@@ -67,6 +67,7 @@ const Homepage = () => {
       } finally {
         setLoading(false);
       }
+
     };
 
     checkAccessPermissions();
@@ -173,7 +174,7 @@ const Homepage = () => {
   if (loading) {
     return (
       <div className="w-full h-screen flex justify-center items-center">
-        <Spinner />
+        <Spinner className=' text-red-500 ' />
       </div>
     );
   }
@@ -212,13 +213,16 @@ const Homepage = () => {
             <Route path="finance" element={<ChatRoom channel="Finance" />} />
             <Route path="internship" element={<ChatRoom channel="Internship" />} /> */}
 
-            {chatRooms.map((room) => (
-              <Route
-                key={room.id}
-                path={`${room.title}`}
-                element={<ChatRoom channel={room.id} channelTitle={room.title} />}
-              />
-            ))}
+              {chatRooms.map((room) => {
+                  const formattedTitle = room.title.replace(/\s+/g, "_"); // Replace spaces with underscores
+                  return (
+                      <Route
+                          key={room.id}
+                          path={`${formattedTitle}`}
+                          element={<ChatRoom channel={room.id} channelTitle={room.title} />}
+                      />
+                  );
+              })}
             <Route path="settings" element={<Settings />} />
 
             {/* <Route path="settings" element={<Settings />}>

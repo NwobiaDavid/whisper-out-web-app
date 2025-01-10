@@ -2,7 +2,7 @@
 import React from 'react';
 import { Input } from '@nextui-org/react';
 import { useState, useMemo, useEffect, useContext } from 'react';
-import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
+import { createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword } from 'firebase/auth';
 import { AuthContext } from '../config/AuthContext.tsx';
 import { auth } from '../config/firebase.ts';
 import { useNavigate } from 'react-router-dom';
@@ -113,10 +113,12 @@ const SignupPage: React.FC = () => {
         // navigate('/home');
 
 
-        // const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        await signInWithEmailAndPassword(auth, email, password);
 
         // Update the AuthContext with the logged-in user
         if (authContext) {
+
+          console.log("the auth con-> "+JSON.stringify(authContext))
           // const firebaseUser = userCredential.user;
           // const userData: UserType = {
           //   uid: firebaseUser.uid,

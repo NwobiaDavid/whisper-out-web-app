@@ -5,7 +5,7 @@ import { RootState } from '../../state/store'
 import { GoGear } from "react-icons/go";
 import { useEffect, useState } from 'react';
 import { AiOutlineMenu } from 'react-icons/ai';
-import { doc, getDoc } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore';
 import { auth, db } from '../../config/firebase';
 
 
@@ -27,7 +27,8 @@ const Header: React.FC<HeaderProps> = ({ toggleDrawer, closeDrawer }) => {
     const user = auth.currentUser;
 
     const [activeChannel, setActiveChannel] = useState(location.pathname);
-    const [company, setCompany] = useState("");
+    // const [company, setCompany] = useState("");
+    const [companyAbbrev, setCompanyAbbrev] = useState("");
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
     useEffect(() => {
@@ -39,8 +40,20 @@ const Header: React.FC<HeaderProps> = ({ toggleDrawer, closeDrawer }) => {
             try {
                 if (user) {
                     const userDoc = await getDoc(doc(db, "users", user.uid));
-                    if (userDoc.exists() && userDoc.data().company) {
-                        setCompany(userDoc.data().company)
+                    console.log("--entering here"+JSON.stringify(userDoc.data()))
+                    
+                    const domain = userDoc.exists() && userDoc.data().domain
+                    
+                    const companyQuery = query(collection(db, 'companies'), where('domain', '==', domain));
+                    const companySnapshot = await getDocs(companyQuery);
+
+                    // console.log("--entering comp here"+JSON.stringify(compDoc.data()))
+                    if (!companySnapshot.empty) {
+                        const companyDoc = companySnapshot.docs[0].data();
+
+                        console.log("entered the log of the ocmpany abbrev - "+JSON.stringify(companyDoc))
+                        // setCompany(userDoc.data().company)
+                        setCompanyAbbrev(companyDoc.companyAbbreviation)
                     }
                 }
             } catch (error) {
@@ -67,7 +80,7 @@ const Header: React.FC<HeaderProps> = ({ toggleDrawer, closeDrawer }) => {
             <div className=' pr-3 h-full md:pr-0 md:w-1/3 ' >
                 <Link to={"/home"} className=' h-full flex items-center ' >
                     <Image
-                        className=" w-[40px] h-full rounded-none lg:w-[50px] "
+                        className=" w-[40px] h-full rounded-none lg:w-[40px] "
                         alt="Whisper out logo"
                         src={darkMode ? '/assets/logodark1.png' : '/assets/logo1.png'}
                     />
@@ -91,7 +104,7 @@ const Header: React.FC<HeaderProps> = ({ toggleDrawer, closeDrawer }) => {
 
             <div className=' flex gap-2 items-center  md:w-1/3 justify-center ' >
                 <div>
-                    <span className="text-base font-bold">{company}</span>
+                    <span className="text-base font-bold">{companyAbbrev}</span>
                 </div>
                 <div className=' flex -order-1 lg:order-1  ' >
                     <button

@@ -58,6 +58,7 @@ const VerifyEmailPage = () => {
                 uid,
                 email: currentUser.email,
                 company: companyName,
+                domain: emailDomain,
                 isActive: true,
               });
 

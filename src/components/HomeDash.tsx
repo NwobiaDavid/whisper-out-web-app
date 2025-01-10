@@ -2,7 +2,7 @@
 import { useContext, useEffect, useState } from "react";
 // import { useNavigate } from "react-router-dom";
 import { AuthContext } from '../config/AuthContext.tsx';
-import { addDoc, collection, deleteDoc,  getDocs, query, where } from "firebase/firestore";
+import { addDoc, collection, deleteDoc,  getDocs, orderBy, query, where } from "firebase/firestore";
 import { db } from "../config/firebase.ts"
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -15,6 +15,9 @@ import { BsFillHandThumbsDownFill } from "react-icons/bs";
 import { Spinner } from "@nextui-org/spinner";
 // import { PiBellSimpleBold } from "react-icons/pi";
 import { TbBulbFilled } from "react-icons/tb";
+import { formatDistanceToNow, parseISO } from 'date-fns';
+import { FaRegFaceSmile } from "react-icons/fa6";
+
 
 interface UserType {
   uid: string;
@@ -33,6 +36,7 @@ interface Reaction {
 
 interface Update {
   id: string;
+  title: string;
   content: string;
   createdDate: string;
   senderId: string;
@@ -65,19 +69,23 @@ const HomeDash = () => {
     fetchUpdates();
   }, []);
 
+
   const fetchUpdates = async () => {
     try {
       const updatesRef = collection(db, "updates");
-      const querySnapshot = await getDocs(updatesRef);
+      const updatesQuery = query(updatesRef, orderBy("createdDate", "desc")); 
+      const querySnapshot = await getDocs(updatesQuery);
 
       const fetchedUpdates: Update[] = [];
       for (const docSnap of querySnapshot.docs) {
         const data = docSnap.data();
         const reactions = await fetchReactions(docSnap.id);
+
         fetchedUpdates.push({
           id: docSnap.id,
+          title: data.title,
           content: data.content,
-          createdDate: data.createdDate,
+          createdDate: formatDistanceToNow(parseISO(data.createdDate), { addSuffix: true }),
           senderId: data.senderId,
           reactions,
         });
@@ -99,7 +107,7 @@ const HomeDash = () => {
 
   const fetchReactions = async (updateId: string): Promise<Record<string, number>> => {
     try {
-      const reactionsRef = collection(db, "updates", updateId, "reactions2");
+      const reactionsRef = collection(db, "updates", updateId, "reactions");
       const reactionsSnapshot = await getDocs(reactionsRef);
 
       const reactionCounts: Record<string, number> = {};
@@ -310,16 +318,16 @@ const HomeDash = () => {
           <div key={update.id} className="py-4 2xl:py-8 border-b dark:border-gray-400 ">
             <div className="px-5 2xl:px-10">
               <div className=" flex justify-between items-center">
-                <h1 className="font-bold capitalize text-xl lg:text-3xl text-golden">Admin</h1>
-                <p className="text-lg text-[#3D3B6F] dark:text-gray-200 ">{update.createdDate}</p>
+                <h1 className="font-bold capitalize text-xl lg:text-2xl text-golden">{update.title}</h1>
+                <p className="text-base lg:text-lg capitalize text-[#3D3B6F] dark:text-gray-200 ">{update.createdDate}</p>
               </div>
-              <div className="pt-3 pb-5">
+              <div className="pt-3 text-lg md:text-base pb-5">
                 <p>{update.content}</p>
               </div>
 
               <div className=" relative">
                 <button
-                  className="dark:hover:bg-golden hover:bg-gray-400 duration-200 bg-gray-200  dark:bg-maindark  px-3 py-2 rounded-md capitalize flex items-center gap-2"
+                  className=" duration-200 hover:bg-gray-200  hover:dark:bg-maindark  px-3 py-2 rounded-md capitalize flex items-center gap-2"
                   onMouseEnter={() => setShowReactions(update.id)}
                   onMouseLeave={() => setShowReactions(null)}
                   onClick={() => setShowReactions((prev) => (prev === update.id ? null : update.id))}
@@ -329,14 +337,14 @@ const HomeDash = () => {
 
 
                   <span className="  lg:text-xl">
-                    {selectedReactions[update.id]?.text || "React"}
+                    {selectedReactions[update.id]?.text || (<div><FaRegFaceSmile size={20} /></div>)}
                   </span>
                 </button>
 
 
                 {showReactions === update.id && (
                   <div
-                    className="absolute top-10 left-0 bg-white border dark:border-transparent dark:bg-[#696794] shadow-md rounded-full flex gap-3 p-2 "
+                    className="absolute top-8 left-0 bg-white border dark:border-transparent dark:bg-[#696794] shadow-md rounded-full flex gap-3 p-2 "
                     onMouseEnter={() => setShowReactions(update.id)}
                     onMouseLeave={() => setShowReactions(null)}
                   >

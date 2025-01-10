@@ -46,6 +46,7 @@ const Settings = () => {
         try {
             const newStatus = !showStatus;
             setShowStatus(newStatus);
+            toast.success("Active status change successful")
             await updateDoc(doc(db, 'users', userId), { isActive: newStatus });
         } catch (error) {
             console.error('Error updating active status:', error);
@@ -70,7 +71,7 @@ const Settings = () => {
         }
 
         const confirmation = window.confirm(
-            "Are you sure you want to deactivate or delete your account? This action cannot be undone."
+            "Are you sure you want to delete your account? This action cannot be undone once taken."
         );
 
         if (!confirmation) {
@@ -140,12 +141,12 @@ const Settings = () => {
 
                     <div className=' border border-[#3D3B6F] dark:border-gray-400 overflow-hidden xl:text-lg rounded-md capitalize ' >
                         <div className='p-2 xl:p-3 hover:bg-[#3D3B6F] hover:dark:bg-[#353361] cursor-pointer hover:text-white duration-200 bg-white dark:bg-[#44427C]  ' >
-                            account settings
+                            update email address
                         </div>
-                        <hr className=' border-[#3D3B6F] dark:border-gray-400 ' />
+                        {/* <hr className=' border-[#3D3B6F] dark:border-gray-400 ' />
                         <div onClick={() => { navigate("settings/notifications") }} className='p-2 xl:p-3 hover:bg-[#3D3B6F] hover:dark:bg-[#353361] cursor-pointer hover:text-white  duration-200 bg-white dark:bg-[#44427C] ' >
                             notifications
-                        </div>
+                        </div> */}
                     </div>
                 </div>
 

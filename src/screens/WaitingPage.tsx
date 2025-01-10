@@ -24,6 +24,7 @@ const WaitingPage = () => {
 
   const authContext = useContext(AuthContext) as AuthContextType | undefined;
   const user = authContext?.user;
+  const emailDomain = user?.email?.split('@')[1];
 
   useEffect(() => {
     const checkApprovalStatus = async () => {
@@ -31,16 +32,19 @@ const WaitingPage = () => {
 
       try {
         // const companyRef = doc(db, 'companies', user.uid);
-        const companyQuery = query(collection(db, 'companies'), where('createdBy', '==', user.uid));
+
+        const companyQuery = query(collection(db, 'companies'), where('domain', '==', emailDomain));
         const companySnap = await getDocs(companyQuery);
 
         console.log("comapyda--> "+JSON.stringify(user))
+        console.log("comp doc--> "+JSON.stringify(companySnap.docs[0].data()))
 
         if (!companySnap.empty) {
           const { isApproved } = companySnap.docs[0].data();
           setApprovalStatus(isApproved);
         } else {
           console.error('No company request found.');
+
         }
 
         setLoading(false);
@@ -77,12 +81,15 @@ useEffect(() => {
             uid: user.uid,
             email: user.email,
             company: companyName,
+            domain: emailDomain,
           });
 
           navigate('/home');
         } catch (error) {
           console.error('Error creating user after company approval:', error);
         }
+      }else {
+        navigate('/home')
       }
     };
 
