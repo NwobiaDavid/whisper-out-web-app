@@ -41,10 +41,10 @@ interface AuthContextType {
 
 type Message = {
     id: string;
-    text: string;
+    content: string;
     timestamp: Timestamp;
     userId: string;
-    username: string;
+    userName: string;
     companyName: string;
     domain: string;
 };
@@ -137,12 +137,12 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel, channelTitle }) => {
                 const reportData = {
                     messageId: contextMenu.messageId,
                     reportedBy: user.email || 'Unknown',
-                    messageText: messageData.text || 'No message text provided.',
+                    messageText: messageData.content || 'No message text provided.',
                     messageTimestamp: messageData.timestamp instanceof Timestamp
                         ? messageData.timestamp
                         : Timestamp.now(),
                     reportedAt: Timestamp.now(),
-                    channel: channel || 'Unknown channel', // Provide a default if channel is undefined
+                    channelId: channel || 'Unknown channel', // Provide a default if channel is undefined
                     status: 'Pending',
                 };
 
@@ -334,10 +334,10 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel, channelTitle }) => {
 
                 const newMessage = {
                     id: `${Date.now()}`, // Temporary ID, Firestore will provide the final ID
-                    text: input,
+                    content: input,
                     timestamp: Timestamp.now(),
                     userId: hashUserId(user?.uid || ""),
-                    username: username,
+                    userName: username,
                     companyName: companyName,
                     domain: emailDomain,
                 };
@@ -407,7 +407,11 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel, channelTitle }) => {
                 lastSeenMessageId,
                 lastSeenIndex
             }
-            await addDoc(collection(db, 'chatRoom', channel, 'userLastSeen', user.uid), newdata)
+            // await addDoc(collection(db, 'chatRoom', channel, 'userLastSeen', user.uid), newdata)
+            await addDoc(collection(db, 'chatRoom', channel, 'userLastSeen'), {
+                ...newdata,
+                userId: user.uid, // Store user ID to identify it later
+            });
 
             console.log("latest message or the last " + JSON.stringify(messages[messages.length-1]))
             console.log("upl: the message last seen ->" + JSON.stringify(theMessage))
@@ -444,10 +448,10 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel, channelTitle }) => {
                 const data = doc.data();
                 return {
                     id: data.id,
-                    text: data.content,
+                    content: data.content,
                     timestamp: data.timestamp instanceof Timestamp ? data.timestamp : Timestamp.fromDate(new Date(data.timestamp)),
                     userId: data.userId,
-                    username: data.userName,
+                    userName: data.userName,
                     companyName: data.companyName,
                     domain: data.domain,
                 };
@@ -630,8 +634,8 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel, channelTitle }) => {
                                         className={`mb-3   flex ${msg.userId === hashedCurrentUserId ? 'justify-end' : 'justify-start'}`}>
                                         <div className={`flex  flex-col ${msg.userId === hashedCurrentUserId ? 'items-end' : 'items-start'}`}>
                                             <div className={`py-1 px-2 break-all flex flex-col rounded-lg w-full max-w-xs md:max-w-sm lg:max-w-md xl:max-w-lg break-words text-left ${msg.userId === hashedCurrentUserId ? 'dark:text-gray-800 bg-[#FFC157]' : 'bg-[#6967ac]'}`}>
-                                                <span className={`text-xs font-semibold ${msg.userId === hashedCurrentUserId ? "text-[#0e0c4180]" : "text-gray-300"}`}>{msg.username}</span>
-                                                {msg.text}
+                                                <span className={`text-xs font-semibold ${msg.userId === hashedCurrentUserId ? "text-[#0e0c4180]" : "text-gray-300"}`}>{msg.userName}</span>
+                                                {msg.content}
                                                 <div className={`text-xs text-right mt-2 ${msg.userId === hashedCurrentUserId ? "text-black text-opacity-50" : "text-gray-300"}`}>
                                                     {msg.timestamp.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                                 </div>
@@ -658,15 +662,15 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel, channelTitle }) => {
 
             {unreadMessages > 0 && showScrollToBottom && (
                 <div className='relative w-full'>
-                    <div className="absolute bottom-[10%] right-[50%] my-4">
-                        <div onClick={scrollToBottom} className='relative z-10 cursor-pointer p-1 md:p-3 bg-[#FFC157] border border-[#c49038] text-maindark rounded-full'>
+                    <div className="absolute bottom-[10%] right-[45%] lg:right-[50%] my-4">
+                        <div onClick={scrollToBottom} className='relative z-10 cursor-pointer p-2 md:p-3 bg-[#FFC157] border border-[#c49038] text-maindark rounded-full'>
                             <div className="p-1">
                                 <FaAngleDown />
                             </div>
                             {/* <div class >
                                 {unreadMessages}
                             </div> */}
-                            <div className="absolute right-[18%] bg-red-500  text-black text-sm h-[20px] w-[30px] flex justify-center items-center font-semibold rounded-full">
+                            <div className="absolute right-[15%] lg:right-[18%] bg-red-500  text-black text-xs lg:text-sm h-[20px] w-[30px] flex justify-center items-center font-semibold rounded-full">
                                 {unreadMessages}
                             </div>
                         </div>

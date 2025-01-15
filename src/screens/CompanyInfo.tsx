@@ -50,6 +50,7 @@ const CompanyInfo = () => {
     const [filteredIndustries, setFilteredIndustries] = useState(industries);
     const [selectedIndustry, setSelectedIndustry] = useState('');
     const [loading, setLoading] = useState(false);
+    const [beginLoading, setBeginLoading] = useState(false);
     // const [message, setMessage] = useState('');
 
     const navigate = useNavigate();
@@ -58,49 +59,45 @@ const CompanyInfo = () => {
     const user = authContext?.user;
 
     useEffect(() => {
-
         const checkStatus = async () => {
-          
-          const emailDomain = user?.email?.split('@')[1];
+            setBeginLoading(true);
+            try {
+                if (!user) {
+                    navigate('/signup');
+                    return;
+                }
+                
+                const emailDomain = user?.email?.split('@')[1];
+                const companyQuery = query(collection(db, 'companies'), where('domain', '==', emailDomain));
+                const companySnapshot = await getDocs(companyQuery);
     
-          const companyQuery = query(collection(db, 'companies'), where('domain', '==', emailDomain));
-          const companySnapshot = await getDocs(companyQuery);
-          if (!companySnapshot.empty) {
-            const companyDoc = companySnapshot.docs[0].data();
-            const approvalStatus = companyDoc.isApproved;
+                if (!companySnapshot.empty) {
+                    const companyDoc = companySnapshot.docs[0].data();
+                    const compInd = companyDoc.companyIndustry;
     
-            if (approvalStatus === true) {
-              navigate('/home');
-            } else {
-              navigate('/waiting-page');
+                    if (compInd) {
+                        const approvalStatus = companyDoc.isApproved;
+                        if (approvalStatus) {
+                            navigate('/home');
+                        } else {
+                            navigate('/waiting-page');
+                        }
+                        return;
+                    }
+                }
+            } catch (error) {
+                console.error('Error checking company status:', error);
+            } finally {
+                setBeginLoading(false);
             }
-          } 
-          // else {
-          //   navigate('/company-entry');
-          // }
+        };
     
-        }
-    
-        if (!user) {
-          navigate('/signup');
-        } else {
-          checkStatus()
-          setLoading(false);
-        }
-      }, [user, navigate]);
-
-    // useEffect(() => {
-    //     if (user !== undefined) {
-    //         setLoading(false);
-    //     }
-    // }, [user]);
-
-    // const handleSelectionChange = (key: any) => {
-    //   setSelectedIndustry(key);
-    // };
+        checkStatus();
+    }, [navigate]);
 
 
-    const handleSearchChange = (e: { target: { value: any } }) => {
+
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const term = e.target.value;
         setSearchTerm(term);
         setFilteredIndustries(
@@ -120,7 +117,10 @@ const CompanyInfo = () => {
 
     // const [companyIndus, setCompanyIndus] = useState("")
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+
+        event.preventDefault();
+
         if (!user) {
             toast.error('User is not authenticated. Please log in again.');
             // setMessage('User is not authenticated. Please log in again.');
@@ -134,6 +134,7 @@ const CompanyInfo = () => {
 
         setLoading(true);
         try {
+            console.log("initialted sending----")
             const companiesRef = collection(db, 'companies');
             const querySnapshot = await getDocs(query(companiesRef, where('createdBy', '==', user.uid)));
 
@@ -147,12 +148,16 @@ const CompanyInfo = () => {
 
             // Update the existing document
             await updateDoc(companyRef, {
-                industry: selectedIndustry,
+                companyIndustry: selectedIndustry,
             });
 
+            console.log("passed----")
+
+            toast.success('Industry updated successfully!');
             navigate('/waiting-page');
         } catch (error) {
             console.error('Error updating company industry:', error);
+            toast.error('Unable to update company industry. Please try again.');
             // setMessage('Error: Unable to update company industry.');
         } finally {
             setLoading(false);
@@ -160,7 +165,7 @@ const CompanyInfo = () => {
     };
 
 
-    if (loading) {
+    if (beginLoading) {
         return (
             <div className="w-full h-screen flex justify-center items-center">
                 <Spinner />
@@ -187,6 +192,7 @@ const CompanyInfo = () => {
 
                     <form
                         onSubmit={handleSubmit}
+                        
                         className="xl:px-20 lg:px-7  flex flex-col relative justify-center items-center">
                         <div className="flex h-full w-full py-10 xl:py-16 flex-col">
 

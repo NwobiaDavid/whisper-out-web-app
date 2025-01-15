@@ -363,8 +363,8 @@ const ChannelSection: React.FC<ChannelSectionProps> = ({ onChannelClick }) => {
     };
 
     const itemVariants = {
-        hidden: { opacity: 0, y: 10 },
-        show: { opacity: 1, y: 0, transition: { duration: 0.3 } },
+        hidden: { opacity: 0, y: 5 },
+        show: { opacity: 1, y: 0, transition: { duration: 0.4 } },
     };
 
     return (
@@ -439,7 +439,7 @@ const ChannelSection: React.FC<ChannelSectionProps> = ({ onChannelClick }) => {
                                                     setActiveChannel(`/home/${item.link}`);
                                                     onChannelClick?.();
                                                 }}
-                                                className={`flex items-center group p-2 xl:p-3 rounded-lg cursor-pointer duration-200 text-sm xl:text-base font-medium capitalize 
+                                                className={`flex items-center my-2 group p-2 xl:p-3 rounded-lg cursor-pointer duration-200 text-sm xl:text-base font-medium capitalize 
                         ${showExtraChannels ? "filter-none lg:hover:bg-gray-300 dark:hover:bg-maindark " : "blur-md text-white dark:text-maindark"} `}
                                             >
                                                 <div className="flex items-center">

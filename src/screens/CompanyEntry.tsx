@@ -113,14 +113,15 @@ const CompanyEntry = () => {
       const emailDomain = user.email.split('@')[1];
 
       const companySizeArray = Array.from(companySize);
+      const companySizeString = Array.from(companySize).join(", ");
 
       const companyData = {
         companyName: companyName.trim(),
         companyAbbreviation: companyAbbrev.trim(),
         companyLocation: companyLoc.trim(),
-        companySize: companySizeArray,
-        domain: emailDomain,
+        companySize: companySizeString,
         createdBy: user.uid,
+        domain: emailDomain,
         isApproved: false,
       };
 

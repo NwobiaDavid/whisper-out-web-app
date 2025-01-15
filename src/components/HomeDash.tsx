@@ -31,7 +31,7 @@ interface AuthContextType {
 interface Reaction {
   reaction: string;
   createdDate: string;
-  creatorId: string;
+  userId: string;
 }
 
 interface Update {
@@ -50,6 +50,8 @@ const HomeDash = () => {
   const [updates, setUpdates] = useState<Update[]>([]);
   const [selectedReactions, setSelectedReactions] = useState<Record<string, { icon: JSX.Element; text: string } | null>>({});
   const [isLoading, setIsLoading] = useState(true)
+
+  const[allReactions, setAllReactions] = useState<Reaction[]>([])
 
   const authContext = useContext(AuthContext) as AuthContextType | undefined;
   const user = authContext?.user;
@@ -111,6 +113,9 @@ const HomeDash = () => {
       const reactionsSnapshot = await getDocs(reactionsRef);
 
       const reactionCounts: Record<string, number> = {};
+      let userReaction: Reaction | null = null;
+      const fetchedReactions: Reaction[] = reactionsSnapshot.docs.map((doc) => doc.data() as Reaction);
+
       reactionsSnapshot.forEach((reactionDoc) => {
         const reactionData = reactionDoc.data() as Reaction;
         if (reactionCounts[reactionData.reaction]) {
@@ -118,7 +123,22 @@ const HomeDash = () => {
         } else {
           reactionCounts[reactionData.reaction] = 1;
         }
+
+        if (reactionData.userId === user?.uid) {
+          userReaction = reactionData;
+        }
       });
+
+
+      if (userReaction) {
+        setSelectedReactions((prev) => ({
+          ...prev,
+          [updateId]: reactionOptions.find((r) => r.text === userReaction?.reaction) || null,
+        }));
+      }
+      setAllReactions(fetchedReactions)
+
+      console.log("all reactions "+JSON.stringify(reactionsSnapshot.docs.map((doc)=> doc.data() as Reaction)))
 
       return reactionCounts;
     } catch (error) {
@@ -134,12 +154,12 @@ const HomeDash = () => {
     if (!user) return;
 
     try {
-      const reactionRef = collection(db, "updates", updateId, "reactions2");
+      const reactionRef = collection(db, "updates", updateId, "reactions");
 
       // Check if the user has already reacted
       const userReactionsQuery = query(
         reactionRef,
-        where("creatorId", "==", user.uid)
+        where("userId", "==", user.uid)
       );
       const userReactionsSnapshot = await getDocs(userReactionsQuery);
 
@@ -198,7 +218,7 @@ const HomeDash = () => {
           await addDoc(reactionRef, {
             reaction: newReactionType,
             createdDate: new Date().toISOString(),
-            creatorId: user.uid,
+            userId: user.uid,
           });
           toast.success(`Switched to ${newReactionType}!`);
         }
@@ -207,7 +227,7 @@ const HomeDash = () => {
         await addDoc(reactionRef, {
           reaction: newReactionType,
           createdDate: new Date().toISOString(),
-          creatorId: user.uid,
+          userId: user.uid,
         });
         setSelectedReactions((prev) => ({
           ...prev,
@@ -324,6 +344,24 @@ const HomeDash = () => {
               <div className="pt-3 text-lg md:text-base pb-5">
                 <p>{update.content}</p>
               </div>
+{/* 
+              <p className="text-sm text-gray-500 dark:text-gray-300">
+              {Object.entries(update.reactions)
+    .filter(([reactionType, count]) => count > 0) // Only show reactions with count > 0
+    .map(([reactionType, count]) => (
+      <div key={reactionType}>
+        {reactionType}: {count}
+      </div>
+    ))}
+              </p> */}
+
+<div>
+  {Object.values(update.reactions).reduce((acc, val) => acc + val, 0) > 0 && (
+    <span>
+      Reactions: {Object.values(update.reactions).reduce((acc, val) => acc + val, 0)}
+    </span>
+  )}
+</div>
 
               <div className=" relative">
                 <button
