@@ -49,7 +49,7 @@ const CompanyInfo = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [filteredIndustries, setFilteredIndustries] = useState(industries);
     const [selectedIndustry, setSelectedIndustry] = useState('');
-    const [loading, setLoading] = useState(false);
+    // const [loading, setLoading] = useState(false);
     const [beginLoading, setBeginLoading] = useState(false);
     // const [message, setMessage] = useState('');
 
@@ -132,7 +132,7 @@ const CompanyInfo = () => {
             return;
         }
 
-        setLoading(true);
+        // setLoading(true);
         try {
             console.log("initialted sending----")
             const companiesRef = collection(db, 'companies');
@@ -159,9 +159,10 @@ const CompanyInfo = () => {
             console.error('Error updating company industry:', error);
             toast.error('Unable to update company industry. Please try again.');
             // setMessage('Error: Unable to update company industry.');
-        } finally {
-            setLoading(false);
-        }
+        } 
+        // finally {
+        //     setLoading(false);
+        // }
     };
 
 

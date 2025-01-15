@@ -51,7 +51,7 @@ const HomeDash = () => {
   const [selectedReactions, setSelectedReactions] = useState<Record<string, { icon: JSX.Element; text: string } | null>>({});
   const [isLoading, setIsLoading] = useState(true)
 
-  const[allReactions, setAllReactions] = useState<Reaction[]>([])
+  // const[allReactions, setAllReactions] = useState<Reaction[]>([])
 
   const authContext = useContext(AuthContext) as AuthContextType | undefined;
   const user = authContext?.user;
@@ -114,7 +114,7 @@ const HomeDash = () => {
 
       const reactionCounts: Record<string, number> = {};
       let userReaction: Reaction | null = null;
-      const fetchedReactions: Reaction[] = reactionsSnapshot.docs.map((doc) => doc.data() as Reaction);
+      // const fetchedReactions: Reaction[] = reactionsSnapshot.docs.map((doc) => doc.data() as Reaction);
 
       reactionsSnapshot.forEach((reactionDoc) => {
         const reactionData = reactionDoc.data() as Reaction;
@@ -136,7 +136,7 @@ const HomeDash = () => {
           [updateId]: reactionOptions.find((r) => r.text === userReaction?.reaction) || null,
         }));
       }
-      setAllReactions(fetchedReactions)
+      // setAllReactions(fetchedReactions)
 
       console.log("all reactions "+JSON.stringify(reactionsSnapshot.docs.map((doc)=> doc.data() as Reaction)))
 
