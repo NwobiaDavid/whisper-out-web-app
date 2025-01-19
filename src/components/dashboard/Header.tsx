@@ -80,7 +80,7 @@ const Header: React.FC<HeaderProps> = ({ toggleDrawer, closeDrawer }) => {
             <div className=' pr-3 h-full md:pr-0 md:w-1/3 ' >
                 <Link to={"/home"} className=' h-full flex items-center ' >
                     <Image
-                        className=" w-[40px] h-full rounded-none lg:w-[40px] "
+                        className=" w-[40px] h-[40px] lg:h-full rounded-none lg:w-[40px] "
                         alt="Whisper out logo"
                         src={darkMode ? '/assets/logodark1.png' : '/assets/logo1.png'}
                     />

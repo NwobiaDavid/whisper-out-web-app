@@ -330,9 +330,9 @@ const ChannelSection: React.FC<ChannelSectionProps> = ({ onChannelClick }) => {
 
 
 
-    const createChannel = () => {
+    // const createChannel = () => {
 
-    }
+    // }
 
 
     // const staggerContainerVariants = {
@@ -479,7 +479,8 @@ const ChannelSection: React.FC<ChannelSectionProps> = ({ onChannelClick }) => {
 
                 <div className="h-[10%] w-full flex justify-center items-center lg:hidden xl:h-[10%]">
                     <div
-                        onClick={createChannel}
+                        // onClick={createChannel}
+                        onClick={onOpen}
                         className="lg:mb-4 py-2 px-20 xl:p-3 text-center w-[50%] bg-[#FFC157] hover:bg-[#FFC157] duration-200 flex justify-center items-center text-sm whitespace-nowrap xl:text-xl 2xl:text-lg text-black font-medium rounded-md cursor-pointer"
                     >
                         Suggest Channel

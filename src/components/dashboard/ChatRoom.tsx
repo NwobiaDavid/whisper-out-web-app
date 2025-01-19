@@ -594,8 +594,8 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel, channelTitle }) => {
 
 
     return (
-        <div className='flex flex-col h-full'>
-            <div className=' flex justify-between h-[8%] items-center  ' >
+        <div className='flex flex-col w-full h-full'>
+            <div className=' flex justify-between lg:h-[8%] items-center  ' >
                 <div className='text-xl font-bold capitalize  text-[#FFC157] '>{channelTitle} Chat</div>
 
                 <div className='flex justify-center items-center' >
@@ -606,7 +606,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel, channelTitle }) => {
 
 
             <div ref={messageContainerRef}
-                className="flex-grow h-[94%]  bg-[rgba(255,255,255,0.6)] dark:bg-[rgba(68,66,124,0.9)] bg-blend-lighten  relative overflow-y-auto overflow-x-hidden p-2 md:p-4 
+                className="flex-grow flex flex-col h-[94%]  bg-[rgba(255,255,255,0.6)] dark:bg-[rgba(68,66,124,0.9)] bg-blend-lighten  relative lg:overflow-y-auto overflow-x-hidden p-2 md:p-4 
                            bg-fixed bg-[url('/assets/images/bg/chatroom/chatroom_light.png')]  dark:bg-[url('/assets/images/bg/chatroom/chatroom_dark1.png')] 
                            bg-no-repeat bg-cover lg:bg-fill lg:dark:bg-contain bg-center rounded-t-md  "
             >
@@ -622,7 +622,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel, channelTitle }) => {
                         {messages.map((msg, index) => {
                             const showDate = index === 0 || !isSameDay(msg.timestamp, messages[index - 1].timestamp);
                             return (
-                                <React.Fragment key={index}>
+                                <React.Fragment  key={index}>
                                     {showDate && (
                                         <div className="text-center  flex justify-center items-center font-semibold text-gray-400 my-2">
                                             <div className=" px-2 opacity-100  py-1 text-xs w-fit bg-slate-800  rounded-full">{formatDate(msg.timestamp)}</div>
@@ -663,14 +663,11 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel, channelTitle }) => {
             {unreadMessages > 0 && showScrollToBottom && (
                 <div className='relative w-full'>
                     <div className="absolute bottom-[10%] right-[45%] lg:right-[50%] my-4">
-                        <div onClick={scrollToBottom} className='relative z-10 cursor-pointer p-2 md:p-3 bg-[#FFC157] border border-[#c49038] text-maindark rounded-full'>
+                        <div onClick={scrollToBottom} className='relative z-10 cursor-pointer p-2 md:p-3 bg-maindark text-white dark:bg-gray-300 border border-[#c49038] dark:text-maindark rounded-full'>
                             <div className="p-1">
                                 <FaAngleDown />
                             </div>
-                            {/* <div class >
-                                {unreadMessages}
-                            </div> */}
-                            <div className="absolute right-[15%] lg:right-[18%] bg-red-500  text-black text-xs lg:text-sm h-[20px] w-[30px] flex justify-center items-center font-semibold rounded-full">
+                            <div className="absolute right-[15%] lg:right-[18%] bg-white dark:bg-golden dark:text-white text-black text-xs lg:text-sm h-[20px] w-[30px] flex justify-center items-center font-semibold rounded-full">
                                 {unreadMessages}
                             </div>
                         </div>

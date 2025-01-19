@@ -186,8 +186,8 @@ const Homepage = () => {
   }
 
   return (
-    <div className=' max-h-screen bg-[#F2F2F2] dark:bg-maindark h-screen  ' >
-      <div className="h-[8%]  ">
+    <div className=' max-h-screen overflow-y-scroll bg-[#F2F2F2] dark:bg-maindark h-screen flex flex-col ' >
+      <div className="lg:h-[8%] h-[10%]  ">
         <Header toggleDrawer={toggleDrawer} closeDrawer={closeDrawer} />
       </div>
 
@@ -197,13 +197,13 @@ const Homepage = () => {
         </div>
       )}
 
-      <div className='flex-grow flex px-2 md:px-5 2xl:px-20 py-0 h-[90%]'>
+      <div className='flex-grow  flex px-2 md:px-5 2xl:px-20 py-0 h-[90%]'>
 
-        <div className="hidden lg:block lg:w-[20%]  ">
+        <div className="hidden lg:flex lg:w-[20%] w-full  ">
           <ChannelSection onChannelClick={closeDrawer} />
         </div>
 
-        <div className="flex-grow p-1 lg:p-5 lg:py-0 overflow-y-auto h-full w-full lg:w-[70%] 2xl:w-[65%]">
+        <div className="flex-grow  p-1 lg:p-5 lg:py-0 overflow-y-auto h-full w-full lg:w-[70%] 2xl:w-[65%]">
           <Routes>
             <Route path="/" element={<HomeDash />} />
             {/* <Route path="welfare" element={<ChatRoom channel="Welfare" />} />
@@ -235,7 +235,10 @@ const Homepage = () => {
           </Routes>
         </div>
 
+{/* <div className="hidden bg-green-500 lg:flex"> */}
+
         <AdSection />
+{/* </div> */}
       </div>
     </div>
   )
