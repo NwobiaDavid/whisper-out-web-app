@@ -251,15 +251,44 @@ const ChannelSection: React.FC<ChannelSectionProps> = ({ onChannelClick }) => {
                 return;
             }
 
+
             const suggestionsRef = collection(db, "channelSuggestion");
+
             const existingSuggestions = await getDocs(
+                query(
+                    suggestionsRef,
+                    where("company", "==", companyName),
+                    where("createdBy", "==", currentUser.uid),
+                    where("isApproved", "==", "Pending")
+                )
+            );
+
+            if (!existingSuggestions.empty) {
+                toast.info(`Pending suggestion exists for ${companyName}; wait for approval.`);
+                return;
+            }
+
+            // const existingSuggestions = await getDocs(
+            //     query(
+            //         suggestionsRef,
+            //         where("name", "==", channelName),
+            //         where("createdBy", "==", currentUser.uid)
+            //     )
+            // );
+            // if (!existingSuggestions.empty) {
+            //     toast.info("You have already suggested this channel.");
+            //     return;
+            // }
+
+            const duplicateChannelCheck = await getDocs(
                 query(
                     suggestionsRef,
                     where("name", "==", channelName),
                     where("createdBy", "==", currentUser.uid)
                 )
             );
-            if (!existingSuggestions.empty) {
+    
+            if (!duplicateChannelCheck.empty) {
                 toast.info("You have already suggested this channel.");
                 return;
             }
@@ -270,7 +299,7 @@ const ChannelSection: React.FC<ChannelSectionProps> = ({ onChannelClick }) => {
                 createdBy: currentUser.uid,
                 company: companyName,
                 domain: emailDomain,
-                isApproved: "pending",
+                isApproved: "Pending",
                 timestamp: Timestamp.now(),
             });
 
@@ -281,7 +310,7 @@ const ChannelSection: React.FC<ChannelSectionProps> = ({ onChannelClick }) => {
             const chatRoomRef = await addDoc(collection(db, "chatRoom"), {
                 title: channelName,
                 isDefault: false,
-                isApproved: "pending",
+                isApproved: "Pending",
                 company: companyName,
                 domain: emailDomain,
                 createdBy: currentUser.uid,
@@ -439,9 +468,19 @@ const ChannelSection: React.FC<ChannelSectionProps> = ({ onChannelClick }) => {
                                                     setActiveChannel(`/home/${item.link}`);
                                                     onChannelClick?.();
                                                 }}
-                                                className={`flex items-center my-2 group p-2 xl:p-3 rounded-lg cursor-pointer duration-200 text-sm xl:text-base font-medium capitalize 
-                        ${showExtraChannels ? "filter-none lg:hover:bg-gray-300 dark:hover:bg-maindark " : "blur-md text-white dark:text-maindark"} `}
-                                            >
+                                                
+                                            //     ${activeChannel === `/home/${item.link}`
+                                            // ? "bg-[#F2F2F2] dark:bg-maindark border border-gray-300"
+                                            //     : ""
+                                            // }
+                                                className={`flex items-center my-2 group p-2 xl:p-3 rounded-lg cursor-pointer duration-200 text-sm xl:text-base font-medium capitalize
+                                                   
+                                                    
+                                                    ${showExtraChannels
+                                                        ? "filter-none lg:hover:bg-gray-300 dark:hover:bg-maindark"
+                                                        : "blur-md text-white dark:text-maindark"
+                                                    }`}
+                                                    >
                                                 <div className="flex items-center">
                                                     {item.img_dark && item.img_light ? (
                                                         <Image
@@ -451,7 +490,7 @@ const ChannelSection: React.FC<ChannelSectionProps> = ({ onChannelClick }) => {
                                                     ) : (
                                                         <div
                                                             className={`h-[25px] ${showExtraChannels ? "group-hover:bg-gray-500 bg-gray-300 " : " bg-inherit"
-                                                                } duration-200 w-[25px] rounded-md mr-2 xl:mr-3`}
+                                                                } duration-200 w-[25px] overflow-hidden rounded-md mr-2 xl:mr-3`}
                                                         ></div>
                                                     )}
                                                     {item.title}
@@ -542,7 +581,7 @@ const ChannelSection: React.FC<ChannelSectionProps> = ({ onChannelClick }) => {
             {/* Modal */}
             <Modal
                 classNames={{
-                    base: "border-[#292f46] bg-[#19172c] dark:bg-[#19172c] text-[#a8b0d3]",
+                    base: "border-[#292f46] bg-white dark:bg-[#19172c] dark:text-[#a8b0d3]",
                 }}
                 isOpen={isOpen}
                 onOpenChange={onOpenChange}

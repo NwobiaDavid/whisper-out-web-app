@@ -3,7 +3,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { FaGear } from 'react-icons/fa6'
 // import { IoSunnySharp } from 'react-icons/io5';
 import { motion } from 'framer-motion';
-import { signOut } from 'firebase/auth';
+import { signOut, updateEmail } from 'firebase/auth';
 // import { auth } from '../../config/firebase';
 import { auth, db } from '../../config/firebase';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
@@ -17,6 +17,11 @@ const Settings = () => {
 
     const [showStatus, setShowStatus] = useState(true);
     const navigate = useNavigate();
+    const [emailName, setEmailName] = useState('');
+    const [emailDomain, setEmailDomain] = useState('');
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [emailInput, setEmailInput] = useState('');
 
     // const userId = useMemo(() => auth.currentUser?.uid, [auth.currentUser]);
 
@@ -38,6 +43,13 @@ const Settings = () => {
         };
 
         fetchActiveStatus();
+
+        if (auth.currentUser?.email) {
+            const [name, domain] = auth.currentUser.email.split('@');
+            setEmailName(name);
+            setEmailDomain(domain);
+        }
+
     }, [userId]);
 
     const handleStatusChange = async () => {
@@ -50,6 +62,27 @@ const Settings = () => {
             await updateDoc(doc(db, 'users', userId), { isActive: newStatus });
         } catch (error) {
             console.error('Error updating active status:', error);
+        }
+    };
+
+
+    const handleUpdateEmail = async () => {
+        if (!emailName || !emailDomain) {
+            toast.error('Email cannot be empty.');
+            return;
+        }
+
+        const newEmail = `${emailName}@${emailDomain}`;
+
+        try {
+            if (!auth.currentUser) throw new Error('User not authenticated.');
+            await updateEmail(auth.currentUser, newEmail);
+
+            setIsModalOpen(false)
+            toast.success('Email address updated successfully.');
+        } catch (error) {
+            console.error('Error updating email:', error);
+            toast.error('Failed to update email. Please try again.');
         }
     };
 
@@ -83,9 +116,9 @@ const Settings = () => {
             await updateDoc(doc(db, 'users', userId), { isActive: false });
 
             const user = auth.currentUser;
-        if (!user) {
-            throw new Error("User not authenticated. Please log in again.");
-        }
+            if (!user) {
+                throw new Error("User not authenticated. Please log in again.");
+            }
 
             // Delete the user account from Firebase Authentication
             // await auth.currentUser.delete();
@@ -139,14 +172,19 @@ const Settings = () => {
                 <div className=' mb-5 ' >
                     <h1 className=' capitalize text-[#FFC157] text-sm mb-1 ' >accounts</h1>
 
-                    <div className=' border border-[#3D3B6F] dark:border-gray-400 overflow-hidden xl:text-lg rounded-md capitalize ' >
+                    {/* <div className=' border border-[#3D3B6F] dark:border-gray-400 overflow-hidden xl:text-lg rounded-md capitalize ' >
                         <div className='p-2 xl:p-3 hover:bg-[#3D3B6F] hover:dark:bg-[#353361] cursor-pointer hover:text-white duration-200 bg-white dark:bg-[#44427C]  ' >
                             update email address
                         </div>
-                        {/* <hr className=' border-[#3D3B6F] dark:border-gray-400 ' />
-                        <div onClick={() => { navigate("settings/notifications") }} className='p-2 xl:p-3 hover:bg-[#3D3B6F] hover:dark:bg-[#353361] cursor-pointer hover:text-white  duration-200 bg-white dark:bg-[#44427C] ' >
-                            notifications
-                        </div> */}
+                    </div>  */}
+
+                    <div className="border border-[#3D3B6F] dark:border-gray-400 overflow-hidden xl:text-lg rounded-md capitalize">
+                        <div
+                            className="p-2 xl:p-3 bg-white hover:bg-[#3D3B6F] hover:dark:bg-[#353361] hover:text-white duration-200 dark:bg-[#44427C] cursor-pointer"
+                            onClick={() => setIsModalOpen(true)}
+                        >
+                            Update Email Address
+                        </div>
                     </div>
                 </div>
 
@@ -192,10 +230,10 @@ const Settings = () => {
                                 </div>
                             </div>
                         </div>
-                        <hr className=' border-[#3D3B6F] dark:border-gray-400  ' />
+                        {/* <hr className=' border-[#3D3B6F] dark:border-gray-400  ' />
                         <div className=' p-3 hover:bg-[#3D3B6F] hover:dark:bg-[#353361] cursor-pointer dark:bg-[#44427C] hover:text-white  duration-200 bg-white ' >
                             chat settings
-                        </div>
+                        </div> */}
                     </div>
 
                     <div className=' mt-5 border border-[#3D3B6F] dark:border-gray-400 overflow-hidden  xl:text-lg rounded-md capitalize ' >
@@ -209,13 +247,17 @@ const Settings = () => {
                     <h1 className=' capitalize text-[#FFC157] text-sm mb-1 ' >support</h1>
 
                     <div className=' border border-[#3D3B6F] dark:border-gray-400 overflow-hidden xl:text-lg rounded-md capitalize ' >
-                        <div className=' p-2 xl:p-3 hover:bg-[#3D3B6F] hover:dark:bg-[#353361] cursor-pointer dark:bg-[#44427C] hover:text-white duration-200 bg-white  ' >
+                        <div
+                            onClick={() => {
+                                window.location.href = "mailto:whisperoutofficial@gmail.com?subject=Customer%20Care&body=Hi%20Developer,%0A%0A";
+                            }}
+                            className=' p-2 xl:p-3 hover:bg-[#3D3B6F] hover:dark:bg-[#353361] cursor-pointer dark:bg-[#44427C] hover:text-white duration-200 bg-white  ' >
                             customer care
                         </div>
-                        <hr className=' border-[#3D3B6F] dark:border-gray-400  ' />
+                        {/* <hr className=' border-[#3D3B6F] dark:border-gray-400  ' />
                         <div className=' p-2 xl:p-3 hover:bg-[#3D3B6F] hover:dark:bg-[#353361] cursor-pointer dark:bg-[#44427C] hover:text-white  duration-200 bg-white ' >
                             FAQs
-                        </div>
+                        </div> */}
                     </div>
                 </div>
 
@@ -231,6 +273,41 @@ const Settings = () => {
                 </div>
 
             </div>
+
+
+            {isModalOpen && (
+                <div className="fixed z-[999999999] inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                    <div className="bg-white dark:bg-[#44427C] rounded-lg shadow-lg p-6 w-[90%] max-w-md">
+                        <h2 className="text-lg font-semibold mb-4">Update Email Address</h2>
+                        <div className="flex items-center gap-2 mb-4">
+                            <input
+                                type="text"
+                                value={emailInput}
+                                onChange={(e) => setEmailInput(e.target.value)}
+                                placeholder="Email name"
+                                className="p-2 border dark:bg-[#34325f] rounded-lg outline-none w-full"
+                            />
+                            <span>@{emailDomain}</span>
+                        </div>
+                        <div className="flex justify-end gap-2">
+                            <button
+                                onClick={() => setIsModalOpen(false)}
+                                className="px-4 py-2 active:scale-95 duration-200 dark:text-black bg-gray-300 rounded"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleUpdateEmail}
+                                className="px-4 active:scale-95 duration-200 py-2 bg-golden text-white rounded"
+                            >
+                                Update
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+
             <ToastContainer position="top-right" autoClose={5000} hideProgressBar closeOnClick pauseOnHover />
         </div>
     )

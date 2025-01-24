@@ -2,7 +2,7 @@
 import { useContext, useEffect, useState } from "react";
 // import { useNavigate } from "react-router-dom";
 import { AuthContext } from '../config/AuthContext.tsx';
-import { addDoc, collection, deleteDoc,  getDocs, orderBy, query, where } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, getDocs, orderBy, query, where } from "firebase/firestore";
 import { db } from "../config/firebase.ts"
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -60,11 +60,15 @@ const HomeDash = () => {
     { icon: <AiFillLike className=" text-[#21CB6E] bg-[#CCE9D9] p-2 rounded-full " size={40} />, text: "Like" }, // 👍
     { icon: <BsFillHandThumbsDownFill className=" text-[#FF3A2F] bg-[#E5C8C7] p-2 rounded-full " size={40} />, text: "Dislike" }, // 👎
     { icon: <FaLaughBeam className=" text-[#FFC157] bg-[#F7F3CB] p-2 rounded-full " size={40} />, text: "Laugh" }, // 😂
-    { icon: <TbBulbFilled className=" text-[#44427C] bg-[#B9B8CB] p-2  rounded-full " size={40} />, text: "Inspiration" },  // 😭
-    
-    // { icon: <FaHeart size={30} />, text: "love" },  // ❤️
-    // { icon: <BiSolidParty size={30} />, text: "party" },  // 🥳
-    // { icon: <ImSad2 size={30} />, text: "sad" },  // 😔
+    { icon: <TbBulbFilled className=" text-[#44427C] bg-[#B9B8CB] p-2  rounded-full " size={40} />, text: "Inspiration" },
+  ];
+
+
+  const reactionOptionsSmall = [
+    { icon: <AiFillLike className=" text-[#21CB6E] bg-[#CCE9D9] p-1 rounded-full " size={25} />, text: "Like" }, // 👍
+    { icon: <BsFillHandThumbsDownFill className=" text-[#FF3A2F] bg-[#E5C8C7] p-1 rounded-full " size={25} />, text: "Dislike" }, // 👎
+    { icon: <FaLaughBeam className=" text-[#FFC157] bg-[#F7F3CB] p-1 rounded-full " size={25} />, text: "Laugh" }, // 😂
+    { icon: <TbBulbFilled className=" text-[#44427C] bg-[#B9B8CB] p-1  rounded-full " size={25} />, text: "Inspiration" },
   ];
 
   useEffect(() => {
@@ -75,7 +79,7 @@ const HomeDash = () => {
   const fetchUpdates = async () => {
     try {
       const updatesRef = collection(db, "updates");
-      const updatesQuery = query(updatesRef, orderBy("createdDate", "desc")); 
+      const updatesQuery = query(updatesRef, orderBy("createdDate", "desc"));
       const querySnapshot = await getDocs(updatesQuery);
 
       const fetchedUpdates: Update[] = [];
@@ -138,7 +142,7 @@ const HomeDash = () => {
       }
       // setAllReactions(fetchedReactions)
 
-      console.log("all reactions "+JSON.stringify(reactionsSnapshot.docs.map((doc)=> doc.data() as Reaction)))
+      console.log("all reactions " + JSON.stringify(reactionsSnapshot.docs.map((doc) => doc.data() as Reaction)))
 
       return reactionCounts;
     } catch (error) {
@@ -147,8 +151,8 @@ const HomeDash = () => {
     }
   };
 
-  
-  
+
+
 
   const addReaction = async (updateId: string, newReactionType: string) => {
     if (!user) return;
@@ -334,7 +338,10 @@ const HomeDash = () => {
       </div> */}
 
       <div className="border dark:border-gray-400 bg-white dark:bg-[#44427C] rounded-md">
-        {updates.map((update) => (
+        {updates.map((update) => {
+          const totalReactions = Object.values(update.reactions).reduce((acc, val) => acc + val, 0);
+        
+          return (
           <div key={update.id} className="py-4 2xl:py-8 border-b dark:border-gray-400 ">
             <div className="px-5 2xl:px-10">
               <div className=" flex justify-between items-center">
@@ -344,24 +351,39 @@ const HomeDash = () => {
               <div className="pt-3 text-lg md:text-base pb-5">
                 <p>{update.content}</p>
               </div>
-{/* 
-              <p className="text-sm text-gray-500 dark:text-gray-300">
-              {Object.entries(update.reactions)
-    .filter(([reactionType, count]) => count > 0) // Only show reactions with count > 0
-    .map(([reactionType, count]) => (
-      <div key={reactionType}>
-        {reactionType}: {count}
-      </div>
-    ))}
-              </p> */}
+
+              {/* <div>
+      {totalReactions > 0 && (
+        <div className="flex items-center gap-4">
+          {reactionOptionsSmall.map(({ icon, text }) => (
+            <div key={text} className="flex items-center gap-1">
+              <span className="text-sm">
+            <span className="icon-wrapper" style={{ width: '30px', height: '30px', display: 'inline-block' }}>
+              {React.cloneElement(icon, { size: 30 })}
+            </span>
+          </span>
+              <span className="text-gray-500">({update.reactions[text] || 0})</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div> */}
 
 <div>
-  {Object.values(update.reactions).reduce((acc, val) => acc + val, 0) > 0 && (
-    <span>
-      Reactions: {Object.values(update.reactions).reduce((acc, val) => acc + val, 0)}
-    </span>
-  )}
-</div>
+      {/* Show reactions only if there are any */}
+      {totalReactions > 0 && (
+        <div className="flex  p-1 w-fit rounded-full shadow-inner shadow-maindark items-center gap-2">
+          {reactionOptionsSmall.map(({ icon, text }) => (
+            <div key={text} className="flex items-center gap-[2px] ">
+              <span className=" flex justify-center items-center " >
+              {icon}
+              </span>
+              <span className="text-gray-500">({update.reactions[text] || 0})</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
 
               <div className=" relative">
                 <button
@@ -371,11 +393,11 @@ const HomeDash = () => {
                   onClick={() => setShowReactions((prev) => (prev === update.id ? null : update.id))}
                 // onClick={() => handleReactionClick(update.id, { icon: <AiFillLike size={30} />, text: "Like" })}
                 >
-                  {selectedReactions[update.id]?.icon}
+                  {selectedReactions[update.id]?.icon || (<div><FaRegFaceSmile size={30} /></div>)}
 
 
                   <span className="  lg:text-xl">
-                    {selectedReactions[update.id]?.text || (<div><FaRegFaceSmile size={20} /></div>)}
+                    {selectedReactions[update.id]?.text }
                   </span>
                 </button>
 
@@ -411,7 +433,9 @@ const HomeDash = () => {
               </div>
             </div>
           </div>
-        ))}
+        )}
+        
+        )}
       </div>
       <ToastContainer position="top-right" autoClose={5000} hideProgressBar closeOnClick pauseOnHover />
     </div>

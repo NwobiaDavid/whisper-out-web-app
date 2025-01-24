@@ -1,19 +1,24 @@
-import { db } from '../../config/firebase';
+import { db, functions } from '../../config/firebase';
 import { addDoc, collection, doc, getDoc, onSnapshot, orderBy, query, setDoc, Timestamp, updateDoc, where } from 'firebase/firestore';
 import React, { useState, ChangeEvent, FormEvent, useEffect, useContext, useRef, KeyboardEvent } from 'react';
-import CryptoJS from 'crypto-js';
+// import CryptoJS from 'crypto-js';
 import { AuthContext } from '../../config/AuthContext.tsx';
 import { FaAngleDown } from "react-icons/fa6";
 import { PiNavigationArrowBold } from "react-icons/pi";
 // import VisibilitySensor from 'react-visibility-sensor';
 import { debounce } from 'lodash';
 
+import { httpsCallable } from "firebase/functions";
+// import { functions } from "./firebase"; // Import your Firebase setup
+import { getAuth } from "firebase/auth";
+
+
 import { useDispatch } from 'react-redux';
 import { setUnreadMessages } from '../../state/unreadMessages/unreadMessagesSlice.ts';
 
 import { v4 as uuidv4 } from 'uuid';
 import { AppDispatch } from '../../state/store.ts';
-// import { Spinner } from '@nextui-org/spinner';
+
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -27,6 +32,11 @@ interface UserType {
     email: string;
 }
 
+interface HashedUserIdResponse {
+    hashedId: string;
+  }
+
+  
 interface AuthContextType {
     user: UserType | null;
 }
@@ -49,7 +59,7 @@ type Message = {
     domain: string;
 };
 
-const secretKey = 'your_secret_key';
+// const secretKey = 'your_secret_key';
 
 const ChatRoom: React.FC<ChatRoomProps> = ({ channel, channelTitle }) => {
     const [messages, setMessages] = useState<Message[]>([]);
@@ -57,6 +67,8 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel, channelTitle }) => {
     const [username, setUsername] = useState<string>('');
     const [unreadMessages, setUnreadMessagess] = useState<number>(0);
     const [activeUsers, setActiveUsers] = useState<number>(0);
+
+    const [hashedId, setHashedId] = useState<string | null>(null);
 
 
     // const [isLoading, setIsLoading] = useState(true)
@@ -79,9 +91,59 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel, channelTitle }) => {
 
     // let manualScroll = false;
 
-    const hashUserId = (userId: string) => {
-        return CryptoJS.HmacSHA256(userId, secretKey).toString();
-    };
+    // const hashUserId = (userId: string) => {
+    //     return CryptoJS.HmacSHA256(userId, secretKey).toString();
+    // };
+
+
+
+
+
+
+
+
+    const getHashedUserId = async (): Promise<string> => {
+        try {
+          // Get the current user's UID from Firebase Auth
+          const auth = getAuth();
+          const currentUser = auth.currentUser;
+      
+          if (!currentUser) {
+            throw new Error("User not authenticated");
+          }
+      
+          // Define the callable Firebase Cloud Function
+          const callable = httpsCallable<{ userId: string }, HashedUserIdResponse>(functions, "getHashedUserId");
+      
+          // Call the Cloud Function with the user's UID
+          const response = await callable({ userId: currentUser.uid });
+      
+          if (!response.data.hashedId) {
+            throw new Error("Response does not contain hashedId");
+          }
+
+          // Extract and return the hashed ID from the response
+          return response.data.hashedId;
+        } catch (error) {
+          console.error("Error calling getHashedUserId:", error);
+          throw error;
+        }
+      };
+
+
+      useEffect(() => {
+        const fetchHashedId = async () => {
+            try {
+                const id = await getHashedUserId();
+                setHashedId(id);
+            } catch (err) {
+                console.error("Failed to fetch hashed ID");
+            }
+        };
+    
+        fetchHashedId();
+    }, []);
+
 
     const dispatch = useDispatch<AppDispatch>();
 
@@ -148,9 +210,16 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel, channelTitle }) => {
 
                 console.log("--passed here222")
 
+                await setDoc(
+                    messageRef,
+                    { status: 'Pending' },
+                    { merge: true } // Merge to avoid overwriting existing fields
+                );
+
                 const reportRef = doc(db, 'reportedMessages', contextMenu.messageId);
-                console.log("--passed here333")
                 await setDoc(reportRef, reportData);
+
+                console.log("--passed here333")
 
                 // await addDoc(collection(db, 'reportedMessages'), reportData);
                 toast.info('Message has been reported.');
@@ -300,8 +369,8 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel, channelTitle }) => {
         }
     }, 200)
 
-    useEffect(() => {
 
+    useEffect(() => {
         const container = messageContainerRef.current;
         if (container) {
             container.addEventListener('scroll', handleScroll);
@@ -336,7 +405,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel, channelTitle }) => {
                     id: `${Date.now()}`, // Temporary ID, Firestore will provide the final ID
                     content: input,
                     timestamp: Timestamp.now(),
-                    userId: hashUserId(user?.uid || ""),
+                    userId: hashedId || "",
                     userName: username,
                     companyName: companyName,
                     domain: emailDomain,
@@ -368,6 +437,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel, channelTitle }) => {
 
         }
     };
+
 
     const fetchLastSeenIndex = async () => {
         if (user) {
@@ -428,43 +498,53 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel, channelTitle }) => {
     const fetchMessages = async () => {
         if (!user) return;
 
-        // setIsLoading(true)
-        const userDoc = await getDoc(doc(db, 'users', user.uid));
-        const companyDomain = userDoc?.data()?.domain;
+        try{
 
-        if (!companyDomain) {
-            console.error("User's company domain not found");
-            return; 
+            // setIsLoading(true)
+            const userDoc = await getDoc(doc(db, 'users', user.uid));
+            const companyDomain = userDoc?.data()?.domain;
+    
+            if (!companyDomain) {
+                console.error("User's company domain not found");
+                return; 
+            }
+    
+            const q = query(
+                collection(db, 'chatRoom', channel, 'messages'),
+                where('domain', '==', companyDomain),
+                orderBy('timestamp')
+            );
+    
+            const unsubscribe = onSnapshot(q, (snapshot) => {
+                const updatedMessages = snapshot.docs
+                .map((doc) => {
+                    const data = doc.data();
+                    return {
+                        id: data.id,
+                        content: data.content,
+                        timestamp: data.timestamp instanceof Timestamp ? data.timestamp : Timestamp.fromDate(new Date(data.timestamp)),
+                        userId: data.userId,
+                        userName: data.userName,
+                        companyName: data.companyName,
+                        domain: data.domain,
+                        status: data.status || null,
+                    };
+                })
+                .filter((message) => message.status !== 'Approved');
+    
+                const newUnreadCount = updatedMessages.length - lastSeenIndex - 1;
+                setMessages(updatedMessages);
+                setUnreadMessagess(newUnreadCount);
+                // setIsLoading(false)
+                dispatch(setUnreadMessages({ channelTitle, count: newUnreadCount }));
+            });
+    
+            return unsubscribe;
+
+        } catch (error) {
+            console.error("Error fetching messages:", error);
         }
 
-        const q = query(
-            collection(db, 'chatRoom', channel, 'messages'),
-            where('domain', '==', companyDomain),
-            orderBy('timestamp')
-        );
-
-        const unsubscribe = onSnapshot(q, (snapshot) => {
-            const updatedMessages = snapshot.docs.map((doc) => {
-                const data = doc.data();
-                return {
-                    id: data.id,
-                    content: data.content,
-                    timestamp: data.timestamp instanceof Timestamp ? data.timestamp : Timestamp.fromDate(new Date(data.timestamp)),
-                    userId: data.userId,
-                    userName: data.userName,
-                    companyName: data.companyName,
-                    domain: data.domain,
-                };
-            });
-
-            const newUnreadCount = updatedMessages.length - lastSeenIndex - 1;
-            setMessages(updatedMessages);
-            setUnreadMessagess(newUnreadCount);
-            // setIsLoading(false)
-            dispatch(setUnreadMessages({ channelTitle, count: newUnreadCount }));
-        });
-
-        return unsubscribe;
     };
 
 
@@ -571,7 +651,9 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel, channelTitle }) => {
         }
     };
 
-    const hashedCurrentUserId = user?.uid ? hashUserId(user?.uid) : '';
+
+    // const hashedCurrentUserId = user?.uid ? hashedId : '';
+
 
     useEffect(() => {
         if (user) {
@@ -610,10 +692,6 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel, channelTitle }) => {
                            bg-fixed bg-[url('/assets/images/bg/chatroom/chatroom_light.png')]  dark:bg-[url('/assets/images/bg/chatroom/chatroom_dark1.png')] 
                            bg-no-repeat bg-cover lg:bg-fill lg:dark:bg-contain bg-center rounded-t-md  "
             >
-                {/* {isLoading ? (
-                               <div className='w-full h-full flex justify-center items-center ' >  <Spinner className='text-golden ' /></div>
-                           ) : (
-                               <>  */}
 
                 {messages.length === 0 ? (
                     <div className='text-gray-900 font-semibold dark:text-gray-100'>No messages yet. Start the conversation!</div>
@@ -631,12 +709,12 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel, channelTitle }) => {
                                     <div
                                         id={msg.id}
                                         onContextMenu={(e) => handleRightClick(e, msg.id)}
-                                        className={`mb-3   flex ${msg.userId === hashedCurrentUserId ? 'justify-end' : 'justify-start'}`}>
-                                        <div className={`flex  flex-col ${msg.userId === hashedCurrentUserId ? 'items-end' : 'items-start'}`}>
-                                            <div className={`py-1 px-2 break-all flex flex-col rounded-lg w-full max-w-xs md:max-w-sm lg:max-w-md xl:max-w-lg break-words text-left ${msg.userId === hashedCurrentUserId ? 'dark:text-gray-800 bg-[#FFC157]' : 'bg-[#6967ac]'}`}>
-                                                <span className={`text-xs font-semibold ${msg.userId === hashedCurrentUserId ? "text-[#0e0c4180]" : "text-gray-300"}`}>{msg.userName}</span>
+                                        className={`mb-3   flex ${msg.userId === hashedId ? 'justify-end' : 'justify-start'}`}>
+                                        <div className={`flex  flex-col ${msg.userId === hashedId ? 'items-end' : 'items-start'}`}>
+                                            <div className={`py-1 px-2 break-all flex flex-col rounded-lg w-full max-w-xs md:max-w-sm lg:max-w-md xl:max-w-lg break-words text-left ${msg.userId === hashedId ? 'dark:text-gray-800 bg-[#FFC157]' : 'bg-[#6967ac]'}`}>
+                                                <span className={`text-xs font-semibold ${msg.userId === hashedId ? "text-[#0e0c4180]" : "text-gray-300"}`}>{msg.userName}</span>
                                                 {msg.content}
-                                                <div className={`text-xs text-right mt-2 ${msg.userId === hashedCurrentUserId ? "text-black text-opacity-50" : "text-gray-300"}`}>
+                                                <div className={`text-xs text-right mt-2 ${msg.userId === hashedId ? "text-black text-opacity-50" : "text-gray-300"}`}>
                                                     {msg.timestamp.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                                 </div>
                                             </div>
@@ -663,7 +741,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ channel, channelTitle }) => {
             {unreadMessages > 0 && showScrollToBottom && (
                 <div className='relative w-full'>
                     <div className="absolute bottom-[10%] right-[45%] lg:right-[50%] my-4">
-                        <div onClick={scrollToBottom} className='relative z-10 cursor-pointer p-2 md:p-3 bg-maindark text-white dark:bg-gray-300 border border-[#c49038] dark:text-maindark rounded-full'>
+                        <div onClick={scrollToBottom} className='relative z-10 cursor-pointer p-2 md:p-3 bg-maindark text-white dark:bg-[#c49038] dark:text-maindark rounded-full'>
                             <div className="p-1">
                                 <FaAngleDown />
                             </div>
